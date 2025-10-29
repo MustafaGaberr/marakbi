@@ -31,22 +31,46 @@ const WhyChoosingUs = () => {
   return (
     <section className="w-full">
       {/* Header Section */}
-      <div className="bg-[#093B77] py-16 text-center">
+      <div className="bg-[#093B77] py-8 sm:py-16 text-center">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-[46px] font-bold text-white font-poppins mb-4 capitalize break-words">
+          <h2 className="text-4xl sm:text-4xl lg:text-[46px] font-bold text-white font-poppins mb-4 capitalize break-words">
             Why Choosing US
           </h2>
-          <p className="text-[30px] text-white font-poppins mb-8 capitalize break-words font-normal">
+          <p className="text-l sm:text-2xl lg:text-[30px] text-white font-poppins mb-8 capitalize break-words font-normal">
             We Do Our Best For Your Convenience
           </p>
-          <button className="bg-[#CEAF6E] text-[#093B77] px-8 py-4 rounded-lg text-[16px] font-normal font-poppins capitalize break-words hover:bg-[#B8941F] transition-colors">
+          <button className="bg-[#CEAF6E] text-[#093B77] px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm sm:text-base font-normal font-poppins capitalize break-words hover:bg-[#B8941F] transition-colors w-full max-w-xs sm:w-auto pt-4 mt-4">
             Book With Us
           </button>
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="relative w-full h-[100vh] overflow-hidden">
+      {/* Mobile Cards */}
+      <div className="block md:hidden bg-[#093B77] py-8">
+        <div className="max-w-4xl mx-auto px-4 space-y-6">
+          {columns.map((column, index) => (
+            <div key={index} className="bg-[#072D5B] rounded-2xl overflow-hidden">
+              <div className="py-8 px-6">
+                <h3 className="text-white text-xl font-semibold font-poppins text-center">
+                  {column.title}
+                </h3>
+              </div>
+              
+              <div className="relative h-64 w-full">
+                <img src={column.image} alt={column.title} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end justify-center p-6">
+                  <p className="text-[#CEAF6E] text-sm font-poppins leading-relaxed text-center">
+                    {column.caption}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop Main Content Area */}
+      <div className="hidden md:block relative w-full h-[100vh] overflow-hidden">
         {/* Background Image */}
         <img
           src={columns[activeColumn].image}

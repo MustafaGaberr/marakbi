@@ -109,7 +109,7 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
   return (
     <header className="relative z-50">
       {/* Top Bar */}
-      <div className="bg-[#093B77] h-14 flex items-center justify-between px-4 sm:px-8 md:px-16">
+      <div className="hidden sm:flex bg-[#093B77] h-14 items-center justify-between px-4 sm:px-8 md:px-16">
         {/* Left Side: Phone and Email */}
         <div className="flex items-center gap-4 sm:gap-8 md:gap-16">
           <div className="flex items-center gap-0.5">
@@ -156,11 +156,14 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
       </div>
       
       {/* Main Navigation Bar */}
-      <nav className={`absolute top-14 left-0 right-0 z-50 ${variant === 'solid' ? 'bg-white shadow-sm' : 'bg-transparent'}`}>
+      <nav className={`absolute top-0 sm:top-14 left-0 right-0 z-50 ${variant === 'solid' ? 'bg-white shadow-sm' : 'bg-[#093B77] sm:bg-transparent'}`}>
         <div className="px-4 sm:px-8 md:px-16 py-4 flex justify-between items-center">
           {/* Left: Logo */}
           <div className="flex items-center space-x-3">
-            <Link href="/">
+            <Link href="/" className="block sm:hidden">
+              <Logo variant="white" width={48} height={60} />
+            </Link>
+            <Link href="/" className="hidden sm:block">
               <Logo width={64} height={80} variant={logoVariant} />
             </Link>
           </div>
@@ -274,9 +277,9 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`md:hidden p-2 rounded-lg ${variant === 'solid' ? 'hover:bg-gray-100' : 'hover:bg-white/10'} transition-colors`}
+              className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors"
             >
-              <svg className={`w-6 h-6 ${textColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -289,37 +292,37 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
         
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className={`md:hidden ${variant === 'solid' ? 'bg-white shadow-lg' : 'bg-white/95 backdrop-blur-sm'} border-t border-gray-200`}>
-            <div className="px-4 py-4 space-y-4">
-              <Link href="/" className="block text-gray-800 text-base font-normal font-poppins hover:text-blue-600 transition-colors">Home</Link>
-              <Link href="/about-us" className="block text-gray-800 text-base font-normal font-poppins hover:text-blue-600 transition-colors">About us</Link>
-              <span className="block text-gray-800 text-base font-normal font-poppins">Our Services</span>
+          <div className="md:hidden bg-white/95 backdrop-blur-sm border-t border-gray-200 animate-fade-in">
+            <div className="px-6 py-6 space-y-3 max-h-[calc(100vh-8rem)] overflow-y-auto">
+              <Link href="/" onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg text-gray-800 text-base font-medium font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">Home</Link>
+              <Link href="/about-us" onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg text-gray-800 text-base font-medium font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">About us</Link>
+              <span className="block px-4 py-3 text-gray-800 text-base font-medium font-poppins">Our Services</span>
               <div className="ml-3 space-y-2">
-                <Link href="/services/private-boats" className="block text-gray-700 text-sm font-poppins hover:text-blue-600">PRIVATE BOATS</Link>
-                <Link href="/services/sharing-boats" className="block text-gray-700 text-sm font-poppins hover:text-blue-600">SHARING BOATS</Link>
-                <Link href="/services/travel-boats" className="block text-gray-700 text-sm font-poppins hover:text-blue-600">TRAVEL BOATS</Link>
-                <Link href="/services/fishing-boats" className="block text-gray-700 text-sm font-poppins hover:text-blue-600">FISHING BOATS</Link>
-                <Link href="/services/stayover-boats" className="block text-gray-700 text-sm font-poppins hover:text-blue-600">STAYOVER BOATS</Link>
-                <Link href="/services/water-activities" className="block text-gray-700 text-sm font-poppins hover:text-blue-600">WATER ACTIVITIES</Link>
-                <Link href="/services/occasions" className="block text-gray-700 text-sm font-poppins hover:text-blue-600">OCCASIONS</Link>
+                <Link href="/services/private-boats" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 rounded-lg text-gray-700 text-sm font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">PRIVATE BOATS</Link>
+                <Link href="/services/sharing-boats" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 rounded-lg text-gray-700 text-sm font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">SHARING BOATS</Link>
+                <Link href="/services/travel-boats" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 rounded-lg text-gray-700 text-sm font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">TRAVEL BOATS</Link>
+                <Link href="/services/fishing-boats" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 rounded-lg text-gray-700 text-sm font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">FISHING BOATS</Link>
+                <Link href="/services/stayover-boats" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 rounded-lg text-gray-700 text-sm font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">STAYOVER BOATS</Link>
+                <Link href="/services/water-activities" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 rounded-lg text-gray-700 text-sm font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">WATER ACTIVITIES</Link>
+                <Link href="/services/occasions" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 rounded-lg text-gray-700 text-sm font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">OCCASIONS</Link>
               </div>
-              <Link href="/contact" className="block text-gray-800 text-base font-normal font-poppins hover:text-blue-600 transition-colors">Contact</Link>
+              <Link href="/contact" onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg text-gray-800 text-base font-medium font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">Contact</Link>
               
               {/* Mobile Auth Links */}
               {user ? (
-                <div className="pt-4 border-t border-gray-200 space-y-2">
-                  <Link href="/profile" className="block text-gray-800 text-base font-normal font-poppins hover:text-blue-600 transition-colors">
+                <div className="pt-4 border-t border-gray-200 space-y-3">
+                  <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg text-gray-800 text-base font-medium font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">
                     My Profile
                   </Link>
                   {currentPage !== 'dashboard' && (
-                    <Link href="/dashboard" className="block text-gray-800 text-base font-normal font-poppins hover:text-blue-600 transition-colors">
+                    <Link href="/dashboard" onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg text-gray-800 text-base font-medium font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">
                       Dashboard
                     </Link>
                   )}
                   <button
                     onClick={handleLogout}
                     disabled={isLoggingOut}
-                    className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-center ${
+                    className={`w-full px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                       isLoggingOut 
                         ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
                         : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md'
@@ -332,11 +335,11 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
                   </button>
                 </div>
               ) : (
-                <div className="pt-4 border-t border-gray-200 space-y-2">
-                  <Link href="/login" className="block text-gray-800 text-base font-normal font-poppins hover:text-blue-600 transition-colors">
+                <div className="pt-4 border-t border-gray-200 space-y-3">
+                  <Link href="/login" onClick={() => setIsMenuOpen(false)} className="w-full px-6 py-3 rounded-lg bg-blue-600 text-white text-base font-medium font-poppins hover:bg-blue-700 transition-colors text-center block">
                     Login
                   </Link>
-                  <Link href="/signup" className="block px-4 py-2 border border-orange-300 text-gray-800 text-base font-normal font-poppins rounded hover:bg-orange-300 hover:text-white transition-colors text-center">
+                  <Link href="/signup" onClick={() => setIsMenuOpen(false)} className="w-full px-6 py-3 rounded-lg border-2 border-orange-300 text-orange-300 text-base font-medium font-poppins hover:bg-orange-300 hover:text-white transition-colors text-center block">
                     Register
                   </Link>
                 </div>

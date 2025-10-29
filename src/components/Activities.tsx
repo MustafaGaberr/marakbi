@@ -12,7 +12,7 @@ const Activities = ({ homeData }: { homeData: any }) => {
     <section className="relative py-2">
       {/* Title */}
       <div className="text-center mb-12">
-        <h2 className="text-black text-4xl md:text-6xl font-bold font-poppins capitalize leading-tight">
+        <h2 className="text-black text-4xl md:text-6xl font-bold font-poppins capitalize leading-tight px-4">
           Discover the Best Activities <br />at waterways
         </h2>
         <p className="text-zinc-500 text-lg md:text-2xl font-medium font-poppins capitalize mt-8 max-w-3xl mx-auto px-4">
@@ -38,25 +38,27 @@ const Activities = ({ homeData }: { homeData: any }) => {
             <div className="absolute inset-0 bg-black/20 transition duration-500 group-hover:bg-transparent"></div>
 
             {/* العنوان */}
-            <div
-  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center"
->
-  <span className="text-white text-xl font-medium font-poppins capitalize">
-    {item.title}
-  </span>
-</div>
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center px-2">
+              <span className="text-white text-2xl sm:text-xl font-medium font-poppins capitalize whitespace-nowrap">
+                {item.title}
+              </span>
+            </div>
 
           </div>
         ))}
       </div>
-      <div className="text-center mb-16 mt-16">
-          <p className="text-4xl lg:text-5xl font-signpainter text-[#927C4E] mb-4">
+      <div className="text-center mb-8 sm:mb-16 mt-12 sm:mt-16 px-4">
+          <p className="text-3xl sm:text-4xl lg:text-5xl font-signpainter text-[#927C4E] mb-2 sm:mb-4">
           Where to sail Now
           </p>
-          <h2 className="text-5xl lg:text-6xl font-bold text-black font-poppins mb-6">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-[#093B77] sm:text-black font-poppins mb-4 sm:mb-6">
           Top Destinations
           </h2>
           
+          {/* Line تحت Top Destination للموبايل فقط */}
+          <div className="flex justify-center sm:hidden">
+            <img src="/icons/Line 74.svg" alt="Decorative line" className="h-4" />
+          </div>
         </div>
     </section>
   );

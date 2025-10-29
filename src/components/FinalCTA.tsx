@@ -1,6 +1,6 @@
 const FinalCTA = () => {
   return (
-    <section className="relative w-full overflow-hidden">
+    <section className="hidden md:block relative w-full overflow-hidden">
       {/* Title Above Section */}
       <div className="text-center py-12 bg-white">
         <p className="text-4xl lg:text-5xl font-signpainter mt-8 text-[#927C4E]">
