@@ -4,10 +4,10 @@ const AboutApp = () => {
   return (
     <section className="py-8 sm:py-20">
       <div className="text-center mb-8 sm:mb-16">
-          <p className="text-4xl sm:text-4xl lg:text-5xl font-signpainter text-[#927C4E] mb-4">
-          what is marakbi
+          <p className="text-4xl sm:text-4xl lg:text-5xl font-signpainter text-[#927C4E] mb-2 sm:mb-4">
+          What is Marakbi
           </p>
-          <h2 className="text-5xl sm:text-5xl lg:text-6xl font-bold text-black font-poppins mb-6">
+          <h2 className="text-5xl sm:text-5xl lg:text-6xl font-bold text-black font-poppins mb-4 sm:mb-6">
           About us
           </h2>
           <p className="text-base sm:text-xl text-gray-400 font-poppins max-w-4xl mx-auto leading-relaxed">
@@ -19,7 +19,7 @@ const AboutApp = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start">
           {/* Left Side: Text Content */}
           <div>
-            <h2 className="text-[#072D5B] text-3xl sm:text-4xl lg:text-5xl font-semibold font-poppins mb-8 leading-tight">
+            <h2 className="text-[#072D5B] text-3xl sm:text-4xl lg:text-5xl font-semibold font-poppins mb-6 sm:mb-8 leading-tight">
               Providing a large fleet of Boats for a perfect and dreamy experience
             </h2>
 
@@ -30,7 +30,7 @@ const AboutApp = () => {
               you&apos;re gaining access to expert local knowledge for a safe and unforgettable journey.
             </p>
 
-            <ul className="space-y-3">
+            <ul className="space-y-2 sm:space-y-3">
               <li className="text-[#093B77] text-base sm:text-lg font-semibold font-poppins leading-7 sm:leading-9 flex items-start">
                 <img src="/icons/tick.svg" alt="check" className="w-5 h-5 sm:w-6 sm:h-6 mr-3 mt-1 flex-shrink-0" />
                 Premium Boats & Yachts
@@ -53,15 +53,15 @@ const AboutApp = () => {
               </li>
             </ul>
 
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8">
               <img
                 src="/images/image 2.png"
                 alt="App Store"
                 className="w-40 h-9 sm:w-52 sm:h-11"
               />
             </div>
-            <div className=" pl-4 mb-8">
-              <p className="text-black text-sm font-normal font-poppins leading-9">
+            <div className="pl-3 sm:pl-4 mb-6 sm:mb-8">
+              <p className="text-black text-xs sm:text-sm font-normal font-poppins leading-6 sm:leading-9">
                 CTO & Founder, Marakbi App
               </p>
             </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 const WhyChoosingUs = () => {
   const [activeColumn, setActiveColumn] = useState(0);
@@ -33,13 +34,13 @@ const WhyChoosingUs = () => {
       {/* Header Section */}
       <div className="bg-[#093B77] py-8 sm:py-16 text-center">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-4xl sm:text-4xl lg:text-[46px] font-bold text-white font-poppins mb-4 capitalize break-words">
+          <h2 className="text-white text-4xl sm:text-4xl lg:text-[46px] font-bold font-poppins mb-3 sm:mb-4 capitalize">
             Why Choosing US
           </h2>
-          <p className="text-l sm:text-2xl lg:text-[30px] text-white font-poppins mb-8 capitalize break-words font-normal">
+          <p className="text-white text-xl sm:text-2xl lg:text-[30px] font-poppins font-normal mb-6 sm:mb-8 capitalize">
             We Do Our Best For Your Convenience
           </p>
-          <button className="bg-[#CEAF6E] text-[#093B77] px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm sm:text-base font-normal font-poppins capitalize break-words hover:bg-[#B8941F] transition-colors w-full max-w-xs sm:w-auto pt-4 mt-4">
+          <button className="bg-[#CEAF6E] text-[#093B77] px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm sm:text-base font-normal font-poppins capitalize hover:bg-[#B8941F] transition-colors w-full max-w-xs sm:w-auto pt-4 mt-4">
             Book With Us
           </button>
         </div>
@@ -57,7 +58,13 @@ const WhyChoosingUs = () => {
               </div>
               
               <div className="relative h-64 w-full">
-                <img src={column.image} alt={column.title} className="w-full h-full object-cover" />
+                <Image 
+                  src={column.image} 
+                  alt={column.title} 
+                  fill
+                  className="object-cover"
+                  quality={85}
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end justify-center p-6">
                   <p className="text-[#CEAF6E] text-sm font-poppins leading-relaxed text-center">
                     {column.caption}
@@ -72,10 +79,12 @@ const WhyChoosingUs = () => {
       {/* Desktop Main Content Area */}
       <div className="hidden md:block relative w-full h-[100vh] overflow-hidden">
         {/* Background Image */}
-        <img
+        <Image
           src={columns[activeColumn].image}
           alt="Background"
-          className="absolute inset-0 w-full h-full object-cover transition-all duration-500"
+          fill
+          className="object-cover transition-all duration-500"
+          quality={85}
         />
 
         {/* Columns Overlay */}
@@ -83,25 +92,23 @@ const WhyChoosingUs = () => {
           {columns.map((column, index) => (
             <div
               key={index}
-              className="flex-1 border-r border-white/20 last:border-r-0 cursor-pointer hover:bg-white/10 transition-all duration-300 relative"
+              className="flex-1 border-r border-white/20 last:border-r-0 cursor-pointer hover:bg-white/10 transition-all duration-300 relative flex flex-col justify-between"
               onMouseEnter={() => setActiveColumn(index)}
             >
-              <div className="h-full flex flex-col justify-between ">
-                <h3 className={`text-lg font-medium font-poppins p-12 text-center rounded transition-all duration-300 ${
-                  activeColumn === index 
-                    ? 'bg-[#093B77] text-white' 
-                    : 'text-white'
-                }`}>
-                  {column.title}
-                </h3>
-                {activeColumn === index && (
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <p className="text-[#CEAF6E] text-sm font-poppins leading-relaxed">
-                      {column.caption}
-                    </p>
-                  </div>
-                )}
-              </div>
+              <h3 className={`text-lg font-medium font-poppins p-12 text-center rounded transition-all duration-300 ${
+                activeColumn === index 
+                  ? 'bg-[#093B77] text-white' 
+                  : 'text-white'
+              }`}>
+                {column.title}
+              </h3>
+              {activeColumn === index && (
+                <div className="absolute bottom-6 left-6 right-6">
+                  <p className="text-[#CEAF6E] text-sm font-poppins leading-relaxed">
+                    {column.caption}
+                  </p>
+                </div>
+              )}
             </div>
           ))}
         </div>

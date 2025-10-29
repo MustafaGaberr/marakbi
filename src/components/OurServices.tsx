@@ -1,5 +1,7 @@
 "use client";
 
+import Image from 'next/image';
+
 const OurServices = () => {
   const services = [
     {
@@ -45,10 +47,10 @@ const OurServices = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-16">
-          <p className="text-4xl sm:text-4xl lg:text-5xl font-signpainter text-[#927C4E] mb-4">
+          <p className="text-4xl sm:text-4xl lg:text-5xl font-signpainter text-[#927C4E] mb-2 sm:mb-4">
             What Do We Offer
           </p>
-          <h2 className="text-5xl sm:text-5xl lg:text-6xl font-bold text-black font-poppins mb-6">
+          <h2 className="text-5xl sm:text-5xl lg:text-6xl font-bold text-black font-poppins mb-4 sm:mb-6">
             Our Services
           </h2>
           <p className="text-base sm:text-xl text-gray-400 font-poppins max-w-4xl mx-auto leading-relaxed">
@@ -59,27 +61,32 @@ const OurServices = () => {
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {services.map((service) => (
-            <div key={service.id} className="bg-white rounded-lg shadow-lg border-l-4 border-l-[#CEAF6E] p-5 sm:p-6 hover:shadow-xl transition-shadow duration-300">
+            <div 
+              key={service.id} 
+              className="bg-white rounded-lg shadow-lg border-l-4 border-l-[#CEAF6E] p-5 sm:p-6 hover:shadow-xl transition-shadow duration-300"
+            >
               {/* Icon */}
-              <div className="mb-4">
-                <img 
+              <div className="mb-3 sm:mb-4">
+                <Image 
                   src={service.icon} 
                   alt={service.title}
+                  width={64}
+                  height={64}
                   className="w-12 h-12 sm:w-16 sm:h-16"
                 />
               </div>
 
               {/* Title */}
-              <h3 className="text-lg sm:text-xl font-medium text-[#093B77] font-poppins mb-3">
+              <h3 className="text-lg sm:text-xl font-medium text-[#093B77] font-poppins mb-2 sm:mb-3">
                 {service.title}
               </h3>
 
               {/* Wavy Underline */}
-              <div className="mb-4">
+              <div className="mb-3 sm:mb-4">
                 <img 
                   src="/icons/Line 74.svg" 
                   alt="Decorative line"
-                  className="h-4"
+                  className="h-3 sm:h-4"
                 />
               </div>
 
