@@ -90,7 +90,7 @@ const BoatFleet = () => {
 
       <div className="relative">
         {/* Hero Content */}
-        <div className="flex flex-col items-center justify-center text-center mb-10 ">
+        <div className="flex flex-col items-center justify-center text-center mb-10">
          
           {/* Title */}
           <h2 className="text-white text-3xl md:text-5xl font-semibold font-poppins mb-4 mt-4">
@@ -122,7 +122,7 @@ const BoatFleet = () => {
         </div>
 
         {/* Boat Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12 px-4 place-items-center md:place-items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 max-w-6xl lg:max-w-7xl mx-auto mb-12 px-4 lg:px-0 place-items-center md:place-items-stretch lg:place-items-start">
           {boats.map((boat, index: number) => {
             return (
               <BoatCard
