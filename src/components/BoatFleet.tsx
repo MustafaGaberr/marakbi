@@ -52,6 +52,7 @@ const BoatFleet = () => {
             return (
               <BoatCard
                 key={boat.id || index}
+                boatId={boat.id}
                 imageUrl={boat.images?.[0] || '/images/Rectangle 3463853.png'}
                 name={boat.name || 'Boat'}
                 price={`${boat.price_per_hour ?? 0}`}

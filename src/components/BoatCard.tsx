@@ -1,6 +1,8 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface BoatCardProps {
+  boatId?: number;
   imageUrl: string;
   name: string;
   price: string;
@@ -12,9 +14,9 @@ interface BoatCardProps {
   reviewsCount?: number;
 }
 
-const BoatCard = ({ imageUrl, name, price, location, guests, status, rooms, rating = 5, reviewsCount = 0 }: BoatCardProps) => {
-  return (
-    <div className="w-96 h-[465px] bg-white rounded-2xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] overflow-hidden ">
+const BoatCard = ({ boatId, imageUrl, name, price, location, guests, status, rooms, rating = 5, reviewsCount = 0 }: BoatCardProps) => {
+  const cardContent = (
+    <div className="w-96 h-[465px] bg-white rounded-2xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] overflow-hidden hover:shadow-xl transition-shadow" style={{ fontFamily: 'Poppins, sans-serif' }}>
       {/* Image Container with Rating Overlay */}
       <div className="relative w-full h-64 overflow-hidden rounded-lg">
         <Image 
@@ -149,6 +151,14 @@ const BoatCard = ({ imageUrl, name, price, location, guests, status, rooms, rati
         </div>
       </div>
     </div>
+  );
+
+  return boatId ? (
+    <Link href={`/boat-details/${boatId}`} className="block cursor-pointer">
+      {cardContent}
+    </Link>
+  ) : (
+    cardContent
   );
 };
 

@@ -37,6 +37,7 @@ export default function BoatListingLayout() {
           {boatFleetData.map((boat) => (
             <BoatCard
               key={boat.id}
+              boatId={boat.id}
               imageUrl={boat.images?.[0] || "/images/Rectangle 3463853.png"}
               name={boat.name}
               price={`${boat.price_per_hour}`}
