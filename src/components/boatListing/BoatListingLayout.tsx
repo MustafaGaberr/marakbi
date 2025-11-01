@@ -3,6 +3,7 @@
 import BoatCard from "../BoatCard";
 import FilterButton from "./FilterButton";
 import { MdOutlineTune } from "react-icons/md";
+import { boatFleetData } from "@/data/boats";
 
 export default function BoatListingLayout() {
   return (
@@ -27,39 +28,26 @@ export default function BoatListingLayout() {
         <p className="text-2xl sm:text-3xl lg:text-[32px] my-6 font-medium">
           Boats in Aswan
           <span className="text-[#7D7D7D] ml-3 text-sm sm:text-base font-normal">
-            (124 found)
+            ({boatFleetData.length} found)
           </span>
         </p>
 
         {/* Boat Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4 pb-24">
-          <BoatCard
-            imageUrl="/mainBg.jpg"
-            name="Dandara 45"
-            price="EGP 800"
-            location="Aswan, Egypt"
-            guests={45}
-            rooms={3}
-            status="Available"
-          />
-          <BoatCard
-            imageUrl="/mainBg.jpg"
-            name="Dandara 45"
-            price="EGP 800"
-            location="Aswan, Egypt"
-            guests={45}
-            rooms={3}
-            status="Available"
-          />
-          <BoatCard
-            imageUrl="/mainBg.jpg"
-            name="Dandara 45"
-            price="EGP 800"
-            location="Aswan, Egypt"
-            guests={45}
-            rooms={3}
-            status="Available"
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 xl:gap-10 pb-24 max-w-6xl lg:max-w-7xl mx-auto place-items-center sm:place-items-stretch">
+          {boatFleetData.map((boat) => (
+            <BoatCard
+              key={boat.id}
+              imageUrl={boat.images?.[0] || "/images/Rectangle 3463853.png"}
+              name={boat.name}
+              price={`${boat.price_per_hour}`}
+              location={boat.location || boat.cities?.[0] || "Aswan - Egypt"}
+              guests={boat.max_seats}
+              rooms={boat.max_seats_stay}
+              status={boat.status || "Available"}
+              rating={boat.rating}
+              reviewsCount={boat.reviewsCount}
+            />
+          ))}
         </div>
       </div>
     </div>
