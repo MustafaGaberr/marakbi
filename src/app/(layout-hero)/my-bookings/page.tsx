@@ -145,18 +145,12 @@ function BookingCard({ booking }: BookingCardProps) {
         />
         {/* Image count badge */}
         <div className="absolute bottom-[38px] right-[12px] h-8 rounded-md px-2 py-1 flex items-center gap-1" style={{ backgroundColor: "rgba(34, 33, 33, 0.07)", backdropFilter: "blur(2px)" }}>
-          <svg
-            width="27.43"
-            height="27.43"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
-              fill="white"
-            />
-          </svg>
+        <Image
+          src="/icons/photo_library_24px.svg"
+          alt="Image Count"
+          width={24}
+          height={24}
+        />
           <span className="text-white text-sm font-medium">
             1/{booking.imageCount}
           </span>
