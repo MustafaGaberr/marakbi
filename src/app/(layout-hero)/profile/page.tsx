@@ -242,32 +242,8 @@ export default function ProfilePage() {
         <div
           className="absolute inset-0 bg-cover bg-center opacity-60"
           style={{ backgroundImage: "url('/images/Rectangle 3463878.jpg')" }}
-        ></div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="flex items-center justify-center">
-            {/* Left Side - My Profile Text */}
-            <div className="flex flex-col items-start">
-              <h1 className="text-6xl font-bold text-white font-poppins leading-tight">
-                My
-              </h1>
-              <h1 className="text-6xl font-bold text-white font-poppins leading-tight">
-                Profile
-              </h1>
-            </div>
-
-            {/* Vertical Line */}
-            <div className="w-px h-32 bg-white mx-8"></div>
-
-            {/* Right Side - Description */}
-            <div className="flex-1 max-w-2xl">
-              <p className="text-xl text-white leading-relaxed font-poppins">
-                No Matter The Journey, We Have A Boat For Your Story. Explore
-                Egypt&apos;s Stunning Waterways With A Curated Selection Of
-                Vessels And Seasoned Captains.
-              </p>
-            </div>
-          </div>
+        >
+          
         </div>
       </div>
 
@@ -495,9 +471,7 @@ export default function ProfilePage() {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
-                        Current Password
-                      </label>
+
                       <input
                         type="password"
                         name="currentPassword"
@@ -514,9 +488,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
-                        New Password
-                      </label>
+
                       <input
                         type="password"
                         name="newPassword"
@@ -533,9 +505,6 @@ export default function ProfilePage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
-                        Confirm New Password
-                      </label>
                       <input
                         type="password"
                         name="confirmPassword"
