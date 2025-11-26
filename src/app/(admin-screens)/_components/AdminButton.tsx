@@ -21,7 +21,10 @@ export default function AdminButton({
     <button
       type={type}
       onClick={onClick}
-      className={buttonStyle + " text-sm py-[11px] px-[41px] rounded-lg font-medium"}
+      className={
+        buttonStyle +
+        " text-sm py-[11px] px-[41px] rounded-lg font-medium"
+      }
     >
       {label}
     </button>

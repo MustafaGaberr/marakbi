@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div>
+    <div className="h-screen overflow-hidden flex flex-col">
       <AdminHeader />
-      <div>{children}</div>
+      <div className="flex-1 overflow-hidden">{children}</div>
     </div>
   );
 }

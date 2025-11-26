@@ -25,21 +25,22 @@ export default function AdminLoginLayout() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8 bg-[#F7F7F7]">
-      <Logo width={54.011234283447266} height={104.49998474121094} />
+    <div className="flex flex-col items-center justify-center h-full px-4 py-8 bg-[#F7F7F7]">
+      <div className="w-full max-w-[491px] flex flex-col items-center">
+        <Logo width={52} height={102} />
 
-      <div className="text-2xl sm:text-3xl md:text-[30px] mt-4 mb-2 font-semibold text-[#0A0A0A] text-center">
-        Admin Portal
-      </div>
+        <div className="text-2xl sm:text-3xl md:text-[30px] mt-4 mb-2 font-semibold text-[#0A0A0A] text-center">
+          Admin Portal
+        </div>
 
-      <p className="text-[#717182] mb-8 text-sm sm:text-base text-center max-w-sm">
-        Sign in to manage your boat rental platform
-      </p>
+        <p className="text-[#717182] mb-8 text-sm sm:text-base text-center max-w-sm">
+          Sign in to manage your boat rental platform
+        </p>
 
-      <AdminFormContainer
-        title="Sign In"
-        subtitle="Enter your credentials to access the admin dashboard"
-      >
+        <AdminFormContainer
+          title="Sign In"
+          subtitle="Enter your credentials to access the admin dashboard"
+        >
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col gap-4 mb-3.5"
@@ -85,12 +86,13 @@ export default function AdminLoginLayout() {
         <p className="text-[#717182] mt-6 text-xs sm:text-sm md:text-base font-medium text-center">
           This is a secure admin portal. Unauthorized access is prohibited.
         </p>
-      </AdminFormContainer>
+        </AdminFormContainer>
 
-      <p className="text-[#717182] mt-6 text-xs sm:text-sm md:text-base font-medium text-center max-w-sm">
-        Need help? Contact support at{" "}
-        <span className="text-black font-semibold">support@Marakbi.tours</span>
-      </p>
+        <p className="text-[#717182] mt-6 text-xs sm:text-sm md:text-base font-medium text-center max-w-md">
+          Need help? Contact support at{" "}
+          <span className="text-black font-semibold">support@Marakbi.tours</span>
+        </p>
+      </div>
     </div>
   );
 }

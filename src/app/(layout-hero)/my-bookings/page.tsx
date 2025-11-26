@@ -303,7 +303,7 @@ export default function MyBookingsPage() {
       {/* Horizontal line separator - Full width */}
       <div className="w-full h-px bg-gray-900 mb-[52px]"></div>
 
-      <div className="max-w-[1440px] mx-auto px-8">م
+      <div className="max-w-[1440px] mx-auto px-8">
         {/* Bookings Grid */}
         <div className="flex flex-wrap gap-4">
           {filteredBookings.map((booking) => (

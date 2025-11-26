@@ -8,7 +8,7 @@ interface AdminHeaderProps {
 
 export default function AdminHeader({ listing }: AdminHeaderProps) {
   return (
-    <header className="bg-white  gap-4 md:py-6 py-3 flex flex-col items-center justify-center">
+    <header className="bg-white gap-4 md:py-6 py-3 flex flex-col items-center justify-center flex-shrink-0">
       <Link
         href={"/"}
         className="flex gap-4 w-[33%] h-fit items-center"
