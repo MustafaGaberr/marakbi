@@ -55,6 +55,13 @@ export default function useDynamicHero() {
         "No Matter The Journey, We Have A Boat For Your Story. Explore Egypt&apos;s Stunning Waterways With A Curated Selection Of Vessels And Seasoned Captains.",
       background: "/images/Rectangle 56548.jpg",
     },
+    {
+      route: "/my-bookings",
+      title: "My\nBookings",
+      description:
+        "Your Nile Journeys, All In One Place\nRelive Your Past Adventures And Get Ready For The Ones Ahead — Your Bookings Are Here, Waiting To Set Sail",
+      background: "/mainBg.jpg",
+    },
   ];
 
   // Find the route that matches the current pathname
