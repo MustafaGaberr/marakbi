@@ -16,7 +16,7 @@ interface BoatCardProps {
 
 const BoatCard = ({ boatId, imageUrl, name, price, location, guests, status, rooms, rating = 5, reviewsCount = 0 }: BoatCardProps) => {
   const cardContent = (
-    <div className="w-96 h-[465px] bg-white rounded-2xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] overflow-hidden hover:shadow-xl transition-shadow" style={{ fontFamily: 'Poppins, sans-serif' }}>
+    <div className="relative z-0 w-96 h-[465px] bg-white rounded-2xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] overflow-hidden hover:shadow-xl transition-shadow" style={{ fontFamily: 'Poppins, sans-serif' }}>
       {/* Image Container with Rating Overlay */}
       <div className="relative w-full h-64 overflow-hidden rounded-lg">
         <Image 

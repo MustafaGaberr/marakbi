@@ -10,7 +10,7 @@ export default function DynamicHero() {
   const isContactPage = pathname === "/contact";
 
   return (
-    <section className="relative w-full h-[380px] flex items-center justify-center overflow-hidden">
+    <section className="relative z-10 w-full h-[380px] flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <Image
         src={background}

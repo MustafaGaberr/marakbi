@@ -292,8 +292,8 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
         
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-sm border-t border-gray-200 animate-fade-in">
-            <div className="px-6 py-6 space-y-3 max-h-[calc(100vh-8rem)] overflow-y-auto">
+          <div className="fixed inset-x-0 top-16 bottom-0 z-[60] md:hidden bg-white/95 backdrop-blur-sm border-t border-gray-200 animate-fade-in">
+            <div className="px-6 py-6 space-y-3 h-full overflow-y-auto">
               <Link href="/" onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg text-gray-800 text-base font-medium font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">Home</Link>
               <Link href="/our-team" onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg text-gray-800 text-base font-medium font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">Our Team</Link>
               <span className="block px-4 py-3 text-gray-800 text-base font-medium font-poppins">Our Services</span>
