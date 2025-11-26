@@ -29,10 +29,10 @@ export default function useDynamicHero() {
     },
     {
       route: "/contact",
-      title: "Contact\nUs",
+      title: "Get in\nTouch",
       description:
-        "Get in touch with our team for bookings, inquiries, or partnership opportunities.",
-      background: "/contactBg.jpg",
+        "Your Nile Journeys, All in One Place. Relive your past adventures and get ready for the ones ahead — your bookings are here, waiting to set sail",
+      background: "/images/contactusheader.jpg",
     },
     {
       route: "/faqs",
