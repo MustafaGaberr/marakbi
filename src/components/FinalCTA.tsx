@@ -39,7 +39,7 @@ const FinalCTA = () => {
 
             {/* CTA Button */}
             <div className="w-56 h-12 px-6 py-2.5 bg-white rounded-lg inline-flex justify-center items-center gap-2.5">
-              <div className="text-sky-800 text-base font-normal font-poppins capitalize">Book now</div>
+              <button className="text-sky-800 text-base font-normal font-poppins capitalize">Book now</button>
             </div>
           </div>
         </div>
