@@ -240,7 +240,7 @@ export default function MyBookingsPage() {
     <div className="w-full bg-white py-16">
       <div className="max-w-[1440px] mx-auto px-8">
         {/* Tabs */}
-        <div className="flex items-center mb-[52px]">
+        <div className="flex items-center">
           {/* Ongoing Bookings Tab */}
           <button
             onClick={() => setActiveTab("ongoing")}
@@ -298,7 +298,12 @@ export default function MyBookingsPage() {
             </span>
           </button>
         </div>
+      </div>
 
+      {/* Horizontal line separator - Full width */}
+      <div className="w-full h-px bg-gray-900 mb-[52px]"></div>
+
+      <div className="max-w-[1440px] mx-auto px-8">م
         {/* Bookings Grid */}
         <div className="flex flex-wrap gap-4">
           {filteredBookings.map((booking) => (
