@@ -1,11 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import BoatCard from "../BoatCard";
 import FilterButton from "./FilterButton";
+import FiltersPanel from "./FiltersPanel";
 import { MdOutlineTune } from "react-icons/md";
 import { boatFleetData } from "@/data/boats";
 
 export default function BoatListingLayout() {
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+
   return (
     <div className="mt-24">
       {/* Filter Buttons */}
@@ -16,10 +20,16 @@ export default function BoatListingLayout() {
         <FilterButton onClick={() => {}} label="Activities" />
         <FilterButton
           icon={MdOutlineTune}
-          onClick={() => {}}
+          onClick={() => setIsFiltersOpen(true)}
           label="More filters"
         />
       </div>
+
+      {/* Filters Panel */}
+      <FiltersPanel
+        isOpen={isFiltersOpen}
+        onClose={() => setIsFiltersOpen(false)}
+      />
 
       <div className="bg-[#A0A0A0] h-px mx-4 sm:mx-8 lg:mx-16" />
 
