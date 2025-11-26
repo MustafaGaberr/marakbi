@@ -171,7 +171,7 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
           {/* Middle: Navigation Links - Desktop */}
           <div className="hidden md:flex gap-8">
             <Link href="/" className={`${textColor} text-base font-normal font-poppins ${hoverColor} transition-colors`}>Home</Link>
-            <Link href="/about-us" className={`${textColor} text-base font-normal font-poppins ${hoverColor} transition-colors`}>About us</Link>
+            <Link href="/our-team" className={`${textColor} text-base font-normal font-poppins ${hoverColor} transition-colors`}>Our Team</Link>
             {/* Our Services Dropdown */}
             <ServicesDropdown variant={variant} />
             <Link href="/contact" className={`${textColor} text-base font-normal font-poppins ${hoverColor} transition-colors`}>Contact</Link>
@@ -295,7 +295,7 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
           <div className="md:hidden bg-white/95 backdrop-blur-sm border-t border-gray-200 animate-fade-in">
             <div className="px-6 py-6 space-y-3 max-h-[calc(100vh-8rem)] overflow-y-auto">
               <Link href="/" onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg text-gray-800 text-base font-medium font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">Home</Link>
-              <Link href="/about-us" onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg text-gray-800 text-base font-medium font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">About us</Link>
+              <Link href="/our-team" onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg text-gray-800 text-base font-medium font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">Our Team</Link>
               <span className="block px-4 py-3 text-gray-800 text-base font-medium font-poppins">Our Services</span>
               <div className="ml-3 space-y-2">
                 <Link href="/services/private-boats" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 rounded-lg text-gray-700 text-sm font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">PRIVATE BOATS</Link>
