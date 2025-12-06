@@ -1,30 +1,19 @@
 "use client"
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { clientApi, City, storage } from '@/lib/api';
 
 const Hero = () => {
+  const router = useRouter();
   const [city, setCity] = useState('');
   const [boatType, setBoatType] = useState('');
   const [tripType, setTripType] = useState('');
-  // Dummy data for cities
-  const cities = [
-    { id: 1, name: 'Aswan' },
-    { id: 2, name: 'Luxor' },
-    { id: 3, name: 'Cairo' },
-    { id: 4, name: 'Alexandria' },
-    { id: 5, name: 'Hurghada' },
-    { id: 6, name: 'Sharm El Sheikh' }
-  ];
-
-  // Dummy data for boats
-  const boats = [
-    { id: 1, name: 'Traditional Felucca' },
-    { id: 2, name: 'Luxury Yacht' },
-    { id: 3, name: 'Speed Boat' },
-    { id: 4, name: 'Fishing Boat' },
-    { id: 5, name: 'Party Boat' },
-    { id: 6, name: 'Family Boat' }
-  ];
+  const [cities, setCities] = useState<City[]>([]);
+  const [categories, setCategories] = useState<{ id: number; name: string; description?: string }[]>([]);
+  const [loadingCities, setLoadingCities] = useState(true);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -34,6 +23,78 @@ const Hero = () => {
     "/images/Rectangle 3463845.png", // Fishing background  
     "/images/Rectangle 3463846.png"  // Kayak background
   ];
+
+  // Check auth status on mount
+  useEffect(() => {
+    const token = storage.getToken();
+    setIsAuthenticated(!!token);
+  }, []);
+
+  // Load cities when authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setLoadingCities(false);
+      setCities([]);
+      return;
+    }
+
+    const fetchCities = async () => {
+      try {
+        setLoadingCities(true);
+        const response = await clientApi.getCities();
+        if (response.success && response.data) {
+          setCities(response.data.cities);
+        }
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+      } finally {
+        setLoadingCities(false);
+      }
+    };
+    fetchCities();
+  }, [isAuthenticated]);
+
+  // Load categories when city changes (only if authenticated)
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setCategories([]);
+      setBoatType('');
+      return;
+    }
+
+    if (city) {
+      const fetchCategories = async () => {
+        try {
+          setLoadingCategories(true);
+          const response = await clientApi.getCategoriesByCity(parseInt(city));
+          if (response.success && response.data) {
+            const data: any = response.data;
+            // API might return an array directly or wrapped in an object (e.g. { categories: [...] } or { cities: [...] })
+            const normalized =
+              Array.isArray(data)
+                ? data
+                : Array.isArray(data.categories)
+                  ? data.categories
+                  : Array.isArray(data.cities)
+                    ? data.cities
+                    : [];
+            setCategories(normalized);
+          } else {
+            setCategories([]);
+          }
+        } catch (error) {
+          console.error('Error fetching categories:', error);
+          setCategories([]);
+        } finally {
+          setLoadingCategories(false);
+        }
+      };
+      fetchCategories();
+    } else {
+      setCategories([]);
+      setBoatType('');
+    }
+  }, [city, isAuthenticated]);
 
   // Timer for image gallery animation - slower (5 seconds)
   useEffect(() => {
@@ -47,6 +108,27 @@ const Hero = () => {
   // Function to handle manual image selection
   const handleImageClick = (index: number) => {
     setActiveImageIndex(index);
+  };
+
+  // Handle Book Now button
+  const handleBookNow = () => {
+    // If not logged in, send user to login first
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (city) params.append('city_id', city);
+    if (boatType) params.append('category_id', boatType);
+    if (tripType) params.append('rental_type', tripType);
+    
+    router.push(`/boat-listing${params.toString() ? `?${params.toString()}` : ''}`);
+  };
+
+  // Handle Explore Now button
+  const handleExploreNow = () => {
+    router.push('/boat-listing');
   };
 
   return (
@@ -79,12 +161,16 @@ const Hero = () => {
               <span className="text-white">Luxury Boats </span>
               <span className="text-orange-300">Rentals</span>
             </div>
-            <button className="hidden sm:flex w-56 h-12 px-6 py-2.5 bg-[#0C4A8C] rounded-lg justify-center items-center gap-2.5 text-white text-base font-normal font-poppins mx-auto lg:mx-0 clickable hover:bg-[#0A3D7A] transition-colors">
+            <button 
+              onClick={handleExploreNow}
+              className="hidden sm:flex w-56 h-12 px-6 py-2.5 bg-[#0C4A8C] rounded-lg justify-center items-center gap-2.5 text-white text-base font-normal font-poppins mx-auto lg:mx-0 clickable hover:bg-[#0A3D7A] transition-colors"
+            >
               Explore Now
             </button>
           </div>
 
           {/* Right Side: Booking Form */}
+          {isAuthenticated && (
           <div className="w-full sm:w-80 bg-white/20 backdrop-blur-md rounded-2xl overflow-hidden flex flex-col justify-start items-center p-5 sm:p-6 shadow-2xl border border-white/30 space-y-3 sm:space-y-4">
 
             {/* City Dropdown */}
@@ -94,8 +180,9 @@ const Hero = () => {
                 className="w-full h-11 sm:h-12 p-3 bg-white/30 backdrop-blur-sm rounded-lg text-gray-700 text-sm font-normal font-poppins capitalize border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
+                disabled={loadingCities}
               >
-                <option value="">City</option>
+                <option value="">{loadingCities ? 'Loading...' : 'Select City'}</option>
                 {cities.map((cityOption) => (
                   <option key={cityOption.id} value={cityOption.id}>
                     {cityOption.name}
@@ -111,40 +198,40 @@ const Hero = () => {
                 className="w-full h-11 sm:h-12 p-3 bg-white/30 backdrop-blur-sm rounded-lg text-gray-700 text-sm font-normal font-poppins capitalize border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50"
                 value={boatType}
                 onChange={(e) => setBoatType(e.target.value)}
+                disabled={!city || loadingCategories}
               >
-                <option value="">Felucca</option>
-                {boats.map((boat, index) => {
-                  const boatData = boat as { id?: number; name?: string };
-                  return (
-                    <option key={boatData.id || index} value={boatData.id}>
-                      {boatData.name}
-                    </option>
-                  );
-                })}
+                <option value="">{!city ? 'Select City First' : loadingCategories ? 'Loading...' : 'Select Boat Type'}</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
             </div>
 
-            {/* Trip Type Dropdown */}
+            {/* Trip Type Dropdown (Rental Type) */}
             <div className="w-full">
-              <p className="text-white text-sm sm:text-base font-normal font-poppins mb-2">Trip Type</p>
+              <p className="text-white text-sm sm:text-base font-normal font-poppins mb-2">Rental Type</p>
               <select 
                 className="w-full h-11 sm:h-12 p-3 bg-white/30 backdrop-blur-sm rounded-lg text-gray-700 text-sm font-normal font-poppins capitalize border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50"
                 value={tripType}
                 onChange={(e) => setTripType(e.target.value)}
               >
-                <option value="">Per Hour</option>
-                <option value="per_hour">Per Hour</option>
-                <option value="half_day">Half Day</option>
-                <option value="full_day">Full Day</option>
-                <option value="multi_day">Multi Day</option>
+                <option value="">Select Rental Type</option>
+                <option value="hourly">Per Hour</option>
+                <option value="daily">Per Day</option>
               </select>
             </div>
 
             {/* Book now Button */}
-            <button className="w-full h-11 sm:h-12 px-6 py-2.5 bg-[#0C4A8C] backdrop-blur-sm rounded-lg flex justify-center items-center gap-2.5 text-white text-base font-medium font-poppins clickable hover:bg-[#0A3D7A] transition-all duration-300 shadow-lg mt-2 sm:mt-4">
+            <button 
+              onClick={handleBookNow}
+              className="w-full h-11 sm:h-12 px-6 py-2.5 bg-[#0C4A8C] backdrop-blur-sm rounded-lg flex justify-center items-center gap-2.5 text-white text-base font-medium font-poppins clickable hover:bg-[#0A3D7A] transition-all duration-300 shadow-lg mt-2 sm:mt-4"
+            >
               Book now
             </button>
           </div>
+          )}
         </div>
       </div>
 

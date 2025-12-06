@@ -1,8 +1,39 @@
+'use client';
+
 import BoatCard from './BoatCard';
 import Link from 'next/link';
-import { boatFleetData } from '@/data/boats';
+import { useEffect, useState } from 'react';
+import { clientApi, Boat } from '@/lib/api';
 
-const BoatFleet = () => {
+interface BoatFleetProps {
+  homeData?: any;
+}
+
+const BoatFleet = ({ homeData }: BoatFleetProps) => {
+  const [boats, setBoats] = useState<Boat[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBoats = async () => {
+      try {
+        setLoading(true);
+        // جلب 6 مراكب من الـ API أو استخدام new_joiners من homeData
+        if (homeData?.new_joiners && homeData.new_joiners.length > 0) {
+          setBoats(homeData.new_joiners.slice(0, 6));
+        } else {
+          const response = await clientApi.getBoats(1, 6);
+          if (response.success && response.data) {
+            setBoats(response.data.boats);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching boats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBoats();
+  }, [homeData]);
   return (
     <section className="relative w-full overflow-hidden py-16">
       {/* Background Image */}
@@ -48,23 +79,34 @@ const BoatFleet = () => {
 
         {/* Boat Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 max-w-6xl lg:max-w-7xl mx-auto mb-12 px-4 lg:px-0 place-items-center md:place-items-stretch lg:place-items-start">
-          {boatFleetData.map((boat, index: number) => {
-            return (
-              <BoatCard
-                key={boat.id || index}
-                boatId={boat.id}
-                imageUrl={boat.images?.[0] || '/images/Rectangle 3463853.png'}
-                name={boat.name || 'Boat'}
-                price={`${boat.price_per_hour ?? 0}`}
-                location={boat.location || boat.cities?.[0] || 'Aswan - Egypt'}
-                guests={boat.max_seats || 4}
-                status={boat.status || 'Available'}
-                rooms={boat.max_seats_stay || 2}
-                rating={boat.rating || 5}
-                reviewsCount={boat.reviewsCount || 0}
-              />
-            );
-          })}
+          {loading ? (
+            <div className="col-span-full text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-900 mx-auto"></div>
+              <p className="text-white mt-4">Loading boats...</p>
+            </div>
+          ) : boats.length === 0 ? (
+            <div className="col-span-full text-center py-12">
+              <p className="text-white text-lg">No boats available at the moment.</p>
+            </div>
+          ) : (
+            boats.map((boat, index: number) => {
+              return (
+                <BoatCard
+                  key={boat.id || index}
+                  boatId={boat.id}
+                  imageUrl={boat.images?.[0] || '/images/Rectangle 3463853.png'}
+                  name={boat.name || 'Boat'}
+                  price={`${boat.price_per_hour ?? 0}`}
+                  location={boat.cities?.[0] || 'Aswan - Egypt'}
+                  guests={boat.max_seats || 4}
+                  status="Available"
+                  rooms={boat.max_seats_stay || 2}
+                  rating={5}
+                  reviewsCount={boat.total_reviews || 0}
+                />
+              );
+            })
+          )}
         </div>
 
         {/* View All Boats Button */}

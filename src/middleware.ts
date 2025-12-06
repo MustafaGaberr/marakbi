@@ -31,35 +31,24 @@ export function middleware(request: NextRequest) {
   // Get token from cookies
   const token = request.cookies.get('access_token')?.value;
   
-  // Public pages that don't require authentication
-  // const publicPages = [
-  //   '/',
-  //   '/about-us',
-  //   '/contact',
-  //   '/privacy-policy',
-  //   '/terms-conditions',
-  //   '/faqs',
-  //   '/login',
-  //   '/signup',
-  //   '/forgot-password',
-  //   '/verify-code',
-  //   '/set-password'
-  // ];
-  
   // Protected pages that require authentication
   const protectedPages = [
     '/dashboard',
-    '/profile'
+    '/profile',
+    '/my-bookings',
+    '/admin-dashboard',
+    '/list-your-boat',
+    '/payment'
   ];
   
   // Check if current page is protected
   const isProtectedPage = protectedPages.some(page => pathname.startsWith(page));
   
-  // For protected pages, we'll let the client-side handle authentication
-  // since middleware can't access localStorage
+  // If trying to access a protected page without valid token, redirect to login
   if (isProtectedPage) {
-    // Let the page load and handle auth check client-side
-    return NextResponse.next();
+    if (!token || !isTokenValid(token)) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
   }
   
   // If user is authenticated and trying to access login/signup, redirect to home

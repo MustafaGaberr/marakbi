@@ -3,8 +3,8 @@
 // Base URL: https://yasershaban.pythonanywhere.com
 
 // ===== BASE CONFIGURATION =====
-// Try with /api prefix - if 404, backend might need configuration
-const BASE_URL = 'https://yasershaban.pythonanywhere.com';
+// Updated to the new Heroku backend
+const BASE_URL = 'https://marakbi-e0870d98592a.herokuapp.com';
 
 // ===== TYPE DEFINITIONS =====
 
@@ -48,12 +48,15 @@ export interface Boat {
   name: string;
   description: string;
   categories: string[];
+  cities?: string[];
   images: string[];
   price_per_hour: number;
+  price_per_day?: number;
   max_seats: number;
   max_seats_stay: number;
   total_reviews: number;
   user_id: number;
+  owner_username?: string;
   created_at: string;
 }
 
@@ -225,12 +228,73 @@ export interface ReviewResponse {
 }
 
 // Order Types
+export interface Order {
+  id: number;
+  boat_id: number;
+  user_id: number;
+  booking_type: string;
+  start_date: string;
+  end_date: string;
+  guest_count: number;
+  price_per_hour: number;
+  total_price: number;
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  payment_status?: 'unpaid' | 'paid' | 'pending' | 'failed' | 'expired';
+  payment_method?: 'card' | 'cash';
+  trip_id: number | null;
+  voyage_id: number | null;
+  created_at: string;
+  boat?: {
+    id: number;
+    name: string;
+    description: string;
+    max_seats: number;
+    max_seats_stay: number;
+    price_per_hour: number;
+    price_per_day: number;
+    total_reviews: number;
+    created_at: string;
+  };
+  profile?: any;
+}
+
 export interface OrderData {
   boat_id: number;
   start_date: string;
   end_date: string;
+  rental_type: 'daily' | 'hourly';
   guest_count: number;
-  voyage_type: string;
+  payment_method: 'card' | 'cash';
+  voyage_type: 'Private' | 'Sharing' | 'Travel' | 'Stay' | 'Fishing' | 'Occasion' | 'Water_activities';
+}
+
+export interface CreateOrderResponse {
+  message: string;
+  order_id: number;
+  payment_data?: {
+    invoice_id: number;
+    invoice_key: string;
+    payment_url: string;
+  };
+  payment_method: 'card' | 'cash';
+  payment_status: 'unpaid' | 'paid' | 'pending' | 'failed' | 'expired';
+  rental_type: 'daily' | 'hourly';
+  total_price: number;
+  voyage: {
+    available_seats: number;
+    boat_id: number;
+    created_at: string;
+    current_seats_taken: number;
+    end_date: string;
+    id: number;
+    max_seats: number;
+    price_per_hour: number;
+    start_date: string;
+    status: string;
+    users_in_voyage: number[];
+    voyage_type: string;
+  };
+  voyage_id: number;
 }
 
 // ===== TOKEN MANAGEMENT =====
@@ -549,12 +613,12 @@ export const customerApi = {
     });
   },
 
-  getOrders: async (): Promise<ApiResponse<{ id: number; order_date: string; total_amount: number; status: string }[]>> => {
-    return apiRequest<{ id: number; order_date: string; total_amount: number; status: string }[]>('/customer/orders');
+  getOrders: async (page = 1, perPage = 10): Promise<ApiResponse<{ orders: Order[]; page: number; pages: number; per_page: number; total: number }>> => {
+    return apiRequest<{ orders: Order[]; page: number; pages: number; per_page: number; total: number }>(`/customer/orders?page=${page}&per_page=${perPage}`);
   },
 
-  createOrder: async (orderData: OrderData): Promise<ApiResponse<{ id: number; message: string }>> => {
-    return apiRequest<{ id: number; message: string }>('/customer/orders', {
+  createOrder: async (orderData: OrderData): Promise<ApiResponse<CreateOrderResponse>> => {
+    return apiRequest<CreateOrderResponse>('/customer/orders', {
       method: 'POST',
       body: JSON.stringify(orderData)
     });

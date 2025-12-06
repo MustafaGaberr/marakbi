@@ -78,7 +78,7 @@ export default function HomePage() {
   return (
     <div>
       <main className="relative z-10">
-        <Hero homeData={homeData} />
+        <Hero />
         <OurServices />
         <AboutApp />
         <BoatFleet homeData={homeData} />
