@@ -1,4 +1,4 @@
-// import Image from 'next/image';
+import Image from 'next/image';
 
 const FeaturedServices = () => {
   const services = [
@@ -43,9 +43,11 @@ const FeaturedServices = () => {
           {services.map((service, index) => (
             <div key={index} className="flex flex-col items-center text-center">
               <div className="mb-4">
-                <img
+                <Image
                   src={service.icon}
                   alt={service.title}
+                  width={56}
+                  height={56}
                   className="w-14 h-14"
                 />
               </div>

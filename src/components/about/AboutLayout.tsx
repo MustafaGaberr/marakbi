@@ -1,5 +1,7 @@
 "use client";
 
+import Image from 'next/image';
+
 export default function AboutLayout() {
   return (
     <div className="min-h-screen bg-white">
@@ -11,27 +13,30 @@ export default function AboutLayout() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-12 items-center mt-16">
+          <div className="grid grid-cols-2 gap-12 items-center mt-16">
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-4">
-              <img
+            <div className="space-y-4 relative h-64">
+              <Image
                 src="/images/f1.png"
                 alt="Sunset boat"
-                className="w-full h-64 object-cover rounded-lg shadow-lg"
+                fill
+                className="object-cover rounded-lg shadow-lg"
               />
             </div>
-            <div className="space-y-4 pt-12">
-              <img
+            <div className="space-y-4 pt-12 relative h-64">
+              <Image
                 src="/images/f2.png"
                 alt="Sunset boat close"
-                className="w-full h-64 object-cover rounded-lg shadow-lg"
+                fill
+                className="object-cover rounded-lg shadow-lg"
               />
             </div>
-            <div className="col-span-2">
-              <img
+            <div className="col-span-2 relative h-72">
+              <Image
                 src="/images/f3.png"
                 alt="Sailboat on Nile"
-                className="w-full h-72 object-cover rounded-lg shadow-lg"
+                fill
+                className="object-cover rounded-lg shadow-lg"
               />
             </div>
           </div>
@@ -197,28 +202,40 @@ export default function AboutLayout() {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-4">
-              <img
-                src="/images/Rectangle 3463860.png"
-                alt="Nile cruise"
-                className="w-full h-48 object-cover rounded-lg shadow-lg"
-              />
-              <img
-                src="/images/Rectangle 3463861.png"
-                alt="Boat adventure"
-                className="w-full h-32 object-cover rounded-lg shadow-lg"
-              />
+              <div className="relative h-48">
+                <Image
+                  src="/images/Rectangle 3463860.png"
+                  alt="Nile cruise"
+                  fill
+                  className="object-cover rounded-lg shadow-lg"
+                />
+              </div>
+              <div className="relative h-32">
+                <Image
+                  src="/images/Rectangle 3463861.png"
+                  alt="Boat adventure"
+                  fill
+                  className="object-cover rounded-lg shadow-lg"
+                />
+              </div>
             </div>
             <div className="space-y-4 pt-8">
-              <img
-                src="/images/Rectangle 3463862.png"
-                alt="Sunset sailing"
-                className="w-full h-32 object-cover rounded-lg shadow-lg"
-              />
-              <img
-                src="/images/Rectangle 3463863.png"
-                alt="Family trip"
-                className="w-full h-48 object-cover rounded-lg shadow-lg"
-              />
+              <div className="relative h-32">
+                <Image
+                  src="/images/Rectangle 3463862.png"
+                  alt="Sunset sailing"
+                  fill
+                  className="object-cover rounded-lg shadow-lg"
+                />
+              </div>
+              <div className="relative h-48">
+                <Image
+                  src="/images/Rectangle 3463863.png"
+                  alt="Family trip"
+                  fill
+                  className="object-cover rounded-lg shadow-lg"
+                />
+              </div>
             </div>
           </div>
         </div>

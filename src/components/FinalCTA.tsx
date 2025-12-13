@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const FinalCTA = () => {
   const router = useRouter();
@@ -21,10 +22,11 @@ const FinalCTA = () => {
       {/* Main CTA Section with Background Image */}
       <div className="relative w-full min-h-[600px] flex items-center">
         {/* Background Image - Flipped Horizontally */}
-        <img
+        <Image
           src="/images/finalcta.png"
           alt="Boat Background"
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          className="object-cover"
           style={{ transform: 'scaleX(-1)' }}
         />
 

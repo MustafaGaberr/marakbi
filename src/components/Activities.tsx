@@ -63,9 +63,11 @@ const Activities = () => {
           
           {/* Golden Wavy Line - Mobile Only */}
           <div className="flex justify-center sm:hidden">
-            <img 
+            <Image 
               src="/icons/Line 74.svg" 
               alt="Decorative line"
+              width={200}
+              height={12}
               className="h-3"
             />
           </div>

@@ -83,9 +83,11 @@ const OurServices = () => {
 
               {/* Wavy Underline */}
               <div className="mb-3 sm:mb-4">
-                <img 
+                <Image 
                   src="/icons/Line 74.svg" 
                   alt="Decorative line"
+                  width={200}
+                  height={16}
                   className="h-3 sm:h-4"
                 />
               </div>

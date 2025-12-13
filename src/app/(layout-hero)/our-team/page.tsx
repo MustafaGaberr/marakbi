@@ -4,6 +4,7 @@ import Logo from "@/components/Logo";
 import LogoShape from "@/components/LogoShape";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 export default function OurTeamPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -140,11 +141,12 @@ export default function OurTeamPage() {
                   style={{ transform: `translateX(-${currentSlide * 100}%)` }}
                 >
                   {slides.map((slide) => (
-                    <div key={slide.id} className="w-full flex-shrink-0">
-                      <img
+                    <div key={slide.id} className="w-full flex-shrink-0 relative h-96">
+                      <Image
                         src={slide.image}
                         alt="Marakbi Team"
-                        className="w-full h-96 object-cover rounded-lg select-none"
+                        fill
+                        className="object-cover rounded-lg select-none"
                         draggable={false}
                       />
                     </div>
@@ -180,11 +182,12 @@ export default function OurTeamPage() {
       {/* Why Choose Marakbi Section */}
       <div className="bg-white">
         {/* Full Width Image */}
-        <div className="w-full">
-          <img
+        <div className="w-full relative h-[400px]">
+          <Image
             src="/images/PLAY SLIDE.png"
             alt="Marakbi App Interface"
-            className="w-full h-auto"
+            fill
+            className="object-contain"
           />
         </div>
 
@@ -210,9 +213,11 @@ export default function OurTeamPage() {
                     className="w-90 h-90 opacity-10 absolute top-0 left-0"
                     variant="white"
                   />
-                  <img
+                  <Image
                     src="/icons/Shield.svg"
                     alt="Shield"
+                    width={64}
+                    height={64}
                     className="w-16 h-16 mb-4 mt-4"
                   />
                   <h3 className="text-4xl font-semibold text-[#D8BF8B] font-poppins mb-4 leading-tight capitalize break-words">
@@ -250,9 +255,11 @@ export default function OurTeamPage() {
                     className="w-90 h-90 opacity-10 absolute top-0 left-0"
                     variant="white"
                   />
-                  <img
+                  <Image
                     src="/icons/character-3.svg"
                     alt="Character"
+                    width={64}
+                    height={64}
                     className="w-16 h-16 mb-4 mt-4"
                   />
                   <h3 className="text-4xl font-semibold text-[#D8BF8B] font-poppins mb-4 leading-tight capitalize break-words">
@@ -280,9 +287,11 @@ export default function OurTeamPage() {
                     className="w-90 h-90 opacity-10 absolute top-0 left-0"
                     variant="white"
                   />
-                  <img
+                  <Image
                     src="/icons/bulb.svg"
                     alt="Bulb"
+                    width={64}
+                    height={64}
                     className="w-16 h-16 mb-4 mt-4"
                   />
                   <h3 className="text-4xl font-semibold text-[#D8BF8B] font-poppins mb-4 leading-tight capitalize break-words">
@@ -307,9 +316,11 @@ export default function OurTeamPage() {
                     className="w-90 h-90 opacity-10 absolute top-0 left-0"
                     variant="white"
                   />
-                  <img
+                  <Image
                     src="/icons/water-scooter.svg"
                     alt="Water Scooter"
+                    width={64}
+                    height={64}
                     className="w-16 h-16 mb-4 mt-4"
                   />
                   <h3 className="text-4xl font-semibold text-[#D8BF8B] font-poppins mb-4 leading-tight capitalize break-words">
@@ -334,9 +345,11 @@ export default function OurTeamPage() {
                     className="w-90 h-90 opacity-10 absolute top-0 left-0"
                     variant="white"
                   />
-                  <img
+                  <Image
                     src="/icons/yaght.svg"
                     alt="Yacht"
+                    width={64}
+                    height={64}
                     className="w-16 h-16 mb-4 mt-4"
                   />
                   <h3 className="text-4xl font-semibold text-[#D8BF8B] font-poppins mb-4 leading-tight capitalize break-words">
@@ -378,11 +391,12 @@ export default function OurTeamPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Ahmed Bastawi */}
             <div className="h-[450px] rounded-xl shadow-lg overflow-hidden border border-gray-200">
-              <div className="relative bg-[#EFEFEF]">
-                <img
+              <div className="relative bg-[#EFEFEF] h-80">
+                <Image
                   src="/images/founder 2.png"
                   alt="Ahmed Bastawi"
-                  className="h-80 object-cover transform translate-x-30 translate-y-0"
+                  fill
+                  className="object-cover transform translate-x-30 translate-y-0"
                 />
                 <div className="absolute top-4 right-4"></div>
               </div>

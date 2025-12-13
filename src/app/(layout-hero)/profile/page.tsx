@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { storage } from "@/lib/api";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Image from "next/image";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<{
@@ -265,12 +266,13 @@ export default function ProfilePage() {
               {/* Profile Picture */}
               <div className="flex justify-center mb-6">
                 <div className="relative">
-                  <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                  <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden relative">
                     {profileImage ? (
-                      <img
+                      <Image
                         src={profileImage}
                         alt="Profile"
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover rounded-full"
                       />
                     ) : (
                       <span className="text-4xl font-bold text-gray-500 font-poppins">
@@ -290,9 +292,11 @@ export default function ProfilePage() {
                         htmlFor="profileImageInput"
                         className="cursor-pointer"
                       >
-                        <img
+                        <Image
                           src="/icons/iconamoon_edit-fill.svg"
                           alt="Edit"
+                          width={20}
+                          height={20}
                           className="w-5 h-5 text-blue-500 drop-shadow-lg"
                           style={{
                             filter:
@@ -340,9 +344,11 @@ export default function ProfilePage() {
                   className="flex items-center justify-center gap-3 px-6 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 font-poppins hover:bg-gray-50 transition-colors"
                 >
                   <span className="font-poppins text-base">Edit Profile</span>
-                  <img
+                  <Image
                     src="/icons/iconamoon_edit-fill.svg"
                     alt="Edit"
+                    width={20}
+                    height={20}
                     className="w-5 h-5"
                   />
                 </button>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authApi, storage } from '@/lib/api';
+import Image from 'next/image';
 
 
 export default function SetPasswordPage() {
@@ -65,26 +66,31 @@ export default function SetPasswordPage() {
     <div className="auth-page-container">
       {/* Left Side - Image */}
       <div className="auth-left-side">
-        <img 
+        <Image 
           className="auth-left-image"
           src="/images/Rectangle 3463876.png" 
           alt="Set password background"
+          width={500}
+          height={700}
         />
         
         {/* Circle Background */}
         <div className="auth-logo-container">
-          <img 
+          <Image 
             src="/icons/Ellipse 46.svg" 
             alt="Circle Background"
+            width={200}
+            height={200}
             className="auth-circle-bg"
           />
           
           {/* Logo */}
           <div className="auth-logo">
-            <img 
+            <Image 
               src="/logo.png" 
               alt="Marakbi Logo"
-              style={{ height: '110px' }}
+              width={200}
+              height={110}
             />
           </div>
         </div>

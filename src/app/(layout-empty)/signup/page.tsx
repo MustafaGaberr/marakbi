@@ -82,18 +82,21 @@ export default function SignUpPage() {
         
         {/* Circle Background */}
         <div className="auth-logo-container">
-          <img 
+          <Image 
             src="/icons/Ellipse 46.svg" 
             alt="Circle Background"
+            width={200}
+            height={200}
             className="auth-circle-bg"
           />
           
           {/* Logo */}
           <div className="auth-logo">
-            <img 
+            <Image 
               src="/logo.png" 
               alt="Marakbi Logo"
-              style={{ height: '110px' }}
+              width={200}
+              height={110}
             />
           </div>
         </div>

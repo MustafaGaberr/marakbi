@@ -4,6 +4,7 @@ import BoatCard from './BoatCard';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { clientApi, Boat } from '@/lib/api';
+import Image from 'next/image';
 
 interface BoatFleetProps {
   homeData?: any;
@@ -55,9 +56,11 @@ const BoatFleet = ({ homeData }: BoatFleetProps) => {
 
           {/* Golden Wavy Line - Mobile Only */}
           <div className="flex justify-center mb-4 md:hidden">
-            <img 
+            <Image 
               src="/icons/Line 74.svg" 
               alt="Decorative line"
+              width={200}
+              height={16}
               className="h-4"
             />
           </div>
@@ -69,9 +72,11 @@ const BoatFleet = ({ homeData }: BoatFleetProps) => {
 
           {/* Golden Wavy Line - Desktop Only */}
           <div className="hidden md:flex justify-center">
-            <img 
+            <Image 
               src="/icons/Line 74.svg" 
               alt="Decorative line"
+              width={200}
+              height={16}
               className="h-4"
             />
           </div>

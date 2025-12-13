@@ -1,4 +1,4 @@
-// import Image from 'next/image';
+import Image from 'next/image';
 
 const AboutApp = () => {
   return (
@@ -32,31 +32,33 @@ const AboutApp = () => {
 
             <ul className="space-y-2 sm:space-y-3">
               <li className="text-[#093B77] text-base sm:text-lg font-semibold font-poppins leading-7 sm:leading-9 flex items-start">
-                <img src="/icons/tick.svg" alt="check" className="w-5 h-5 sm:w-6 sm:h-6 mr-3 mt-1 flex-shrink-0" />
+                <Image src="/icons/tick.svg" alt="check" width={24} height={24} className="w-5 h-5 sm:w-6 sm:h-6 mr-3 mt-1 flex-shrink-0" />
                 Premium Boats & Yachts
               </li>
               <li className="text-[#093B77] text-base sm:text-lg font-semibold font-poppins leading-7 sm:leading-9 flex items-start">
-                <img src="/icons/tick.svg" alt="check" className="w-5 h-5 sm:w-6 sm:h-6 mr-3 mt-1 flex-shrink-0" />
+                <Image src="/icons/tick.svg" alt="check" width={24} height={24} className="w-5 h-5 sm:w-6 sm:h-6 mr-3 mt-1 flex-shrink-0" />
                 Our Professional Approach
               </li>
               <li className="text-[#093B77] text-base sm:text-lg font-semibold font-poppins leading-7 sm:leading-9 flex items-start">
-                <img src="/icons/tick.svg" alt="check" className="w-5 h-5 sm:w-6 sm:h-6 mr-3 mt-1 flex-shrink-0" />
+                <Image src="/icons/tick.svg" alt="check" width={24} height={24} className="w-5 h-5 sm:w-6 sm:h-6 mr-3 mt-1 flex-shrink-0" />
                 AR/VR Experience
               </li>
               <li className="text-[#093B77] text-base sm:text-lg font-semibold font-poppins leading-7 sm:leading-9 flex items-start">
-                <img src="/icons/tick.svg" alt="check" className="w-5 h-5 sm:w-6 sm:h-6 mr-3 mt-1 flex-shrink-0" />
+                <Image src="/icons/tick.svg" alt="check" width={24} height={24} className="w-5 h-5 sm:w-6 sm:h-6 mr-3 mt-1 flex-shrink-0" />
                 360 Video Experience
               </li>
               <li className="text-[#093B77] text-base sm:text-lg font-semibold font-poppins leading-7 sm:leading-9 flex items-start">
-                <img src="/icons/tick.svg" alt="check" className="w-5 h-5 sm:w-6 sm:h-6 mr-3 mt-1 flex-shrink-0" />
+                <Image src="/icons/tick.svg" alt="check" width={24} height={24} className="w-5 h-5 sm:w-6 sm:h-6 mr-3 mt-1 flex-shrink-0" />
                 AI Chatbot
               </li>
             </ul>
 
             <div className="mt-6 sm:mt-8">
-              <img
+              <Image
                 src="/images/image 2.png"
                 alt="App Store"
+                width={208}
+                height={44}
                 className="w-40 h-9 sm:w-52 sm:h-11"
               />
             </div>
@@ -69,9 +71,11 @@ const AboutApp = () => {
 
           {/* Right Side: Image */}
           <div className="flex justify-center lg:justify-end mt-6 lg:mt-0">
-            <img
+            <Image
               src="/images/image 1.png"
               alt="Boat Image"
+              width={640}
+              height={661}
               className="w-full max-w-md sm:max-w-lg lg:w-[640px] lg:h-[661px] object-cover rounded-lg"
             />
           </div>
