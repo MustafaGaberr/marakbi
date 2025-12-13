@@ -1,4 +1,14 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 const FinalCTA = () => {
+  const router = useRouter();
+
+  const handleBookNow = () => {
+    router.push("/boat-listing");
+  };
+
   return (
     <section className="hidden md:block relative w-full overflow-hidden">
       {/* Title Above Section */}
@@ -38,9 +48,12 @@ const FinalCTA = () => {
             </div>
 
             {/* CTA Button */}
-            <div className="w-56 h-12 px-6 py-2.5 bg-white rounded-lg inline-flex justify-center items-center gap-2.5">
-              <button className="text-sky-800 text-base font-normal font-poppins capitalize">Book now</button>
-            </div>
+            <button 
+              onClick={handleBookNow}
+              className="w-56 h-12 px-6 py-2.5 bg-white rounded-lg inline-flex justify-center items-center gap-2.5 text-sky-800 text-base font-normal font-poppins capitalize hover:bg-gray-50 transition-colors cursor-pointer"
+            >
+              Book now
+            </button>
           </div>
         </div>
       </div>

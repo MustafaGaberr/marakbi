@@ -13,7 +13,7 @@ import FinalCTA from "@/components/FinalCTA";
 import { clientApi } from "@/lib/api";
 
 export default function HomePage() {
-  const [homeData, setHomeData] = useState<any>(null);
+  const [homeData, setHomeData] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -82,7 +82,7 @@ export default function HomePage() {
         <BoatFleet homeData={homeData} />
         <WhyChoosingUs />
         <Stats />
-        <Activities homeData={homeData} />
+        <Activities />
         <Destinations />
         <FinalCTA />
       </main>

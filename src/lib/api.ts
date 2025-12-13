@@ -669,8 +669,30 @@ export async function testConnection(): Promise<ApiResponse<{ status: string; me
 }
 
 // ===== UTILITY FUNCTIONS =====
+export function isTokenValid(token: string | null): boolean {
+  if (!token) return false;
+  
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return false;
+    
+    const payload = JSON.parse(atob(parts[1]));
+    const currentTime = Math.floor(Date.now() / 1000);
+    
+    // Check if token is expired
+    if (payload.exp && payload.exp < currentTime) {
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 export function isAuthenticated(): boolean {
-  return !!storage.getToken();
+  const token = storage.getToken();
+  return token ? isTokenValid(token) : false;
 }
 
 export function handleApiError(error: unknown): string {

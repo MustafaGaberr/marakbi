@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Logo from './Logo';
 import ServicesDropdown from './ServicesDropdown';
 import { storage, isAuthenticated, clientApi, City, Boat } from '@/lib/api';
@@ -15,6 +15,7 @@ interface HeaderProps {
 
 const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<{ fullName?: string; email?: string; role?: string } | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -164,21 +165,68 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
     loadSearchData();
   }, []);
 
+  // Check authentication status
   useEffect(() => {
-    // Check if user is authenticated
-    if (isAuthenticated()) {
-      const userData = storage.getUser();
-      if (userData) {
-        setUser({
-          fullName: userData.username,
-          email: userData.email || '',
-          role: userData.role || 'user'
-        });
+    const checkAuth = () => {
+      if (isAuthenticated()) {
+        const userData = storage.getUser();
+        if (userData) {
+          setUser({
+            fullName: userData.username,
+            email: userData.email || '',
+            role: userData.role || 'user'
+          });
+        }
+      } else {
+        setUser(null);
+        // Clear storage if token is invalid
+        storage.clearAll();
       }
-    } else {
-      setUser(null);
+    };
+
+    // Check immediately
+    checkAuth();
+
+    // Check periodically (every 30 seconds)
+    const interval = setInterval(checkAuth, 30000);
+
+    // Check on storage change (when token is cleared)
+    const handleStorageChange = () => {
+      checkAuth();
+    };
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', handleStorageChange);
     }
+
+    return () => {
+      clearInterval(interval);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('storage', handleStorageChange);
+      }
+    };
   }, []);
+
+  // Also check when pathname changes
+  useEffect(() => {
+    const checkAuth = () => {
+      if (isAuthenticated()) {
+        const userData = storage.getUser();
+        if (userData) {
+          setUser({
+            fullName: userData.username,
+            email: userData.email || '',
+            role: userData.role || 'user'
+          });
+        }
+      } else {
+        setUser(null);
+        storage.clearAll();
+      }
+    };
+
+    checkAuth();
+  }, [pathname]);
 
   // Generate dynamic search suggestions
   const getSearchSuggestions = (): Suggestion[] => {

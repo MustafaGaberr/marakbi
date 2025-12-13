@@ -1,8 +1,22 @@
+"use client";
+
 import Link from 'next/link';
 import Image from 'next/image';
 import Logo from './Logo';
 
 const Footer = () => {
+  // Mapping service names to category IDs (based on ServicesDropdown mapping)
+  const serviceToCategoryMap: Record<string, number> = {
+    "Boat Rentals": 1, // Private Boats / Motor Boats → category_id=1
+    "Water Sports": 5, // Water Activities → category_id=5
+    "Family activities": 5, // Water Activities → category_id=5
+    "Corporate Events": 4, // Occasion → category_id=4
+    "Fishing Trips": 3, // Fishing Boats → category_id=3
+    "Occassions": 4, // Occasion → category_id=4
+    "Occasions": 4, // Occasion → category_id=4
+    "Travel Boat": 3, // Travel Boats → category_id=3
+    "Dahabya": 1, // Felucca/Dahabya → category_id=1 (Private Boats)
+  };
   return (
     <footer className="text-white bg-gradient-to-t from-[#083872] via-[#0A4489] to-[#106BD8]">
       {/* Main Footer Grid */}
@@ -30,42 +44,66 @@ const Footer = () => {
             <h4 className="text-lg md:text-xl text-amber-300 font-semibold mb-4 md:mb-6 font-poppins">Marakbi Services</h4>
             <ul className="space-y-2 md:space-y-3 text-sm md:text-base list-disc list-inside">
               <li>
-                <Link href="#" className=" hover:text-orange-300 transition-colors font-poppins">
+                <Link 
+                  href={`/boat-listing?category_id=${serviceToCategoryMap["Boat Rentals"] || 1}`}
+                  className=" hover:text-orange-300 transition-colors font-poppins"
+                >
                   Boat Rentals
                 </Link>
               </li>
               <li>
-                <Link href="#" className=" hover:text-orange-300 transition-colors font-poppins">
+                <Link 
+                  href={`/boat-listing?category_id=${serviceToCategoryMap["Water Sports"] || 5}`}
+                  className=" hover:text-orange-300 transition-colors font-poppins"
+                >
                   Water Sports
                 </Link>
               </li>
               <li>
-                <Link href="#" className=" hover:text-orange-300 transition-colors font-poppins">
+                <Link 
+                  href={`/boat-listing?category_id=${serviceToCategoryMap["Family activities"] || 5}`}
+                  className=" hover:text-orange-300 transition-colors font-poppins"
+                >
                   Family activities
                 </Link>
               </li>
               <li>
-                <Link href="#" className=" hover:text-orange-300 transition-colors font-poppins">
+                <Link 
+                  href={`/boat-listing?category_id=${serviceToCategoryMap["Corporate Events"] || 4}`}
+                  className=" hover:text-orange-300 transition-colors font-poppins"
+                >
                   Corporate Events
                 </Link>
               </li>
               <li>
-                <Link href="#" className=" hover:text-orange-300 transition-colors font-poppins">
+                <Link 
+                  href={`/boat-listing?category_id=${serviceToCategoryMap["Fishing Trips"] || 3}`}
+                  className=" hover:text-orange-300 transition-colors font-poppins"
+                >
                   Fishing Trips
                 </Link>
               </li>
               <li>
-                <Link href="#" className=" hover:text-orange-300 transition-colors font-poppins">
+                <Link 
+                  href={`/boat-listing?category_id=${serviceToCategoryMap["Occassions"] || 4}`}
+                  className=" hover:text-orange-300 transition-colors font-poppins"
+                >
                   Occassions
                 </Link>
               </li>
               <li>
-                <Link href="#" className=" hover:text-orange-300 transition-colors font-poppins">
+                <Link 
+                  href={`/boat-listing?category_id=${serviceToCategoryMap["Travel Boat"] || 2}`}
+                  className=" hover:text-orange-300 transition-colors font-poppins"
+                >
                   Travel Boat
                 </Link>
               </li>
               <li>
-                <Link href="#" className=" hover:text-orange-300 transition-colors font-poppins">
+                <Link 
+                  href={`/boat-listing?category_id=${serviceToCategoryMap["Dahabya"] || 1}`}
+                  className=" hover:text-orange-300 transition-colors font-poppins"
+                >
                   Dahabya
                 </Link>
               </li>
@@ -77,7 +115,7 @@ const Footer = () => {
             <h4 className="text-lg md:text-xl text-amber-300 font-semibold mb-4 md:mb-6 font-poppins">Useful Links</h4>
             <ul className="space-y-2 md:space-y-3 text-sm md:text-base list-disc list-inside">
               <li>
-                <Link href="#" className=" hover:text-orange-300 transition-colors font-poppins">
+                <Link href="our-team" className=" hover:text-orange-300 transition-colors font-poppins">
                   About Us
                 </Link>
               </li>
@@ -164,19 +202,19 @@ const Footer = () => {
             {/* Contact Info */}
             <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6 lg:gap-8">
               <div className="flex items-center gap-2">
-                <img src="/icons/phone_in_talk_y.svg" alt="Phone" className="w-4 h-4 md:w-5 md:h-5" />
+                <Image src="/icons/phone_in_talk_y.svg" alt="Phone" width={20} height={20} className="w-4 h-4 md:w-5 md:h-5" />
                 <Link href="tel:+201031416900" className="text-sm md:text-base text-gray-300 font-poppins hover:text-orange-300 transition-colors">
                   +2010 31 41 6 900
                 </Link>
               </div>
               <div className="flex items-center gap-2">
-                <img src="/icons/mail-1.svg" alt="Email" className="w-4 h-4 md:w-5 md:h-5" />
+                <Image src="/icons/mail-1.svg" alt="Email" width={20} height={20} className="w-4 h-4 md:w-5 md:h-5" />
                 <Link href="mailto:info@marakbi.tours" className="text-sm md:text-base text-gray-300 font-poppins hover:text-orange-300 transition-colors">
                   info@marakbi.tours
                 </Link>
               </div>
               <div className="flex items-center gap-2">
-                <img src="/icons/home_pin.svg" alt="Location" className="w-4 h-4 md:w-5 md:h-5" />
+                <Image src="/icons/home_pin.svg" alt="Location" width={20} height={20} className="w-4 h-4 md:w-5 md:h-5" />
                 <span className="text-sm md:text-base text-gray-300 font-poppins">Aswan - Egypt</span>
               </div>
             </div>
@@ -184,16 +222,16 @@ const Footer = () => {
             {/* Social Media Icons */}
             <div className="flex items-center gap-4 md:gap-6">
               <Link href="https://www.facebook.com/profile.php?id=61578325940602" target="_blank" rel="noopener noreferrer" className="w-6 h-6 relative overflow-hidden hover:opacity-80 transition-opacity">
-                <img src="/icons/Facebook.svg" alt="Facebook" className="w-full h-full" />
+                <Image src="/icons/Facebook.svg" alt="Facebook" width={24} height={24} className="w-full h-full" />
               </Link>
               <Link href="https://www.linkedin.com/company/marakbi" target="_blank" rel="noopener noreferrer" className="w-6 h-6 relative overflow-hidden hover:opacity-80 transition-opacity">
-                <img src="/icons/Linkedin.svg" alt="LinkedIn" className="w-full h-full" />
+                <Image src="/icons/Linkedin.svg" alt="LinkedIn" width={24} height={24} className="w-full h-full" />
               </Link>
               <Link href="https://www.instagram.com/marakbi_app/" target="_blank" rel="noopener noreferrer" className="w-6 h-6 relative overflow-hidden hover:opacity-80 transition-opacity">
-                <img src="/icons/instgram.svg" alt="Instagram" className="w-full h-full" />
+                <Image src="/icons/instgram.svg" alt="Instagram" width={24} height={24} className="w-full h-full" />
               </Link>
               <Link href="https://www.youtube.com/@marakbi" target="_blank" rel="noopener noreferrer" className="w-6 h-6 relative overflow-hidden hover:opacity-80 transition-opacity">
-                <img src="/icons/youtube.svg" alt="YouTube" className="w-full h-full" />
+                <Image src="/icons/youtube.svg" alt="YouTube" width={24} height={24} className="w-full h-full" />
               </Link>
             </div>
           </div>
