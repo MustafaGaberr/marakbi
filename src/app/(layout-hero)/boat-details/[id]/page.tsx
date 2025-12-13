@@ -107,27 +107,27 @@ export default function BoatDetailsPage() {
               <div className="grid grid-cols-4 gap-2 h-[400px]">
                 {boat.images.length > 0 ? (
                   <>
-                    <div className="col-span-2 row-span-2 relative rounded-lg overflow-hidden">
-                      <Image
+                <div className="col-span-2 row-span-2 relative rounded-lg overflow-hidden">
+                  <Image
                         src={boat.images[0]}
-                        alt="Main boat"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
+                    alt="Main boat"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
                     {boat.images.slice(1, 5).map((img, idx) => (
                       <div key={idx} className="relative rounded-lg overflow-hidden">
-                        <Image
+                  <Image
                           src={img}
                           alt={`Gallery ${idx + 1}`}
-                          fill
-                          className="object-cover"
-                        />
+                    fill
+                    className="object-cover"
+                  />
                         {idx === 3 && boat.images.length > 5 && (
-                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                            <span className="text-white text-3xl font-semibold">
+                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                    <span className="text-white text-3xl font-semibold">
                               +{boat.images.length - 5}
-                            </span>
+                    </span>
                           </div>
                         )}
                       </div>
@@ -189,11 +189,11 @@ export default function BoatDetailsPage() {
                 <div className="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-200">
                   <span className="font-medium text-gray-700 mb-1 sm:mb-0">Categories</span>
                   <span className="text-gray-600 sm:text-right">{boat.categories.join(', ')}</span>
-                </div>
+              </div>
                 <div className="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-200">
                   <span className="font-medium text-gray-700 mb-1 sm:mb-0">Owner</span>
                   <span className="text-gray-600 sm:text-right">{owner.username}</span>
-                </div>
+                  </div>
               </div>
             </section>
 
@@ -233,26 +233,26 @@ export default function BoatDetailsPage() {
                 <p className="text-gray-700 mb-4">{owner.bio || 'No bio available.'}</p>
                 <div className="space-y-2 mb-4">
                   {owner.phone && (
-                    <div className="flex items-center gap-2">
-                      <Image
-                        src="/icons/phone_in_talk_y.svg"
+                  <div className="flex items-center gap-2">
+                    <Image
+                      src="/icons/phone_in_talk_y.svg"
                         alt="Phone"
-                        width={20}
-                        height={20}
-                      />
+                      width={20}
+                      height={20}
+                    />
                       <span className="text-sm">Phone: {owner.phone}</span>
-                    </div>
+                  </div>
                   )}
                   {owner.address && (
-                    <div className="flex items-center gap-2">
-                      <Image
+                  <div className="flex items-center gap-2">
+                    <Image
                         src="/icons/location_on.svg"
                         alt="Address"
-                        width={20}
-                        height={20}
-                      />
+                      width={20}
+                      height={20}
+                    />
                       <span className="text-sm">Address: {owner.address}</span>
-                    </div>
+                  </div>
                   )}
                 </div>
                 <button className="w-full sm:w-auto px-8 py-3 bg-[#0C4A8C] text-white rounded-lg hover:bg-[#0A3D7A] transition-colors">
@@ -309,18 +309,18 @@ export default function BoatDetailsPage() {
                     return (
                       <div key={stars} className="flex items-center gap-3">
                         <span className="w-16 text-sm">{stars} Star</span>
-                        <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-orange-400"
-                            style={{
+                      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-orange-400"
+                          style={{
                               width: totalRating > 0 ? `${(count / totalRating) * 100}%` : '0%',
-                            }}
-                          />
-                        </div>
-                        <span className="w-12 text-right text-sm">
-                          {count}
-                        </span>
+                          }}
+                        />
                       </div>
+                      <span className="w-12 text-right text-sm">
+                          {count}
+                      </span>
+                    </div>
                     );
                   })}
                 </div>
@@ -332,32 +332,32 @@ export default function BoatDetailsPage() {
                   <p className="text-gray-500 text-center py-8">No reviews yet.</p>
                 ) : (
                   (showAllReviews ? reviews : reviews.slice(0, 3)).map((review) => (
-                    <div key={review.id} className="border-b border-gray-200 pb-6">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-12 h-12 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 font-semibold">
+                  <div key={review.id} className="border-b border-gray-200 pb-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-12 h-12 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 font-semibold">
                           {review.username.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
+                      </div>
+                      <div>
                           <p className="font-semibold">{review.username}</p>
                           <p className="text-sm text-gray-600">{new Date(review.created_at).toLocaleDateString()}</p>
-                        </div>
                       </div>
-                      <div className="flex items-center mb-2">
-                        {[...Array(5)].map((_, i) => (
-                          <Image
-                            key={i}
-                            src="/icons/Star Icon.svg"
-                            alt="Star"
-                            width={16}
-                            height={16}
-                            className={`${i < review.rating ? "opacity-100" : "opacity-30"}`}
-                          />
-                        ))}
-                      </div>
-                      <p className="text-gray-700 mb-3">{review.comment}</p>
                     </div>
+                    <div className="flex items-center mb-2">
+                      {[...Array(5)].map((_, i) => (
+                        <Image
+                          key={i}
+                          src="/icons/Star Icon.svg"
+                          alt="Star"
+                          width={16}
+                          height={16}
+                          className={`${i < review.rating ? "opacity-100" : "opacity-30"}`}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-gray-700 mb-3">{review.comment}</p>
+                          </div>
                   ))
-                )}
+                    )}
               </div>
 
               {reviews.length > 3 && (

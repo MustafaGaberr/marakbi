@@ -6,6 +6,9 @@
 // Updated to the new Heroku backend
 const BASE_URL = 'https://marakbi-e0870d98592a.herokuapp.com';
 
+// Toggle for verbose API logging in the console
+const ENABLE_API_LOGS = false;
+
 // ===== TYPE DEFINITIONS =====
 
 // Base API Response
@@ -292,7 +295,7 @@ export interface CreateOrderResponse {
     start_date: string;
     status: string;
     users_in_voyage: number[];
-    voyage_type: string;
+  voyage_type: string;
   };
   voyage_id: number;
 }
@@ -385,14 +388,18 @@ async function apiRequest<T>(
   }
 
   try {
-    console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`);
+    if (ENABLE_API_LOGS) {
+      console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`);
+    }
     
     const response = await fetch(url, {
       ...options,
       headers,
     });
 
-    console.log(`📡 API Response: ${response.status} ${response.statusText}`);
+    if (ENABLE_API_LOGS) {
+      console.log(`📡 API Response: ${response.status} ${response.statusText}`);
+    }
 
     // Handle non-JSON responses
     const contentType = response.headers.get('content-type');
@@ -406,7 +413,9 @@ async function apiRequest<T>(
     }
 
     const data = await response.json();
-    console.log('📦 API Data:', data);
+    if (ENABLE_API_LOGS) {
+      console.log('📦 API Data:', data);
+    }
 
     if (!response.ok) {
       // Handle different error types

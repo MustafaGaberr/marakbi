@@ -21,9 +21,7 @@ export default function HomePage() {
     const fetchHomeData = async () => {
       try {
         setLoading(true);
-        console.log("📡 Fetching home data...");
         const response = await clientApi.getHomeData();
-        console.log("✅ Home data loaded:", response);
 
         if (response.success && response.data) {
           setHomeData(response.data);

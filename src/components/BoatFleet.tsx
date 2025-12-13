@@ -90,21 +90,21 @@ const BoatFleet = ({ homeData }: BoatFleetProps) => {
             </div>
           ) : (
             boats.map((boat, index: number) => {
-              return (
-                <BoatCard
-                  key={boat.id || index}
-                  boatId={boat.id}
-                  imageUrl={boat.images?.[0] || '/images/Rectangle 3463853.png'}
-                  name={boat.name || 'Boat'}
-                  price={`${boat.price_per_hour ?? 0}`}
+            return (
+              <BoatCard
+                key={boat.id || index}
+                boatId={boat.id}
+                imageUrl={boat.images?.[0] || '/images/Rectangle 3463853.png'}
+                name={boat.name || 'Boat'}
+                price={`${boat.price_per_hour ?? 0}`}
                   location={boat.cities?.[0] || 'Aswan - Egypt'}
-                  guests={boat.max_seats || 4}
+                guests={boat.max_seats || 4}
                   status="Available"
-                  rooms={boat.max_seats_stay || 2}
+                rooms={boat.max_seats_stay || 2}
                   rating={5}
                   reviewsCount={boat.total_reviews || 0}
-                />
-              );
+              />
+            );
             })
           )}
         </div>

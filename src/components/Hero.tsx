@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { clientApi, City, storage } from '@/lib/api';
+import { clientApi, City } from '@/lib/api';
 
 const Hero = () => {
   const router = useRouter();
@@ -13,7 +13,6 @@ const Hero = () => {
   const [categories, setCategories] = useState<{ id: number; name: string; description?: string }[]>([]);
   const [loadingCities, setLoadingCities] = useState(true);
   const [loadingCategories, setLoadingCategories] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -24,20 +23,8 @@ const Hero = () => {
     "/images/Rectangle 3463846.png"  // Kayak background
   ];
 
-  // Check auth status on mount
+  // Load cities on mount (no auth required)
   useEffect(() => {
-    const token = storage.getToken();
-    setIsAuthenticated(!!token);
-  }, []);
-
-  // Load cities when authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setLoadingCities(false);
-      setCities([]);
-      return;
-    }
-
     const fetchCities = async () => {
       try {
         setLoadingCities(true);
@@ -52,31 +39,25 @@ const Hero = () => {
       }
     };
     fetchCities();
-  }, [isAuthenticated]);
+  }, []);
 
-  // Load categories when city changes (only if authenticated)
+  // Load categories when city changes (no auth required)
   useEffect(() => {
-    if (!isAuthenticated) {
-      setCategories([]);
-      setBoatType('');
-      return;
-    }
-
     if (city) {
       const fetchCategories = async () => {
         try {
           setLoadingCategories(true);
           const response = await clientApi.getCategoriesByCity(parseInt(city));
           if (response.success && response.data) {
-            const data: any = response.data;
+            const data = response.data;
             // API might return an array directly or wrapped in an object (e.g. { categories: [...] } or { cities: [...] })
             const normalized =
               Array.isArray(data)
                 ? data
-                : Array.isArray(data.categories)
-                  ? data.categories
-                  : Array.isArray(data.cities)
-                    ? data.cities
+                : Array.isArray((data as { categories?: unknown[] }).categories)
+                  ? (data as { categories: { id: number; name: string; description?: string }[] }).categories
+                  : Array.isArray((data as { cities?: unknown[] }).cities)
+                    ? (data as { cities: { id: number; name: string; description?: string }[] }).cities
                     : [];
             setCategories(normalized);
           } else {
@@ -94,7 +75,7 @@ const Hero = () => {
       setCategories([]);
       setBoatType('');
     }
-  }, [city, isAuthenticated]);
+  }, [city]);
 
   // Timer for image gallery animation - slower (5 seconds)
   useEffect(() => {
@@ -112,12 +93,6 @@ const Hero = () => {
 
   // Handle Book Now button
   const handleBookNow = () => {
-    // If not logged in, send user to login first
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
-
     const params = new URLSearchParams();
     if (city) params.append('city_id', city);
     if (boatType) params.append('category_id', boatType);
@@ -170,7 +145,6 @@ const Hero = () => {
           </div>
 
           {/* Right Side: Booking Form */}
-          {isAuthenticated && (
           <div className="w-full sm:w-80 bg-white/20 backdrop-blur-md rounded-2xl overflow-hidden flex flex-col justify-start items-center p-5 sm:p-6 shadow-2xl border border-white/30 space-y-3 sm:space-y-4">
 
             {/* City Dropdown */}
@@ -204,7 +178,7 @@ const Hero = () => {
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
-                  </option>
+                    </option>
                 ))}
               </select>
             </div>
@@ -231,7 +205,6 @@ const Hero = () => {
               Book now
             </button>
           </div>
-          )}
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 // CSS for animations
 const styles = `
@@ -28,9 +29,20 @@ interface ServicesDropdownProps {
 }
 
 const ServicesDropdown = ({ variant = 'transparent' }: ServicesDropdownProps) => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<number | null>(null);
+
+  // Mapping service IDs to category IDs
+  const serviceToCategoryMap: Record<number, number> = {
+    1: 1, // Private Boats / Motor Boats → category_id=1
+    2: 2, // Sharing Trips → category_id=2 (keeping as is, or update if needed)
+    3: 3, // Travel Boats → category_id=3 (keeping as is, or update if needed)
+    4: 3, // Fishing Boats → category_id=3
+    5: 5, // Water Activities → category_id=5 (keeping as is, or update if needed)
+    6: 4, // Occasion → category_id=4
+  };
 
   const services: Service[] = [
     {
@@ -135,9 +147,10 @@ const ServicesDropdown = ({ variant = 'transparent' }: ServicesDropdownProps) =>
                   key={service.id}
                   className="group cursor-pointer hover:scale-103 transition-all duration-200 bg-gray-50 hover:bg-white rounded-lg p-3 hover:shadow-md flex-shrink-0 w-44"
                   onClick={() => {
-                    console.log(`Selected service: ${service.name}`);
                     setIsOpen(false);
-                    // يمكن إضافة navigation هنا لاحقاً
+                    // Navigate to boat listing page with category filter
+                    const categoryId = serviceToCategoryMap[service.id] || service.id;
+                    router.push(`/boat-listing?category_id=${categoryId}`);
                   }}
                 >
                   {/* Service Image */}
@@ -145,9 +158,9 @@ const ServicesDropdown = ({ variant = 'transparent' }: ServicesDropdownProps) =>
                     <Image
                       src={service.image}
                       alt={service.name}
-                      width={176}
-                      height={96}
-                      className="w-full h-full object-cover group-hover:scale-106 transition-transform duration-300"
+                      fill
+                      sizes="176px"
+                      className="object-cover group-hover:scale-106 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent group-hover:from-black/20 transition-colors duration-200"></div>
                   </div>

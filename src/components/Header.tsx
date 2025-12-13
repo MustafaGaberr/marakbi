@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Logo from './Logo';
 import ServicesDropdown from './ServicesDropdown';
-import { storage, isAuthenticated } from '@/lib/api';
+import { storage, isAuthenticated, clientApi, City, Boat } from '@/lib/api';
 
 interface HeaderProps {
   variant?: 'transparent' | 'solid';
@@ -21,49 +21,148 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const [cities, setCities] = useState<City[]>([]);
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+  const [boats, setBoats] = useState<Boat[]>([]);
 
-  type Suggestion = { label: string; href: string; keywords?: string[] };
+  type Suggestion = { 
+    label: string; 
+    href: string; 
+    type: 'category' | 'city' | 'boat' | 'service';
+    keywords?: string[] 
+  };
 
-  const searchSuggestions: Suggestion[] = [
-    { label: 'PRIVATE BOATS', href: '/services/private-boats', keywords: ['boats', 'private', 'مراكب', 'قوارب', 'مركب'] },
-    { label: 'SHARING BOATS', href: '/services/sharing-boats', keywords: ['sharing', 'shared', 'مشتركة', 'رحلة مشتركة', 'قارب مشترك'] },
-    { label: 'TRAVEL BOATS', href: '/services/travel-boats', keywords: ['travel', 'trip', 'رحلات', 'سفر', 'رحلة'] },
-    { label: 'FISHING BOATS', href: '/services/fishing-boats', keywords: ['fishing', 'fish', 'صيد', 'مراكب صيد'] },
-    { label: 'STAYOVER BOATS', href: '/services/stayover-boats', keywords: ['stayover', 'overnight', 'مبيت', 'مبيت بحري'] },
-    { label: 'WATER ACTIVITIES', href: '/services/water-activities', keywords: ['activities', 'water', 'نشاطات', 'أنشطة', 'أنشطة مائية'] },
-    { label: 'OCCASIONS', href: '/services/occasions', keywords: ['occasions', 'party', 'مناسبات', 'حفلات'] },
-    { label: 'FELUCCA', href: '/services/felucca', keywords: ['felucca', 'فلوكة', 'فلوكه'] },
-    { label: 'YACHT', href: '/services/yacht', keywords: ['yacht', 'يخت', 'يachts'] },
-    { label: 'TRIPS', href: '/services/trips', keywords: ['trips', 'tours', 'رحلات', 'جولات'] },
-    { label: 'BOAT FLEET', href: '/#boat-fleet', keywords: ['fleet', 'boats', 'أسطول', 'أسطول القوارب', 'مراكب'] },
-    { label: 'DESTINATIONS', href: '/#destinations', keywords: ['destinations', 'أماكن', 'وجهات', 'معبد'] },
-  ];
+  // Mapping for common Arabic city names to English (for search)
+  const cityNameMapping: Record<string, string[]> = {
+    'أسوان': ['aswan', 'asuan', 'asswan'],
+    'الأقصر': ['luxor', 'al uqsur', 'al uqsor', 'el uqsur'],
+    'القاهرة': ['cairo', 'al qahira', 'el qahira'],
+    'الإسكندرية': ['alexandria', 'al iskandariyah', 'el iskandariya'],
+    'الغردقة': ['hurghada', 'al ghardaqah', 'el ghardaqa'],
+    'شرم الشيخ': ['sharm el sheikh', 'sharm el sheik', 'sharm'],
+    'مرسى مطروح': ['marsa matruh', 'marsa matrouh'],
+    'دهب': ['dahab', 'dahb'],
+    'نويبع': ['nuweiba', 'nueiba'],
+    'طابا': ['taba'],
+  };
+
+  // Mapping for common Arabic category names to English
+  const categoryNameMapping: Record<string, string[]> = {
+    'مناسبات': ['occasion', 'occasions', 'event', 'events'],
+    'أنشطة مائية': ['water activities', 'water activity', 'water sports'],
+    'مراكب صيد': ['fishing', 'fishing boats', 'fish'],
+    'مراكب خاصة': ['private', 'private boats'],
+    'رحلات مشتركة': ['sharing', 'sharing trips', 'shared'],
+    'مراكب سفر': ['travel', 'travel boats'],
+    'دهبية': ['felucca', 'feluka', 'فلوكة'],
+    'يخت': ['yacht', 'yachts'],
+  };
 
   const normalizeArabic = (text: string) =>
     text
       .toLowerCase()
-      .replace(/أ|إ|آ/g, 'ا')
-      .replace(/ى/g, 'ي')
+      .replace(/أ|إ|آ|ء/g, 'ا')
+      .replace(/ى|ئ/g, 'ي')
       .replace(/ة/g, 'ه')
       .replace(/ؤ/g, 'و')
-      .replace(/ئ/g, 'ي')
+      .replace(/[ًٌٍَُِّْ]/g, '') // Remove diacritics
       .replace(/\s+/g, ' ') // collapse spaces
       .trim();
 
-  const tokenStartsWith = (source: string, query: string) => {
-    const q = normalizeArabic(query);
-    if (!q) return false;
-    return normalizeArabic(source)
-      .split(' ')
-      .some((tok) => tok.startsWith(q));
+  // Check if query matches with Arabic-English mapping
+  const matchesWithMapping = (query: string, source: string, mapping: Record<string, string[]>): boolean => {
+    const normalizedQuery = normalizeArabic(query);
+    const normalizedSource = normalizeArabic(source);
+    
+    // Direct match
+    if (normalizedSource.includes(normalizedQuery)) return true;
+    
+    // Check Arabic query against English source using mapping
+    for (const [arabicName, englishNames] of Object.entries(mapping)) {
+      if (normalizeArabic(arabicName).includes(normalizedQuery)) {
+        // If query matches Arabic name, check if source matches any English equivalent
+        if (englishNames.some(en => normalizedSource.includes(en.toLowerCase()))) {
+          return true;
+        }
+      }
+    }
+    
+    // Check English query against Arabic source using mapping
+    for (const [arabicName, englishNames] of Object.entries(mapping)) {
+      if (englishNames.some(en => normalizedQuery.includes(en.toLowerCase()))) {
+        // If query matches English name, check if source matches Arabic equivalent
+        if (normalizeArabic(arabicName).includes(normalizedSource) || normalizedSource.includes(normalizeArabic(arabicName))) {
+          return true;
+        }
+      }
+    }
+    
+    return false;
   };
 
-  const filteredSuggestions = searchQuery.trim()
-    ? searchSuggestions.filter((s) => {
-        const pool = [s.label, ...(s.keywords ?? [])];
-        return pool.some((p) => tokenStartsWith(p, searchQuery));
-      }).slice(0, 8)
-    : [];
+  const tokenStartsWith = (source: string, query: string, type: 'city' | 'category' | 'boat' = 'boat') => {
+    const q = normalizeArabic(query);
+    if (!q) return false;
+    const normalizedSource = normalizeArabic(source);
+    
+    // Direct match
+    if (normalizedSource.includes(q)) return true;
+    
+    // Use mapping for cities and categories
+    if (type === 'city') {
+      return matchesWithMapping(query, source, cityNameMapping);
+    } else if (type === 'category') {
+      return matchesWithMapping(query, source, categoryNameMapping);
+    }
+    
+    // For boats, check both direct match and word-by-word
+    return normalizedSource.split(/\s+/).some((tok) => tok.startsWith(q) || tok.includes(q));
+  };
+
+  // Load search data on mount
+  useEffect(() => {
+    const loadSearchData = async () => {
+      try {
+        // Load cities
+        const citiesResponse = await clientApi.getCities();
+        if (citiesResponse.success && citiesResponse.data) {
+          setCities(citiesResponse.data.cities);
+        }
+
+        // Load some boats for search
+        const boatsResponse = await clientApi.getBoats(1, 50);
+        if (boatsResponse.success && boatsResponse.data) {
+          setBoats(boatsResponse.data.boats);
+        }
+
+        // Load categories from all cities
+        if (citiesResponse.success && citiesResponse.data) {
+          const allCategories = new Map<number, { id: number; name: string }>();
+          for (const city of citiesResponse.data.cities) {
+            try {
+              const catResponse = await clientApi.getCategoriesByCity(city.id);
+              if (catResponse.success && catResponse.data) {
+                const data = catResponse.data;
+                const normalized = Array.isArray(data) ? data : [];
+                normalized.forEach(cat => {
+                  if (!allCategories.has(cat.id)) {
+                    allCategories.set(cat.id, { id: cat.id, name: cat.name });
+                  }
+                });
+              }
+            } catch (error) {
+              // Continue if one city fails
+            }
+          }
+          setCategories(Array.from(allCategories.values()));
+        }
+      } catch (error) {
+        console.error('Error loading search data:', error);
+      }
+    };
+
+    loadSearchData();
+  }, []);
 
   useEffect(() => {
     // Check if user is authenticated
@@ -80,6 +179,74 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
       setUser(null);
     }
   }, []);
+
+  // Generate dynamic search suggestions
+  const getSearchSuggestions = (): Suggestion[] => {
+    if (!searchQuery.trim()) return [];
+
+    const query = normalizeArabic(searchQuery.trim());
+    const suggestions: Suggestion[] = [];
+
+    // Search in categories
+    categories.forEach(cat => {
+      if (tokenStartsWith(cat.name, query, 'category')) {
+        suggestions.push({
+          label: cat.name,
+          href: `/boat-listing?category_id=${cat.id}`,
+          type: 'category',
+          keywords: [cat.name]
+        });
+      }
+    });
+
+    // Search in cities
+    cities.forEach(city => {
+      if (tokenStartsWith(city.name, query, 'city')) {
+        suggestions.push({
+          label: city.name,
+          href: `/boat-listing?city_id=${city.id}`,
+          type: 'city',
+          keywords: [city.name]
+        });
+      }
+    });
+
+    // Search in boat names
+    boats.forEach(boat => {
+      if (tokenStartsWith(boat.name, query)) {
+        suggestions.push({
+          label: boat.name,
+          href: `/boat-listing?search=${encodeURIComponent(boat.name)}`,
+          type: 'boat',
+          keywords: [boat.name, ...(boat.categories || [])]
+        });
+      }
+    });
+
+    // Search in boat types/categories
+    boats.forEach(boat => {
+      if (boat.categories) {
+        boat.categories.forEach(cat => {
+          if (tokenStartsWith(cat, query) && !suggestions.some(s => s.label === cat && s.type === 'category')) {
+            // Try to find category ID
+            const category = categories.find(c => c.name.toLowerCase() === cat.toLowerCase());
+            if (category) {
+              suggestions.push({
+                label: cat,
+                href: `/boat-listing?category_id=${category.id}`,
+                type: 'category',
+                keywords: [cat]
+              });
+            }
+          }
+        });
+      }
+    });
+
+    return suggestions.slice(0, 8);
+  };
+
+  const filteredSuggestions = getSearchSuggestions();
 
 
   const textColor = variant === 'solid' ? 'text-gray-900' : 'text-white';
@@ -195,13 +362,21 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    const target = (filteredSuggestions[0] ?? null);
-                    if (target) {
-                      router.push(target.href);
+                    if (searchQuery.trim()) {
+                      // If there's a suggestion, go to it, otherwise search with query
+                      const target = filteredSuggestions[0];
+                      if (target) {
+                        router.push(target.href);
+                      } else {
+                        // Search with query parameter
+                        router.push(`/boat-listing?search=${encodeURIComponent(searchQuery.trim())}`);
+                      }
                       setIsSearchOpen(false);
+                      setSearchQuery('');
                     }
                   } else if (e.key === 'Escape') {
                     setIsSearchOpen(false);
+                    setSearchQuery('');
                   }
                 }}
                 onBlur={() => setTimeout(() => setIsSearchOpen(false), 120)}
@@ -212,24 +387,38 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
               />
               {/* Suggestions Dropdown */}
               {isSearchOpen && searchQuery.trim() && (
-                <div className={`absolute left-full top-full ml-2 mt-2 w-64 rounded-md bg-white shadow-lg ring-1 ring-black/5 overflow-hidden transition-opacity duration-200 ${isSearchOpen ? 'opacity-100' : 'opacity-0'}`}>
-                  {filteredSuggestions.map((s, idx) => (
-                    <Link
-                      key={`${s.href}-${idx}`}
-                      href={s.href}
-                      className="block px-3 py-2 text-sm text-gray-800 hover:bg-gray-50"
-                      onMouseDown={(e) => {
-                        // prevent input blur from cancelling navigation before push
-                        e.preventDefault();
-                        router.push(s.href);
-                        setIsSearchOpen(false);
-                      }}
-                    >
-                      {s.label}
-                    </Link>
-                  ))}
-                  {filteredSuggestions.length === 0 && (
-                    <div className="px-3 py-2 text-sm text-gray-500">No results</div>
+                <div className={`absolute left-full top-full ml-2 mt-2 w-64 rounded-md bg-white shadow-lg ring-1 ring-black/5 overflow-hidden transition-opacity duration-200 z-50 max-h-80 overflow-y-auto ${isSearchOpen ? 'opacity-100' : 'opacity-0'}`}>
+                  {filteredSuggestions.length > 0 ? (
+                    filteredSuggestions.map((s, idx) => (
+                      <Link
+                        key={`${s.href}-${idx}-${s.type}`}
+                        href={s.href}
+                        className="block px-3 py-2 text-sm text-gray-800 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
+                        onMouseDown={(e) => {
+                          // prevent input blur from cancelling navigation before push
+                          e.preventDefault();
+                          router.push(s.href);
+                          setIsSearchOpen(false);
+                          setSearchQuery('');
+                        }}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className={`text-xs px-2 py-0.5 rounded ${
+                            s.type === 'category' ? 'bg-blue-100 text-blue-700' :
+                            s.type === 'city' ? 'bg-green-100 text-green-700' :
+                            s.type === 'boat' ? 'bg-purple-100 text-purple-700' :
+                            'bg-gray-100 text-gray-700'
+                          }`}>
+                            {s.type === 'category' ? 'Category' : s.type === 'city' ? 'City' : 'Boat'}
+                          </span>
+                          <span>{s.label}</span>
+                        </div>
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="px-3 py-2 text-sm text-gray-500">
+                      No results found. Press Enter to search for "{searchQuery}"
+                    </div>
                   )}
                 </div>
               )}
