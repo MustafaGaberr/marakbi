@@ -62,7 +62,7 @@ export default function ContactPage() {
                       value={formData.firstName}
                       onChange={handleChange}
                       placeholder="First Name"
-                      className="w-full h-[60px] px-4 py-3 bg-[#f7f7f7] rounded-lg border-none outline-none text-[22px] font-poppins font-normal text-black placeholder:text-black placeholder:opacity-100 focus:ring-2 focus:ring-[#093b77] focus:ring-opacity-20 transition-all"
+                      className="w-full h-[60px] px-4 py-3 bg-[#f7f7f7] rounded-lg border-none outline-none text-[22px] font-poppins font-normal text-black placeholder:text-gray-500 focus:ring-2 focus:ring-[#093b77] focus:ring-opacity-20 transition-all"
                       required
                     />
                   </div>
@@ -75,7 +75,7 @@ export default function ContactPage() {
                       value={formData.lastName}
                       onChange={handleChange}
                       placeholder="Last Name"
-                      className="w-full h-[60px] px-4 py-3 bg-[#f7f7f7] rounded-lg border-none outline-none text-[22px] font-poppins font-normal text-black placeholder:text-black placeholder:opacity-100 focus:ring-2 focus:ring-[#093b77] focus:ring-opacity-20 transition-all"
+                      className="w-full h-[60px] px-4 py-3 bg-[#f7f7f7] rounded-lg border-none outline-none text-[22px] font-poppins font-normal text-black placeholder:text-gray-500 focus:ring-2 focus:ring-[#093b77] focus:ring-opacity-20 transition-all"
                       required
                     />
                   </div>
@@ -91,7 +91,7 @@ export default function ContactPage() {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="Email"
-                      className="w-full h-[60px] px-4 py-3 bg-[#f7f7f7] rounded-lg border-none outline-none text-[22px] font-poppins font-normal text-black placeholder:text-black placeholder:opacity-100 focus:ring-2 focus:ring-[#093b77] focus:ring-opacity-20 transition-all"
+                      className="w-full h-[60px] px-4 py-3 bg-[#f7f7f7] rounded-lg border-none outline-none text-[22px] font-poppins font-normal text-black placeholder:text-gray-500 focus:ring-2 focus:ring-[#093b77] focus:ring-opacity-20 transition-all"
                       required
                     />
                   </div>
@@ -104,7 +104,7 @@ export default function ContactPage() {
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="Phone"
-                      className="w-full h-[60px] px-4 py-3 bg-[#f7f7f7] rounded-lg border-none outline-none text-[22px] font-poppins font-normal text-black placeholder:text-black placeholder:opacity-100 focus:ring-2 focus:ring-[#093b77] focus:ring-opacity-20 transition-all"
+                      className="w-full h-[60px] px-4 py-3 bg-[#f7f7f7] rounded-lg border-none outline-none text-[22px] font-poppins font-normal text-black placeholder:text-gray-500 focus:ring-2 focus:ring-[#093b77] focus:ring-opacity-20 transition-all"
                       required
                     />
                   </div>
@@ -118,7 +118,7 @@ export default function ContactPage() {
                     value={formData.subject}
                     onChange={handleChange}
                     placeholder="Subject"
-                    className="w-full h-[60px] px-4 py-3 bg-[#f7f7f7] rounded-lg border-none outline-none text-[22px] font-poppins font-normal text-black placeholder:text-black"
+                    className="w-full h-[60px] px-4 py-3 bg-[#f7f7f7] rounded-lg border-none outline-none text-[22px] font-poppins font-normal text-black placeholder:text-gray-500 focus:ring-2 focus:ring-[#093b77] focus:ring-opacity-20 transition-all"
                     required
                   />
                 </div>
@@ -131,7 +131,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     placeholder="Message"
                     rows={6}
-                    className="w-full min-h-[228px] px-4 py-6 bg-[#f7f7f7] rounded-lg border-none outline-none text-[22px] font-poppins font-normal text-black placeholder:text-black placeholder:opacity-100 resize-none focus:ring-2 focus:ring-[#093b77] focus:ring-opacity-20 transition-all"
+                    className="w-full min-h-[228px] px-4 py-6 bg-[#f7f7f7] rounded-lg border-none outline-none text-[22px] font-poppins font-normal text-black placeholder:text-gray-500 resize-none focus:ring-2 focus:ring-[#093b77] focus:ring-opacity-20 transition-all"
                     required
                   />
                 </div>
