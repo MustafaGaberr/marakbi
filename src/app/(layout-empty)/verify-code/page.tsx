@@ -170,7 +170,7 @@ export default function VerifyCodePage() {
             <div className="mb-6">
               {canResend ? (
                 <p className="text-base text-black">
-                  Didn't Receive A Code?{' '}
+                  Didn&apos;t Receive A Code?{' '}
                   <button
                     type="button"
                     onClick={handleResendCode}

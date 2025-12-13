@@ -11,7 +11,7 @@ export default function FAQsPage() {
       id: 1,
       question: "What is Marakbi?",
       answer:
-        "Marakbi is an online platform that connects you with trusted boat owners and captains across Egypt. Whether you're looking for a private trip, a shared tour, or a fishing adventure — we make booking easy and secure.",
+        "Marakbi is an online platform that connects you with trusted boat owners and captains across Egypt. Whether you&apos;re looking for a private trip, a shared tour, or a fishing adventure — we make booking easy and secure.",
     },
     {
       id: 2,
@@ -47,7 +47,7 @@ export default function FAQsPage() {
       id: 7,
       question: "Do you offer group or event packages?",
       answer:
-        "Yes! We offer special packages for groups and events. Contact us to discuss your requirements and we'll help you find the perfect boat and package for your occasion.",
+        "Yes! We offer special packages for groups and events. Contact us to discuss your requirements and we&apos;ll help you find the perfect boat and package for your occasion.",
     },
     {
       id: 8,

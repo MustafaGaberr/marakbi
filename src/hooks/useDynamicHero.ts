@@ -10,21 +10,21 @@ export default function useDynamicHero() {
       route: "/about",
       title: "About\nUs",
       description:
-        "No matter the journey, we have a boat for your story. Explore Egypt’s stunning waterways with a curated selection of vessels and seasoned captains.",
+        "No matter the journey, we have a boat for your story. Explore Egypt&apos;s stunning waterways with a curated selection of vessels and seasoned captains.",
       background: "/mainBg.jpg",
     },
     {
       route: "/boat-listing",
       title: "Boat\nListing",
       description:
-        "No matter the journey, we have a boat for your story. Explore Egypt's stunning waterways with a curated selection of vessels and seasoned captains.",
+        "No matter the journey, we have a boat for your story. Explore Egypt&apos;s stunning waterways with a curated selection of vessels and seasoned captains.",
       background: "/mainBg.jpg",
     },
     {
       route: "/boat-details",
       title: "Boat\nName",
       description:
-        "No Matter The Journey, We Have A Boat For Your Story. Explore Egypt's Stunning Waterways With A Curated Selection Of Vessels And Seasoned Captains.",
+        "No Matter The Journey, We Have A Boat For Your Story. Explore Egypt&apos;s Stunning Waterways With A Curated Selection Of Vessels And Seasoned Captains.",
       background: "/mainBg.jpg",
     },
     {
@@ -38,7 +38,7 @@ export default function useDynamicHero() {
       route: "/faqs",
       title: "FAQS",
       description:
-        "Set sail with Marakbi and explore Egypt from a new angle — smooth waters, local stories, and moments you'll remember long after the trip ends.",
+        "Set sail with Marakbi and explore Egypt from a new angle — smooth waters, local stories, and moments you&apos;ll remember long after the trip ends.",
       background: "/images/Rectangle 5654.png",
     },
     {

@@ -47,10 +47,10 @@ export default function TermsConditionsPage() {
                     1. Introduction
                   </h3>
                   <p className="privacy-section-text">
-                    By accessing or using Marakbi's website or mobile services,
+                    By accessing or using Marakbi&apos;s website or mobile services,
                     you agree to these Terms and Conditions. Our goal is to
                     provide a safe, transparent, and enjoyable experience for
-                    everyone using our platform - whether you're booking a trip,
+                    everyone using our platform - whether you&apos;re booking a trip,
                     listing your boat, or just exploring.
                   </p>
                 </div>

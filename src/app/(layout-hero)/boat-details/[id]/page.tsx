@@ -67,7 +67,7 @@ export default function BoatDetailsPage() {
     return (
       <div className="container mx-auto px-4 py-20 text-center font-poppins">
         <h1 className="text-3xl font-bold mb-4">Boat not found</h1>
-        <p className="text-gray-600">The boat you're looking for doesn't exist.</p>
+        <p className="text-gray-600">The boat you&apos;re looking for doesn&apos;t exist.</p>
       </div>
     );
   }
@@ -589,7 +589,7 @@ export default function BoatDetailsPage() {
                   className="mt-1"
                 />
                 <p className="text-gray-500 text-base font-normal font-poppins leading-6">
-                  You won't be charged yet. The host will review your request.
+                  You won&apos;t be charged yet. The host will review your request.
                 </p>
               </div>
             </div>

@@ -5,17 +5,17 @@ const WhyUs = () => {
   const features = [
     {
       title: "Unmatched Local Expertise",
-      description: "We aren't just a rental service; we are a network of local professionals who live and breathe Egypt's waters. Our captains know the hidden gems and secret spots that will make your trip unforgettable.",
+      description: "We aren&apos;t just a rental service; we are a network of local professionals who live and breathe Egypt&apos;s waters. Our captains know the hidden gems and secret spots that will make your trip unforgettable.",
       icon: "🎯"
     },
     {
       title: "Your Safety, Our Priority",
-      description: "Safety is paramount in everything we do. Our vessels undergo rigorous maintenance and our captains are certified professionals with years of experience navigating Egypt's waters.",
+      description: "Safety is paramount in everything we do. Our vessels undergo rigorous maintenance and our captains are certified professionals with years of experience navigating Egypt&apos;s waters.",
       icon: "🛡️"
     },
     {
-      title: "The Full Scope of Egypt's Waters",
-      description: "From the majestic Nile River to the crystal-clear Red Sea, we offer access to Egypt's most spectacular aquatic destinations and hidden coastal treasures.",
+      title: "The Full Scope of Egypt&apos;s Waters",
+      description: "From the majestic Nile River to the crystal-clear Red Sea, we offer access to Egypt&apos;s most spectacular aquatic destinations and hidden coastal treasures.",
       icon: "🌊"
     },
     {
