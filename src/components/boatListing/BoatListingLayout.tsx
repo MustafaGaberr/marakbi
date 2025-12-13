@@ -12,8 +12,21 @@ export default function BoatListingLayout() {
   const searchParams = useSearchParams();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [boats, setBoats] = useState<Boat[]>([]);
+  const [allBoats, setAllBoats] = useState<Boat[]>([]); // Store all boats before filtering
   const [loading, setLoading] = useState(true);
   const [totalBoats, setTotalBoats] = useState(0);
+  
+  // Filter states
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 2500]);
+  const [selectedBoatTypes, setSelectedBoatTypes] = useState<string[]>([]);
+  const [selectedCabins, setSelectedCabins] = useState<string[]>([]);
+  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  
+  // Dropdown states
+  const [priceDropdownOpen, setPriceDropdownOpen] = useState(false);
+  const [boatsDropdownOpen, setBoatsDropdownOpen] = useState(false);
+  const [cabinsDropdownOpen, setCabinsDropdownOpen] = useState(false);
+  const [activitiesDropdownOpen, setActivitiesDropdownOpen] = useState(false);
   
   // جلب الفلاتر من URL
   const cityId = searchParams.get('city_id');
@@ -90,6 +103,81 @@ export default function BoatListingLayout() {
     return false;
   };
 
+  // Extract unique boat types, cabins, and activities from boats
+  const getUniqueBoatTypes = () => {
+    const types = new Set<string>();
+    allBoats.forEach(boat => {
+      boat.categories?.forEach(cat => types.add(cat));
+    });
+    return Array.from(types);
+  };
+
+  // Apply all filters
+  const applyFilters = () => {
+    let filtered = [...allBoats];
+
+    // Price filter
+    filtered = filtered.filter(boat => {
+      const price = boat.price_per_hour || 0;
+      return price >= priceRange[0] && price <= priceRange[1];
+    });
+
+    // Boat types filter
+    if (selectedBoatTypes.length > 0) {
+      filtered = filtered.filter(boat => 
+        boat.categories?.some(cat => selectedBoatTypes.includes(cat))
+      );
+    }
+
+    // Cabins filter
+    if (selectedCabins.length > 0) {
+      filtered = filtered.filter(boat => {
+        const cabinCount = boat.max_seats_stay || 0;
+        return selectedCabins.some(cabin => {
+          if (cabin === '1-2 Cabins') return cabinCount <= 2;
+          if (cabin === '3-4 Cabins') return cabinCount >= 3 && cabinCount <= 4;
+          if (cabin === '5-6 Cabins') return cabinCount >= 5 && cabinCount <= 6;
+          if (cabin === '7+ Cabins') return cabinCount >= 7;
+          return false;
+        });
+      });
+    }
+
+    // Activities filter (using categories as activities)
+    if (selectedActivities.length > 0) {
+      filtered = filtered.filter(boat => 
+        boat.categories?.some(cat => selectedActivities.includes(cat))
+      );
+    }
+
+    setBoats(filtered);
+    setTotalBoats(filtered.length);
+  };
+
+  // Apply filters when they change
+  useEffect(() => {
+    if (allBoats.length > 0) {
+      applyFilters();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [priceRange, selectedBoatTypes, selectedCabins, selectedActivities, allBoats]);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.filter-dropdown')) {
+        setPriceDropdownOpen(false);
+        setBoatsDropdownOpen(false);
+        setCabinsDropdownOpen(false);
+        setActivitiesDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   useEffect(() => {
     const fetchBoats = async () => {
       try {
@@ -108,6 +196,9 @@ export default function BoatListingLayout() {
         
         if (response.success && response.data) {
           let filteredBoats = response.data.boats || [];
+          
+          // Store all boats for filtering
+          setAllBoats(filteredBoats);
           
           // Filter by search query if provided
           if (searchQuery) {
@@ -146,17 +237,166 @@ export default function BoatListingLayout() {
     };
     
     fetchBoats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cityId, categoryId, rentalType, searchQuery]);
 
   return (
     <div className="relative mt-10 sm:mt-12 lg:mt-16 z-0">
       {/* Filter Bar Background + Buttons */}
       <div className="relative z-10 bg-white border-b border-[rgba(0,0,0,0.1)]">
-        <div className="flex gap-3 sm:gap-4 px-4 sm:px-8 lg:px-16 py-3 overflow-x-auto">
-          <FilterButton onClick={() => {}} label="Price" />
-          <FilterButton onClick={() => {}} label="Boats" />
-          <FilterButton onClick={() => {}} label="Cabins" />
-          <FilterButton onClick={() => {}} label="Activities" />
+        <div className="flex gap-3 sm:gap-4 px-4 sm:px-8 lg:px-16 py-3 overflow-x-auto relative">
+          {/* Price Filter */}
+          <div className="relative filter-dropdown">
+            <FilterButton 
+              onClick={() => {
+                setPriceDropdownOpen(!priceDropdownOpen);
+                setBoatsDropdownOpen(false);
+                setCabinsDropdownOpen(false);
+                setActivitiesDropdownOpen(false);
+              }} 
+              label={`Price${priceRange[0] > 0 || priceRange[1] < 2500 ? `: ${priceRange[0]}-${priceRange[1]}` : ''}`}
+            />
+            {priceDropdownOpen && (
+              <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-50">
+                <div className="space-y-4">
+                  <div className="flex justify-between text-sm">
+                    <span>${priceRange[0]}</span>
+                    <span>${priceRange[1]}</span>
+                  </div>
+                  <div className="space-y-2">
+                    <input
+                      type="range"
+                      min="0"
+                      max="2500"
+                      step="50"
+                      value={priceRange[0]}
+                      onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+                      className="w-full"
+                    />
+                    <input
+                      type="range"
+                      min="0"
+                      max="2500"
+                      step="50"
+                      value={priceRange[1]}
+                      onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Boats Filter */}
+          <div className="relative filter-dropdown">
+            <FilterButton 
+              onClick={() => {
+                setBoatsDropdownOpen(!boatsDropdownOpen);
+                setPriceDropdownOpen(false);
+                setCabinsDropdownOpen(false);
+                setActivitiesDropdownOpen(false);
+              }} 
+              label={`Boats${selectedBoatTypes.length > 0 ? ` (${selectedBoatTypes.length})` : ''}`}
+            />
+            {boatsDropdownOpen && (
+              <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-50 max-h-80 overflow-y-auto">
+                <div className="space-y-2">
+                  {getUniqueBoatTypes().map(type => (
+                    <label key={type} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedBoatTypes.includes(type)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedBoatTypes([...selectedBoatTypes, type]);
+                          } else {
+                            setSelectedBoatTypes(selectedBoatTypes.filter(t => t !== type));
+                          }
+                        }}
+                        className="w-4 h-4"
+                      />
+                      <span className="text-sm">{type}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Cabins Filter */}
+          <div className="relative filter-dropdown">
+            <FilterButton 
+              onClick={() => {
+                setCabinsDropdownOpen(!cabinsDropdownOpen);
+                setPriceDropdownOpen(false);
+                setBoatsDropdownOpen(false);
+                setActivitiesDropdownOpen(false);
+              }} 
+              label={`Cabins${selectedCabins.length > 0 ? ` (${selectedCabins.length})` : ''}`}
+            />
+            {cabinsDropdownOpen && (
+              <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-50">
+                <div className="space-y-2">
+                  {['1-2 Cabins', '3-4 Cabins', '5-6 Cabins', '7+ Cabins'].map(cabin => (
+                    <label key={cabin} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedCabins.includes(cabin)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedCabins([...selectedCabins, cabin]);
+                          } else {
+                            setSelectedCabins(selectedCabins.filter(c => c !== cabin));
+                          }
+                        }}
+                        className="w-4 h-4"
+                      />
+                      <span className="text-sm">{cabin}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Activities Filter */}
+          <div className="relative filter-dropdown">
+            <FilterButton 
+              onClick={() => {
+                setActivitiesDropdownOpen(!activitiesDropdownOpen);
+                setPriceDropdownOpen(false);
+                setBoatsDropdownOpen(false);
+                setCabinsDropdownOpen(false);
+              }} 
+              label={`Activities${selectedActivities.length > 0 ? ` (${selectedActivities.length})` : ''}`}
+            />
+            {activitiesDropdownOpen && (
+              <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-50 max-h-80 overflow-y-auto">
+                <div className="space-y-2">
+                  {getUniqueBoatTypes().map(activity => (
+                    <label key={activity} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedActivities.includes(activity)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedActivities([...selectedActivities, activity]);
+                          } else {
+                            setSelectedActivities(selectedActivities.filter(a => a !== activity));
+                          }
+                        }}
+                        className="w-4 h-4"
+                      />
+                      <span className="text-sm">{activity}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* More Filters */}
           <FilterButton
             icon={MdOutlineTune}
             onClick={() => setIsFiltersOpen(true)}
@@ -169,6 +409,15 @@ export default function BoatListingLayout() {
       <FiltersPanel
         isOpen={isFiltersOpen}
         onClose={() => setIsFiltersOpen(false)}
+        priceRange={priceRange}
+        setPriceRange={setPriceRange}
+        selectedBoatTypes={selectedBoatTypes}
+        setSelectedBoatTypes={setSelectedBoatTypes}
+        selectedCabins={selectedCabins}
+        setSelectedCabins={setSelectedCabins}
+        selectedActivities={selectedActivities}
+        setSelectedActivities={setSelectedActivities}
+        boats={allBoats}
       />
 
       {/* Heading */}

@@ -1,43 +1,69 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { Boat } from "@/lib/api";
 
 interface FiltersPanelProps {
   isOpen: boolean;
   onClose: () => void;
+  priceRange: [number, number];
+  setPriceRange: (range: [number, number]) => void;
+  selectedBoatTypes: string[];
+  setSelectedBoatTypes: (types: string[] | ((prev: string[]) => string[])) => void;
+  selectedCabins: string[];
+  setSelectedCabins: (cabins: string[] | ((prev: string[]) => string[])) => void;
+  selectedActivities: string[];
+  setSelectedActivities: (activities: string[] | ((prev: string[]) => string[])) => void;
+  boats: Boat[];
 }
 
-export default function FiltersPanel({ isOpen, onClose }: FiltersPanelProps) {
-  const [priceRange, setPriceRange] = useState([0, 1000]);
-  const [selectedBoatTypes, setSelectedBoatTypes] = useState<string[]>([]);
-  const [selectedCabins, setSelectedCabins] = useState<string[]>([]);
-  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+export default function FiltersPanel({ 
+  isOpen, 
+  onClose,
+  priceRange,
+  setPriceRange,
+  selectedBoatTypes,
+  setSelectedBoatTypes,
+  selectedCabins,
+  setSelectedCabins,
+  selectedActivities,
+  setSelectedActivities,
+  boats
+}: FiltersPanelProps) {
 
-  const boatTypes = [
-    { name: "Dahabiya", count: 45 },
-    { name: "Kombine", count: 32 },
-    { name: "Luxury Yacht", count: 28 },
-    { name: "Cruise Ship", count: 18 },
-    { name: "Sailboat", count: 25 },
-    { name: "Catamaran", count: 15 },
-  ];
+  // Get unique boat types from actual boats data
+  const getBoatTypes = () => {
+    const typeCounts = new Map<string, number>();
+    boats.forEach(boat => {
+      boat.categories?.forEach(cat => {
+        typeCounts.set(cat, (typeCounts.get(cat) || 0) + 1);
+      });
+    });
+    return Array.from(typeCounts.entries()).map(([name, count]) => ({ name, count }));
+  };
 
-  const cabins = [
-    { name: "1-2 Cabins", count: 35 },
-    { name: "3-4 Cabins", count: 58 },
-    { name: "5-6 Cabins", count: 42 },
-    { name: "7+ Cabins", count: 15 },
-  ];
+  const boatTypes = getBoatTypes();
 
-  const activities = [
-    { name: "Fishing", count: 67 },
-    { name: "Scuba Diving", count: 89 },
-    { name: "Snorkeling", count: 102 },
-    { name: "Water Skiing", count: 45 },
-    { name: "Sunset Cruise", count: 78 },
-    { name: "Party Boat", count: 34 },
-  ];
+  // Get cabin counts from actual boats data
+  const getCabins = () => {
+    const cabinCounts = new Map<string, number>();
+    boats.forEach(boat => {
+      const cabins = boat.max_seats_stay || 0;
+      let cabinRange = '';
+      if (cabins <= 2) cabinRange = '1-2 Cabins';
+      else if (cabins <= 4) cabinRange = '3-4 Cabins';
+      else if (cabins <= 6) cabinRange = '5-6 Cabins';
+      else cabinRange = '7+ Cabins';
+      cabinCounts.set(cabinRange, (cabinCounts.get(cabinRange) || 0) + 1);
+    });
+    return Array.from(cabinCounts.entries()).map(([name, count]) => ({ name, count }));
+  };
+
+  const cabins = getCabins();
+
+  // Use boat types as activities (categories)
+  const activities = boatTypes;
 
   const toggleBoatType = (name: string) => {
     setSelectedBoatTypes((prev) =>
@@ -58,27 +84,28 @@ export default function FiltersPanel({ isOpen, onClose }: FiltersPanelProps) {
   };
 
   const handleClearAll = () => {
-    setPriceRange([0, 1000]);
+    setPriceRange([0, 2500]);
     setSelectedBoatTypes([]);
     setSelectedCabins([]);
     setSelectedActivities([]);
   };
 
   const handleApplyFilters = () => {
-    // Apply filters logic here
-    console.log("Applying filters:", {
-      priceRange,
-      selectedBoatTypes,
-      selectedCabins,
-      selectedActivities,
-    });
+    // Filters are already applied via useEffect in parent component
     onClose();
   };
 
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
 
-  return (
-    <div className="fixed inset-0 z-[99999] pointer-events-none">
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
+
+  const panelContent = (
+    <div className="fixed inset-0 z-[99999] pointer-events-none" style={{ zIndex: 99999 }}>
       {/* Overlay */}
       <div
         className="fixed inset-0 bg-black/50 pointer-events-auto"
@@ -157,16 +184,17 @@ export default function FiltersPanel({ isOpen, onClose }: FiltersPanelProps) {
             <div className="relative h-1 bg-[#030213] rounded-full">
               <div
                 className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border border-[#030213] rounded-full shadow-md cursor-pointer z-10"
-                style={{ left: `calc(${(priceRange[0] / 1000) * 100}% - 8px)` }}
+                style={{ left: `calc(${(priceRange[0] / 2500) * 100}% - 8px)` }}
               />
               <div
                 className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border border-[#030213] rounded-full shadow-md cursor-pointer z-10"
-                style={{ left: `calc(${(priceRange[1] / 1000) * 100}% - 8px)` }}
+                style={{ left: `calc(${(priceRange[1] / 2500) * 100}% - 8px)` }}
               />
               <input
                 type="range"
                 min="0"
-                max="1000"
+                max="2500"
+                step="50"
                 value={priceRange[0]}
                 onChange={(e) =>
                   setPriceRange([
@@ -179,7 +207,8 @@ export default function FiltersPanel({ isOpen, onClose }: FiltersPanelProps) {
               <input
                 type="range"
                 min="0"
-                max="1000"
+                max="2500"
+                step="50"
                 value={priceRange[1]}
                 onChange={(e) =>
                   setPriceRange([
@@ -193,7 +222,7 @@ export default function FiltersPanel({ isOpen, onClose }: FiltersPanelProps) {
 
             <div className="flex items-center justify-between text-xs font-poppins font-normal text-[#717182]">
               <span>$0</span>
-              <span>$1000+</span>
+              <span>$2500+</span>
             </div>
           </div>
 
@@ -433,5 +462,7 @@ export default function FiltersPanel({ isOpen, onClose }: FiltersPanelProps) {
       </div>
     </div>
   );
+
+  return createPortal(panelContent, document.body);
 }
 
