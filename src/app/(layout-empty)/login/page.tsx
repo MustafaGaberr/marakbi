@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { authApi, storage } from '@/lib/api';
 
@@ -11,6 +11,20 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // Load saved credentials on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
+      if (savedRememberMe) {
+        const savedUsername = localStorage.getItem('savedUsername') || '';
+        const savedPassword = localStorage.getItem('savedPassword') || '';
+        setUsername(savedUsername);
+        setPassword(savedPassword);
+        setRememberMe(true);
+      }
+    }
+  }, []);
 
   const handleLogin = async () => {
     setError('');
@@ -57,18 +71,32 @@ export default function LoginPage() {
           role: 'user'
         });
 
+        // Save credentials if remember me is checked
+        if (rememberMe) {
+          localStorage.setItem('rememberMe', 'true');
+          localStorage.setItem('savedUsername', username);
+          localStorage.setItem('savedPassword', password);
+        } else {
+          localStorage.removeItem('rememberMe');
+          localStorage.removeItem('savedUsername');
+          localStorage.removeItem('savedPassword');
+        }
+
         // Also set cookie for middleware
         document.cookie = `access_token=${response.data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
         
         // Redirect to home page
         router.push('/');
       } else {
-        setError(response.error || 'Login failed. Please try again.');
+        // Show specific error message from API
+        const errorMsg = response.error || 'Login failed. Please check your username and password.';
+        setError(errorMsg);
       }
       
     } catch (err: unknown) {
       console.error('Login error:', err);
-      setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
+      // Don't show technical error messages to user
+      setError('Login failed. Please check your username and password.');
     } finally {
       setLoading(false);
     }
@@ -117,7 +145,13 @@ export default function LoginPage() {
           </div>
 
           {/* Form */}
-          <form noValidate>
+          <form 
+            noValidate
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin();
+            }}
+          >
             {/* Username Field */}
             <div className="mb-8">
               <label className="block text-gray-600 text-sm font-semibold mb-2 capitalize">
@@ -155,11 +189,25 @@ export default function LoginPage() {
               <label className="flex items-center gap-2 cursor-pointer">
                 <div
                   onClick={() => setRememberMe(!rememberMe)}
-                  className={`w-5 h-5 rounded-full border-2 border-gray-500 cursor-pointer flex items-center justify-center ${
-                    rememberMe ? 'bg-gray-500' : ''
+                  className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 cursor-pointer ${
+                    rememberMe 
+                      ? 'bg-[#093b77] border-[#093b77]' 
+                      : 'bg-white border-gray-400 hover:border-gray-500'
                   }`}
                 >
-                  {rememberMe && <div className="w-2 h-2 rounded-full bg-white" />}
+                  {rememberMe && (
+                    <svg 
+                      className="w-3 h-3 text-white" 
+                      fill="none" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth="3" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  )}
                 </div>
                 <span className="text-gray-500 capitalize">
                   Remember me
@@ -183,8 +231,7 @@ export default function LoginPage() {
 
             {/* Login Button */}
             <button 
-              type="button"
-              onClick={handleLogin}
+              type="submit"
               disabled={loading}
               className="auth-submit-button"
             >

@@ -421,13 +421,26 @@ async function apiRequest<T>(
       // Handle different error types
       if (response.status === 401) {
         // Token expired or invalid
-        storage.clearAll();
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+        // Don't redirect if we're on login/signup pages
+        const isAuthPage = typeof window !== 'undefined' && 
+          (window.location.pathname === '/login' || 
+           window.location.pathname === '/signup' ||
+           endpoint.includes('/auth/login') ||
+           endpoint.includes('/auth/register'));
+        
+        if (!isAuthPage) {
+          storage.clearAll();
+          if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+          }
         }
+        
+        // Extract error message from response
+        const errorMessage = data?.message || data?.error || 'Invalid credentials. Please check your username and password.';
+        
         return {
           success: false,
-          error: 'Session expired. Please login again.'
+          error: errorMessage
         };
       }
 

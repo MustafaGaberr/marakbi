@@ -312,12 +312,19 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
       document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       document.cookie = 'refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       
+      // Clear remember me data
+      localStorage.removeItem('rememberMe');
+      localStorage.removeItem('savedUsername');
+      localStorage.removeItem('savedPassword');
+      
       setUser(null);
-      router.push('/');
+      
+      // Refresh the page to update all components
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
-      setIsLoggingOut(false);
+      // Still refresh even if there's an error
+      window.location.href = '/';
     }
   };
 

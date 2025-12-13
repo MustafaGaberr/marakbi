@@ -125,7 +125,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="#" className=" hover:text-orange-300 transition-colors font-poppins">
+                <Link href="boat-listing" className=" hover:text-orange-300 transition-colors font-poppins">
                   Our Services
                 </Link>
               </li>
@@ -135,7 +135,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="#" className=" hover:text-orange-300 transition-colors font-poppins">
+                <Link href="contact" className=" hover:text-orange-300 transition-colors font-poppins">
                   Contact Us
                 </Link>
               </li>
