@@ -132,6 +132,8 @@ export interface TripBooking {
   boat_id: number;
   start_date: string;
   guest_count: number;
+  payment_method: 'card' | 'cash';
+  platform: 'web' | 'mobile';
 }
 
 export interface BookingResponse {
@@ -217,6 +219,8 @@ export interface SharingVoyage {
 
 export interface VoyageJoinData {
   guest_count: number;
+  payment_method: 'card' | 'cash';
+  platform: 'web' | 'mobile';
 }
 
 // Review Types
@@ -268,6 +272,7 @@ export interface OrderData {
   rental_type: 'daily' | 'hourly';
   guest_count: number;
   payment_method: 'card' | 'cash';
+  platform: 'web' | 'mobile';
   voyage_type: 'Private' | 'Sharing' | 'Travel' | 'Stay' | 'Fishing' | 'Occasion' | 'Water_activities';
 }
 
@@ -295,7 +300,7 @@ export interface CreateOrderResponse {
     start_date: string;
     status: string;
     users_in_voyage: number[];
-  voyage_type: string;
+    voyage_type: string;
   };
   voyage_id: number;
 }

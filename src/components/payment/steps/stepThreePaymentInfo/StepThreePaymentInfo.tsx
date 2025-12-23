@@ -26,7 +26,7 @@ export default function StepThreePaymentInfo() {
 
   const handleConfirmPayment = async () => {
     if (!bookingData) return;
-    
+
     setError("");
     setProcessing(true);
 
@@ -39,6 +39,7 @@ export default function StepThreePaymentInfo() {
         rental_type: bookingData.rental_type,
         guest_count: bookingData.guest_count,
         payment_method: paymentMethod,
+        platform: 'web' as const, // Platform identifier for web application
         voyage_type: 'Private' as const // TODO: يمكن جعلها ديناميكية
       };
 
@@ -92,14 +93,12 @@ export default function StepThreePaymentInfo() {
       <div className="space-y-4 mb-6">
         <div
           onClick={() => setPaymentMethod('card')}
-          className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-            paymentMethod === 'card' ? 'border-sky-900 bg-sky-50' : 'border-gray-200 hover:border-gray-300'
-          }`}
+          className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${paymentMethod === 'card' ? 'border-sky-900 bg-sky-50' : 'border-gray-200 hover:border-gray-300'
+            }`}
         >
           <div className="flex items-center gap-3">
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-              paymentMethod === 'card' ? 'border-sky-900 bg-sky-900' : 'border-gray-300'
-            }`}>
+            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'card' ? 'border-sky-900 bg-sky-900' : 'border-gray-300'
+              }`}>
               {paymentMethod === 'card' && <div className="w-2.5 h-2.5 bg-white rounded-full" />}
             </div>
             <div>
@@ -111,14 +110,12 @@ export default function StepThreePaymentInfo() {
 
         <div
           onClick={() => setPaymentMethod('cash')}
-          className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-            paymentMethod === 'cash' ? 'border-sky-900 bg-sky-50' : 'border-gray-200 hover:border-gray-300'
-          }`}
+          className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${paymentMethod === 'cash' ? 'border-sky-900 bg-sky-50' : 'border-gray-200 hover:border-gray-300'
+            }`}
         >
           <div className="flex items-center gap-3">
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-              paymentMethod === 'cash' ? 'border-sky-900 bg-sky-900' : 'border-gray-300'
-            }`}>
+            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'cash' ? 'border-sky-900 bg-sky-900' : 'border-gray-300'
+              }`}>
               {paymentMethod === 'cash' && <div className="w-2.5 h-2.5 bg-white rounded-full" />}
             </div>
             <div>
