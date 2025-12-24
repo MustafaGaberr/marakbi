@@ -7,9 +7,9 @@ interface DiagnosticResult {
   success: boolean;
   error?: string;
   errorType?: string;
-  diagnostics?: { status: string; message: string; details: any };
+  diagnostics?: { status: string; message: string; details: Record<string, unknown> };
   status?: number;
-  data?: { status: string; message: string; details: any };
+  data?: { status: string; message: string; details: Record<string, unknown> };
 }
 
 export default function DiagnosticReport() {
@@ -60,23 +60,23 @@ export default function DiagnosticReport() {
     }
 
     const recommendations = [];
-    
+
     if (result.error?.includes('Failed to fetch')) {
       recommendations.push('🔧 Check if backend server is running on http://127.0.0.1:5000');
       recommendations.push('🔧 Verify the backend is accessible by visiting http://127.0.0.1:5000/client/home in browser');
     }
-    
+
     if (result.error?.includes('CORS')) {
       recommendations.push('🔧 Add CORS middleware to your Python Flask backend');
       recommendations.push('🔧 Install flask-cors: pip install flask-cors');
       recommendations.push('🔧 Add CORS configuration to your Flask app');
     }
-    
+
     if (result.diagnostics?.details?.isHttps && result.diagnostics?.details?.baseUrl?.startsWith('http:')) {
       recommendations.push('🔧 Mixed content error: HTTPS page trying to fetch HTTP resource');
       recommendations.push('🔧 Solution: Change BASE_URL to HTTPS or run frontend on HTTP');
     }
-    
+
     if (!result.diagnostics?.details?.isLocalhost) {
       recommendations.push('🔧 Consider using localhost instead of 127.0.0.1 for better compatibility');
     }
@@ -191,7 +191,7 @@ export default function DiagnosticReport() {
                 <div className="mt-2">app = Flask(__name__)</div>
                 <div>CORS(app)  # Enable CORS for all routes</div>
                 <div className="mt-2"># Or configure specific origins:</div>
-                <div>CORS(app, origins=['http://localhost:3000', 'http://127.0.0.1:3000'])</div>
+                <div>CORS(app, origins=[&apos;http://localhost:3000&apos;, &apos;http://127.0.0.1:3000&apos;])</div>
               </div>
             </div>
           )}

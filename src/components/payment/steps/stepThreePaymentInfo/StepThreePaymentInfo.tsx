@@ -11,11 +11,20 @@ export default function StepThreePaymentInfo() {
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash'>('card');
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
-  const [bookingData, setBookingData] = useState<any>(null);
+  const [bookingData, setBookingData] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     // تحميل بيانات الحجز من localStorage
-    const savedBooking = localStorage.getItem('booking_data');
+    // Check for pending booking data first (from login redirect)
+    let savedBooking = localStorage.getItem('pending_booking_data');
+    if (savedBooking) {
+      // Move pending booking to active booking
+      localStorage.setItem('booking_data', savedBooking);
+      localStorage.removeItem('pending_booking_data');
+    } else {
+      savedBooking = localStorage.getItem('booking_data');
+    }
+
     if (savedBooking) {
       setBookingData(JSON.parse(savedBooking));
     } else {
@@ -83,10 +92,40 @@ export default function StepThreePaymentInfo() {
         <h3 className="font-semibold mb-2">Booking Summary</h3>
         <p className="text-sm text-gray-600">Boat: {bookingData.boat_name}</p>
         <p className="text-sm text-gray-600">Guests: {bookingData.guest_count}</p>
-        <p className="text-sm text-gray-600">Rental Type: {bookingData.rental_type}</p>
-        <p className="text-sm font-semibold mt-2">
-          Price: {bookingData.rental_type === 'hourly' ? bookingData.price_per_hour : bookingData.price_per_day} EGP
+        <p className="text-sm text-gray-600">
+          Rental Type: {bookingData.rental_type === 'hourly' ? 'Per Hour' : 'Per Day'}
         </p>
+        {bookingData.hours && (
+          <p className="text-sm text-gray-600">
+            Duration: {bookingData.hours} hour{bookingData.hours > 1 ? 's' : ''}
+          </p>
+        )}
+        {bookingData.days && (
+          <p className="text-sm text-gray-600">
+            Duration: {bookingData.days} day{bookingData.days > 1 ? 's' : ''}
+          </p>
+        )}
+
+        <div className="mt-3 pt-3 border-t border-gray-300 space-y-1">
+          {bookingData.base_price && (
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Base Price:</span>
+              <span className="font-medium">{bookingData.base_price.toFixed(0)} EGP</span>
+            </div>
+          )}
+          {bookingData.service_fee && (
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Service Fee:</span>
+              <span className="font-medium">{bookingData.service_fee.toFixed(0)} EGP</span>
+            </div>
+          )}
+          <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-300">
+            <span>Total:</span>
+            <span className="text-sky-900">
+              {bookingData.total_price?.toFixed(0) || bookingData.base_price?.toFixed(0)} EGP
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Payment Method Selection */}

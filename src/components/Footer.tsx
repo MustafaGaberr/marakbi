@@ -5,15 +5,15 @@ import Image from 'next/image';
 import Logo from './Logo';
 
 const Footer = () => {
-  // Mapping service names to category IDs (based on ServicesDropdown mapping)
+  // Service to Category ID mapping
   const serviceToCategoryMap: Record<string, number> = {
     "Boat Rentals": 1, // Private Boats / Motor Boats → category_id=1
     "Water Sports": 5, // Water Activities → category_id=5
     "Family activities": 5, // Water Activities → category_id=5
-    "Corporate Events": 4, // Occasion → category_id=4
-    "Fishing Trips": 3, // Fishing Boats → category_id=3
-    "Occassions": 4, // Occasion → category_id=4
-    "Occasions": 4, // Occasion → category_id=4
+    "Corporate Events": 6, // Occasion → category_id=6
+    "Fishing Trips": 4, // Fishing Boats → category_id=4
+    "Occassions": 6, // Occasion → category_id=6
+    "Occasions": 6, // Occasion → category_id=6
     "Travel Boat": 3, // Travel Boats → category_id=3
     "Dahabya": 1, // Felucca/Dahabya → category_id=1 (Private Boats)
   };
@@ -28,13 +28,13 @@ const Footer = () => {
               <Logo variant="white" width={64} height={80} />
             </div>
             <p className="text-gray-300 text-sm md:text-base leading-6 md:leading-7 font-poppins">
-              <span>Marakbi is your premier digital gateway to</span><br/>
-              <span>effortless boat rentals across Egypt&apos;s</span><br/>
-              <span>majestic Nile and vibrant Red Sea. We</span><br/>
-              <span>connect you with a diverse fleet, from</span><br/>
-              <span>authentic feluccas to luxury yachts,</span><br/>
-              <span>blending local expertise with cutting-edge</span><br/>
-              <span>technology for your unforgettable aquatic</span><br/>
+              <span>Marakbi is your premier digital gateway to</span><br />
+              <span>effortless boat rentals across Egypt&apos;s</span><br />
+              <span>majestic Nile and vibrant Red Sea. We</span><br />
+              <span>connect you with a diverse fleet, from</span><br />
+              <span>authentic feluccas to luxury yachts,</span><br />
+              <span>blending local expertise with cutting-edge</span><br />
+              <span>technology for your unforgettable aquatic</span><br />
               <span>adventure.</span>
             </p>
           </div>
@@ -44,7 +44,7 @@ const Footer = () => {
             <h4 className="text-lg md:text-xl text-amber-300 font-semibold mb-4 md:mb-6 font-poppins">Marakbi Services</h4>
             <ul className="space-y-2 md:space-y-3 text-sm md:text-base list-disc list-inside">
               <li>
-                <Link 
+                <Link
                   href={`/boat-listing?category_id=${serviceToCategoryMap["Boat Rentals"] || 1}`}
                   className=" hover:text-orange-300 transition-colors font-poppins"
                 >
@@ -52,7 +52,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link 
+                <Link
                   href={`/boat-listing?category_id=${serviceToCategoryMap["Water Sports"] || 5}`}
                   className=" hover:text-orange-300 transition-colors font-poppins"
                 >
@@ -60,7 +60,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link 
+                <Link
                   href={`/boat-listing?category_id=${serviceToCategoryMap["Family activities"] || 5}`}
                   className=" hover:text-orange-300 transition-colors font-poppins"
                 >
@@ -68,31 +68,31 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link 
-                  href={`/boat-listing?category_id=${serviceToCategoryMap["Corporate Events"] || 4}`}
+                <Link
+                  href={`/boat-listing?category_id=${serviceToCategoryMap["Corporate Events"] || 6}`}
                   className=" hover:text-orange-300 transition-colors font-poppins"
                 >
                   Corporate Events
                 </Link>
               </li>
               <li>
-                <Link 
-                  href={`/boat-listing?category_id=${serviceToCategoryMap["Fishing Trips"] || 3}`}
+                <Link
+                  href={`/boat-listing?category_id=${serviceToCategoryMap["Fishing Trips"] || 4}`}
                   className=" hover:text-orange-300 transition-colors font-poppins"
                 >
                   Fishing Trips
                 </Link>
               </li>
               <li>
-                <Link 
-                  href={`/boat-listing?category_id=${serviceToCategoryMap["Occassions"] || 4}`}
+                <Link
+                  href={`/boat-listing?category_id=${serviceToCategoryMap["Occassions"] || 6}`}
                   className=" hover:text-orange-300 transition-colors font-poppins"
                 >
                   Occassions
                 </Link>
               </li>
               <li>
-                <Link 
+                <Link
                   href={`/boat-listing?category_id=${serviceToCategoryMap["Travel Boat"] || 2}`}
                   className=" hover:text-orange-300 transition-colors font-poppins"
                 >
@@ -100,7 +100,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link 
+                <Link
                   href={`/boat-listing?category_id=${serviceToCategoryMap["Dahabya"] || 1}`}
                   className=" hover:text-orange-300 transition-colors font-poppins"
                 >
@@ -170,19 +170,19 @@ const Footer = () => {
             <div className="mt-4 md:mt-6">
               <h5 className="text-base md:text-lg text-amber-300 font-semibold mb-3 md:mb-4 font-poppins">Download App</h5>
               <div className="flex gap-1 md:gap-2">
-                <Link 
-                  href="https://play.google.com/store/apps/details?id=com.marakbi.app" 
-                  target="_blank" 
+                <Link
+                  href="https://play.google.com/store/apps/details?id=com.marakbi.app"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-start hover:scale-105 transition-all duration-200"
                   title="Download on Google Play"
                 >
                   <Image src="/icons/Google Play.svg" alt="Google Play" width={120} height={40} className="w-28 h-10 md:w-32 md:h-12" />
                 </Link>
-                
-                <Link 
-                  href="https://apps.apple.com/app/marakbi/id123456789" 
-                  target="_blank" 
+
+                <Link
+                  href="https://apps.apple.com/app/marakbi/id123456789"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-start hover:scale-105 transition-all duration-200"
                   title="Download on App Store"

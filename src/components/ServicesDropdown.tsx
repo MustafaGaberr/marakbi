@@ -37,11 +37,11 @@ const ServicesDropdown = ({ variant = 'transparent' }: ServicesDropdownProps) =>
   // Mapping service IDs to category IDs
   const serviceToCategoryMap: Record<number, number> = {
     1: 1, // Private Boats / Motor Boats → category_id=1
-    2: 2, // Sharing Trips → category_id=2 (keeping as is, or update if needed)
-    3: 3, // Travel Boats → category_id=3 (keeping as is, or update if needed)
-    4: 3, // Fishing Boats → category_id=3
-    5: 5, // Water Activities → category_id=5 (keeping as is, or update if needed)
-    6: 4, // Occasion → category_id=4
+    2: 2, // Sharing Trips → category_id=2
+    3: 3, // Travel Boats → category_id=3
+    4: 4, // Fishing Boats → category_id=4
+    5: 5, // Water Activities (Kayak) → category_id=5
+    6: 6, // Occasion → category_id=6
   };
 
   const services: Service[] = [
@@ -116,65 +116,65 @@ const ServicesDropdown = ({ variant = 'transparent' }: ServicesDropdownProps) =>
   return (
     <>
       <style>{styles}</style>
-       <div className="relative" ref={dropdownRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-       {/* Trigger Button */}
-       <button
-         className={`flex items-center gap-1 ${textColor} ${hoverColor} transition-colors`}
-       >
-        Our Services
-        <Image
-          src="/icons/arrow_drop_down-1.svg"
-          alt="Dropdown arrow"
-          width={16}
-          height={16}
-          className={`w-6 h-6 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''} filter brightness-0 invert`}
-        />
-      </button>
+      <div className="relative" ref={dropdownRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        {/* Trigger Button */}
+        <button
+          className={`flex items-center gap-1 ${textColor} ${hoverColor} transition-colors`}
+        >
+          Our Services
+          <Image
+            src="/icons/arrow_drop_down-1.svg"
+            alt="Dropdown arrow"
+            width={16}
+            height={16}
+            className={`w-6 h-6 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''} filter brightness-0 invert`}
+          />
+        </button>
 
-      {/* Dropdown Content */}
-      {isOpen && (
-        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-[1100px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
-             style={{
-               animation: 'slideDown 0.3s ease-out'
-             }}>
-          <div className='py-2'>
+        {/* Dropdown Content */}
+        {isOpen && (
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-[1100px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
+            style={{
+              animation: 'slideDown 0.3s ease-out'
+            }}>
+            <div className='py-2'>
 
-            
-            {/* Horizontal Row of Service Cards */}
-            <div className="flex flex-nowrap gap-2">
-              {services.map((service) => (
-                <div
-                  key={service.id}
-                  className="group cursor-pointer hover:scale-103 transition-all duration-200 bg-gray-50 hover:bg-white rounded-lg p-3 hover:shadow-md flex-shrink-0 w-44"
-                  onClick={() => {
-                    setIsOpen(false);
-                    // Navigate to boat listing page with category filter
-                    const categoryId = serviceToCategoryMap[service.id] || service.id;
-                    router.push(`/boat-listing?category_id=${categoryId}`);
-                  }}
-                >
-                  {/* Service Image */}
-                  <div className="relative w-full h-24 mb-3 rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-shadow duration-200">
-                    <Image
-                      src={service.image}
-                      alt={service.name}
-                      fill
-                      sizes="176px"
-                      className="object-cover group-hover:scale-106 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent group-hover:from-black/20 transition-colors duration-200"></div>
+
+              {/* Horizontal Row of Service Cards */}
+              <div className="flex flex-nowrap gap-2">
+                {services.map((service) => (
+                  <div
+                    key={service.id}
+                    className="group cursor-pointer hover:scale-103 transition-all duration-200 bg-gray-50 hover:bg-white rounded-lg p-3 hover:shadow-md flex-shrink-0 w-44"
+                    onClick={() => {
+                      setIsOpen(false);
+                      // Navigate to boat listing page with category filter
+                      const categoryId = serviceToCategoryMap[service.id] || service.id;
+                      router.push(`/boat-listing?category_id=${categoryId}`);
+                    }}
+                  >
+                    {/* Service Image */}
+                    <div className="relative w-full h-24 mb-3 rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-shadow duration-200">
+                      <Image
+                        src={service.image}
+                        alt={service.name}
+                        fill
+                        sizes="176px"
+                        className="object-cover group-hover:scale-106 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent group-hover:from-black/20 transition-colors duration-200"></div>
+                    </div>
+
+                    {/* Service Name */}
+                    <h3 className="text-gray-800 text-base font-semibold font-poppins text-center group-hover:text-blue-600 transition-colors duration-200">
+                      {service.name}
+                    </h3>
                   </div>
-                  
-                  {/* Service Name */}
-                  <h3 className="text-gray-800 text-base font-semibold font-poppins text-center group-hover:text-blue-600 transition-colors duration-200">
-                    {service.name}
-                  </h3>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
       </div>
     </>
   );

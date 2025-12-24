@@ -65,7 +65,7 @@ export default function LoginPage() {
           access_token: response.data.access_token,
           refresh_token: response.data.refresh_token
         });
-        
+
         storage.setUser({
           id: response.data.user_id,
           username: response.data.username,
@@ -85,15 +85,22 @@ export default function LoginPage() {
 
         // Also set cookie for middleware
         document.cookie = `access_token=${response.data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
-        
-        // Redirect to home page
-        router.push('/');
+
+        // Check if there's an intended URL to redirect to (for booking flow)
+        const intendedUrl = localStorage.getItem('intended_url');
+        if (intendedUrl) {
+          localStorage.removeItem('intended_url'); // Clean up
+          router.push(intendedUrl);
+        } else {
+          // Redirect to home page
+          router.push('/');
+        }
       } else {
         // Show specific error message from API
         const errorMsg = response.error || 'Login failed. Please check your username and password.';
         setError(errorMsg);
       }
-      
+
     } catch (err: unknown) {
       console.error('Login error:', err);
       // Don't show technical error messages to user
@@ -107,28 +114,28 @@ export default function LoginPage() {
     <div className="auth-page-container">
       {/* Left Side - Image */}
       <div className="auth-left-side">
-        <Image 
+        <Image
           className="auth-left-image"
-          src="/images/Rectangle 3463861.png" 
+          src="/images/Rectangle 3463861.png"
           alt="Sailboat"
           width={500}
           height={700}
         />
-        
+
         {/* Circle Background */}
         <div className="auth-logo-container">
-          <Image 
-            src="/icons/Ellipse 46.svg" 
+          <Image
+            src="/icons/Ellipse 46.svg"
             alt="Circle Background"
             width={200}
             height={200}
             className="auth-circle-bg"
           />
-          
+
           {/* Logo */}
           <div className="auth-logo">
-            <Image 
-              src="/logo.png" 
+            <Image
+              src="/logo.png"
               alt="Marakbi Logo"
               width={200}
               height={110}
@@ -151,7 +158,7 @@ export default function LoginPage() {
           </div>
 
           {/* Form */}
-          <form 
+          <form
             noValidate
             onSubmit={(e) => {
               e.preventDefault();
@@ -163,7 +170,7 @@ export default function LoginPage() {
               <label className="block text-gray-600 text-sm font-semibold mb-2 capitalize">
                 Username
               </label>
-              <input 
+              <input
                 type="text"
                 placeholder="Username"
                 value={username}
@@ -179,7 +186,7 @@ export default function LoginPage() {
               <label className="block text-gray-600 text-sm font-semibold mb-2 capitalize">
                 Password
               </label>
-              <input 
+              <input
                 type="password"
                 placeholder="**************"
                 value={password}
@@ -195,20 +202,19 @@ export default function LoginPage() {
               <label className="flex items-center gap-2 cursor-pointer">
                 <div
                   onClick={() => setRememberMe(!rememberMe)}
-                  className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                    rememberMe 
-                      ? 'bg-[#093b77] border-[#093b77]' 
+                  className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 cursor-pointer ${rememberMe
+                      ? 'bg-[#093b77] border-[#093b77]'
                       : 'bg-white border-gray-400 hover:border-gray-500'
-                  }`}
+                    }`}
                 >
                   {rememberMe && (
-                    <svg 
-                      className="w-3 h-3 text-white" 
-                      fill="none" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth="3" 
-                      viewBox="0 0 24 24" 
+                    <svg
+                      className="w-3 h-3 text-white"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="3"
+                      viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
                       <path d="M5 13l4 4L19 7"></path>
@@ -219,8 +225,8 @@ export default function LoginPage() {
                   Remember me
                 </span>
               </label>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => router.push('/forgot-password')}
                 className="auth-link-button capitalize"
               >
@@ -236,7 +242,7 @@ export default function LoginPage() {
             )}
 
             {/* Login Button */}
-            <button 
+            <button
               type="submit"
               disabled={loading}
               className="auth-submit-button"
@@ -258,6 +264,6 @@ export default function LoginPage() {
           </form>
         </div>
       </div>
-   </div>
+    </div>
   );
 }

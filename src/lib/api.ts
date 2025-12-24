@@ -61,6 +61,16 @@ export interface Boat {
   user_id: number;
   owner_username?: string;
   created_at: string;
+  trips?: Array<{
+    id: number;
+    city_id: number;
+    city_name: string;
+    name: string;
+    description: string;
+    trip_type: string;
+    voyage_hours: number;
+    total_price: number;
+  }>;
 }
 
 export interface BoatOwner {
@@ -162,13 +172,13 @@ export interface BookingResponse {
 
 // Home Data Types
 export interface HomeData {
-  new_joiners: any[];
+  new_joiners: Boat[];
   fishing_trips: Trip[];
   water_games: Trip[];
   nile_cruises: Trip[];
   occasions: Trip[];
   trending_voyages: Trip[];
-  upcoming_shares: any[];
+  upcoming_shares: SharingVoyage[];
   summary: {
     total_new_joiners: number;
     total_fishing_trips: number;
@@ -262,7 +272,7 @@ export interface Order {
     total_reviews: number;
     created_at: string;
   };
-  profile?: any;
+  profile?: Record<string, unknown>;
 }
 
 export interface OrderData {
@@ -380,7 +390,7 @@ async function apiRequest<T>(
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
   const url = `${BASE_URL}${endpoint}`;
-  
+
   // Add authorization header if token exists
   const token = storage.getToken();
   const headers: Record<string, string> = {
@@ -396,7 +406,7 @@ async function apiRequest<T>(
     if (ENABLE_API_LOGS) {
       console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`);
     }
-    
+
     const response = await fetch(url, {
       ...options,
       headers,
@@ -427,22 +437,22 @@ async function apiRequest<T>(
       if (response.status === 401) {
         // Token expired or invalid
         // Don't redirect if we're on login/signup pages
-        const isAuthPage = typeof window !== 'undefined' && 
-          (window.location.pathname === '/login' || 
-           window.location.pathname === '/signup' ||
-           endpoint.includes('/auth/login') ||
-           endpoint.includes('/auth/register'));
-        
+        const isAuthPage = typeof window !== 'undefined' &&
+          (window.location.pathname === '/login' ||
+            window.location.pathname === '/signup' ||
+            endpoint.includes('/auth/login') ||
+            endpoint.includes('/auth/register'));
+
         if (!isAuthPage) {
           storage.clearAll();
           if (typeof window !== 'undefined') {
             window.location.href = '/login';
           }
         }
-        
+
         // Extract error message from response
         const errorMessage = data?.message || data?.error || 'Invalid credentials. Please check your username and password.';
-        
+
         return {
           success: false,
           error: errorMessage
@@ -450,22 +460,22 @@ async function apiRequest<T>(
       }
 
       if (response.status === 403) {
-    return {
+        return {
           success: false,
           error: 'You do not have permission to perform this action.'
         };
       }
 
       if (response.status === 404) {
-    return {
+        return {
           success: false,
           error: 'The requested resource was not found.'
         };
       }
 
       if (response.status >= 500) {
-      return {
-        success: false,
+        return {
+          success: false,
           error: 'Server error. Please try again later.'
         };
       }
@@ -478,16 +488,16 @@ async function apiRequest<T>(
 
     // Handle successful responses
     if (data.status === 'success' && data.data) {
-    return {
-      success: true,
+      return {
+        success: true,
         data: data.data
       };
     }
 
     // Handle direct data responses
     if (data) {
-    return {
-      success: true,
+      return {
+        success: true,
         data: data
       };
     }
@@ -499,14 +509,14 @@ async function apiRequest<T>(
 
   } catch (error) {
     console.error('🚨 API Error:', error);
-    
+
     if (error instanceof TypeError && error.message.includes('fetch')) {
       return {
         success: false,
         error: 'Network error. Please check your connection.'
       };
     }
-    
+
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An unexpected error occurred.'
@@ -564,8 +574,8 @@ export const clientApi = {
     return apiRequest<HomeData>('/client/home');
   },
 
-  getHomeSection: async (section: string, page = 1, perPage = 15): Promise<ApiResponse<{ message: string; data: any }>> => {
-    return apiRequest<{ message: string; data: any }>(`/client/home/${section}?page=${page}&per_page=${perPage}`);
+  getHomeSection: async (section: string, page = 1, perPage = 15): Promise<ApiResponse<{ message: string; data: Record<string, unknown> }>> => {
+    return apiRequest<{ message: string; data: Record<string, unknown> }>(`/client/home/${section}?page=${page}&per_page=${perPage}`);
   },
 
   getBoats: async (page = 1, perPage = 10): Promise<ApiResponse<{ boats: Boat[]; page: number; pages: number; per_page: number; total: number }>> => {
@@ -678,32 +688,32 @@ export const voyagesApi = {
 };
 
 // ===== DIAGNOSTIC FUNCTIONS =====
-export async function diagnoseConnection(): Promise<ApiResponse<{ status: string; message: string; details: any }>> {
-  return apiRequest<{ status: string; message: string; details: any }>('/diagnostics/connection');
+export async function diagnoseConnection(): Promise<ApiResponse<{ status: string; message: string; details: Record<string, unknown> }>> {
+  return apiRequest<{ status: string; message: string; details: Record<string, unknown> }>('/diagnostics/connection');
 }
 
-export async function testConnection(): Promise<ApiResponse<{ status: string; message: string; details: any }>> {
-  return apiRequest<{ status: string; message: string; details: any }>('/diagnostics/test');
+export async function testConnection(): Promise<ApiResponse<{ status: string; message: string; details: Record<string, unknown> }>> {
+  return apiRequest<{ status: string; message: string; details: Record<string, unknown> }>('/diagnostics/test');
 }
 
 // ===== UTILITY FUNCTIONS =====
 export function isTokenValid(token: string | null): boolean {
   if (!token) return false;
-  
+
   try {
     const parts = token.split('.');
     if (parts.length !== 3) return false;
-    
+
     const payload = JSON.parse(atob(parts[1]));
     const currentTime = Math.floor(Date.now() / 1000);
-    
+
     // Check if token is expired
     if (payload.exp && payload.exp < currentTime) {
       return false;
     }
-    
+
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

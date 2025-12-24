@@ -9,7 +9,7 @@ import Image from "next/image";
 export default function StepOneBookingInfo() {
   const router = useRouter();
   const { setStep } = useFormStep();
-  const [bookingData, setBookingData] = useState<any>(null);
+  const [bookingData, setBookingData] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     // Load booking data from localStorage
@@ -43,8 +43,8 @@ export default function StepOneBookingInfo() {
       {/* Left side: Booking details */}
       <div className="w-full lg:w-[60%]">
         <h2 className="text-2xl font-bold mb-6">Booking Information</h2>
-        
-        {/* Boat Info */}
+
+        {/* Booking Details */}
         <div className="bg-gray-50 p-6 rounded-lg mb-6">
           <div className="flex gap-4">
             {bookingData.boat_image && (
@@ -57,11 +57,26 @@ export default function StepOneBookingInfo() {
                 />
               </div>
             )}
-            <div>
+            <div className="flex-1">
               <h3 className="text-xl font-semibold mb-2">{bookingData.boat_name}</h3>
-              <p className="text-gray-600">Rental Type: {bookingData.rental_type}</p>
-              <p className="text-gray-600">Guests: {bookingData.guest_count}</p>
-              <p className="text-gray-600">Max Capacity: {bookingData.max_seats}</p>
+              <div className="space-y-1 text-gray-600">
+                <p>Rental Type: {bookingData.rental_type === 'hourly' ? 'Per Hour' : 'Per Day'}</p>
+                {bookingData.hours && (
+                  <p>Duration: {bookingData.hours} hour{bookingData.hours > 1 ? 's' : ''}</p>
+                )}
+                {bookingData.days && (
+                  <p>Duration: {bookingData.days} day{bookingData.days > 1 ? 's' : ''}</p>
+                )}
+                <p>Guests: {bookingData.guest_count} / {bookingData.max_seats}</p>
+                <p className="text-sm">
+                  {new Date(bookingData.start_date).toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -70,13 +85,25 @@ export default function StepOneBookingInfo() {
         <div className="bg-white p-6 rounded-lg border border-gray-200">
           <h3 className="font-semibold mb-4">Price Breakdown</h3>
           <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-gray-600">
-                {bookingData.rental_type === 'hourly' ? 'Per Hour' : 'Per Day'}
-              </span>
-              <span className="font-semibold">
-                {bookingData.rental_type === 'hourly' ? bookingData.price_per_hour : bookingData.price_per_day} EGP
-              </span>
+            {bookingData.base_price && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Base Price</span>
+                <span className="font-semibold">{bookingData.base_price.toFixed(0)} EGP</span>
+              </div>
+            )}
+            {bookingData.service_fee && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Service Fee (10%)</span>
+                <span className="font-semibold">{bookingData.service_fee.toFixed(0)} EGP</span>
+              </div>
+            )}
+            <div className="border-t pt-2 mt-2">
+              <div className="flex justify-between text-lg">
+                <span className="font-bold">Total</span>
+                <span className="font-bold text-sky-900">
+                  {bookingData.total_price?.toFixed(0) || bookingData.base_price?.toFixed(0)} EGP
+                </span>
+              </div>
             </div>
           </div>
         </div>

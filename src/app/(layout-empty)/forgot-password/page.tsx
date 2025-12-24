@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
 
       if (response.success) {
         setSuccess(response.data?.message || 'Password reset code has been sent to your email');
-        
+
         // Navigate to verification page after showing success message
         setTimeout(() => {
           router.push('/verify-code');
@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
       } else {
         setError(response.error || 'Failed to send reset code. Please try again.');
       }
-      
+
     } catch (err) {
       console.error('Password reset error:', err);
       setError('Failed to send reset link. Please try again.');
@@ -63,28 +63,28 @@ export default function ForgotPasswordPage() {
     <div className="auth-page-container">
       {/* Left Side - Image */}
       <div className="auth-left-side">
-        <Image 
+        <Image
           className="auth-left-image"
-          src="/images/Rectangle 3463879.png" 
+          src="/images/Rectangle 3463879.png"
           alt="Boat background"
           width={500}
           height={700}
         />
-        
+
         {/* Circle Background */}
         <div className="auth-logo-container">
-          <Image 
-            src="/icons/Ellipse 46.svg" 
+          <Image
+            src="/icons/Ellipse 46.svg"
             alt="Circle Background"
             width={200}
             height={200}
             className="auth-circle-bg"
           />
-          
+
           {/* Logo */}
           <div className="auth-logo">
-            <Image 
-              src="/logo.png" 
+            <Image
+              src="/logo.png"
               alt="Marakbi Logo"
               width={200}
               height={110}
@@ -112,9 +112,9 @@ export default function ForgotPasswordPage() {
             <h1 className="text-5xl font-bold text-black mb-5 text-left leading-tight font-poppins">
               Forgot your password?
             </h1>
-              <p className="text-base text-black mb-10 leading-relaxed font-poppins">
-                Don't worry, happens to all of us. Enter your email below to recover your password
-              </p>
+            <p className="text-base text-black mb-10 leading-relaxed font-poppins">
+              Don&apos;t worry, happens to all of us. Enter your email below to recover your password
+            </p>
           </div>
 
           {/* Form */}
@@ -123,8 +123,8 @@ export default function ForgotPasswordPage() {
             <div className="mb-8">
               <label className="block text-black text-base mb-3">
                 Email
-      </label>
-              <input 
+              </label>
+              <input
                 type="email"
                 placeholder="Email Address"
                 value={email}
@@ -149,7 +149,7 @@ export default function ForgotPasswordPage() {
             )}
 
             {/* Submit Button */}
-            <button 
+            <button
               type="button"
               onClick={handleSubmit}
               disabled={loading}
@@ -175,8 +175,8 @@ export default function ForgotPasswordPage() {
                 onClick={handleFacebookLogin}
                 className="w-12 h-12 rounded-full border-none cursor-pointer bg-transparent flex items-center justify-center p-2"
               >
-                <Image 
-                  src="/icons/flat-color-icons_fb.svg" 
+                <Image
+                  src="/icons/flat-color-icons_fb.svg"
                   alt="Facebook"
                   width={32}
                   height={32}
@@ -189,8 +189,8 @@ export default function ForgotPasswordPage() {
                 onClick={handleGoogleLogin}
                 className="w-12 h-12 rounded-full border-none cursor-pointer bg-transparent flex items-center justify-center p-2"
               >
-                <Image 
-                  src="/icons/flat-color-icons_google.svg" 
+                <Image
+                  src="/icons/flat-color-icons_google.svg"
                   alt="Google"
                   width={32}
                   height={32}
@@ -203,8 +203,8 @@ export default function ForgotPasswordPage() {
                 onClick={handleAppleLogin}
                 className="w-12 h-12 rounded-full border-none cursor-pointer bg-transparent flex items-center justify-center p-2"
               >
-                <Image 
-                  src="/icons/flat-color-icons_apple.svg" 
+                <Image
+                  src="/icons/flat-color-icons_apple.svg"
                   alt="Apple"
                   width={32}
                   height={32}

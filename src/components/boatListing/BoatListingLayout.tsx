@@ -15,19 +15,19 @@ export default function BoatListingLayout() {
   const [allBoats, setAllBoats] = useState<Boat[]>([]); // Store all boats before filtering
   const [loading, setLoading] = useState(true);
   const [totalBoats, setTotalBoats] = useState(0);
-  
+
   // Filter states
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 2500]);
   const [selectedBoatTypes, setSelectedBoatTypes] = useState<string[]>([]);
   const [selectedCabins, setSelectedCabins] = useState<string[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
-  
+
   // Dropdown states
   const [priceDropdownOpen, setPriceDropdownOpen] = useState(false);
   const [boatsDropdownOpen, setBoatsDropdownOpen] = useState(false);
   const [cabinsDropdownOpen, setCabinsDropdownOpen] = useState(false);
   const [activitiesDropdownOpen, setActivitiesDropdownOpen] = useState(false);
-  
+
   // جلب الفلاتر من URL
   const cityId = searchParams.get('city_id');
   const categoryId = searchParams.get('category_id');
@@ -76,10 +76,10 @@ export default function BoatListingLayout() {
   const matchesWithMapping = (query: string, source: string, mapping: Record<string, string[]>): boolean => {
     const normalizedQuery = normalizeArabic(query);
     const normalizedSource = normalizeArabic(source);
-    
+
     // Direct match
     if (normalizedSource.includes(normalizedQuery)) return true;
-    
+
     // Check Arabic query against English source using mapping
     for (const [arabicName, englishNames] of Object.entries(mapping)) {
       if (normalizeArabic(arabicName).includes(normalizedQuery)) {
@@ -89,7 +89,7 @@ export default function BoatListingLayout() {
         }
       }
     }
-    
+
     // Check English query against Arabic source using mapping
     for (const [arabicName, englishNames] of Object.entries(mapping)) {
       if (englishNames.some(en => normalizedQuery.includes(en.toLowerCase()))) {
@@ -99,7 +99,7 @@ export default function BoatListingLayout() {
         }
       }
     }
-    
+
     return false;
   };
 
@@ -124,7 +124,7 @@ export default function BoatListingLayout() {
 
     // Boat types filter
     if (selectedBoatTypes.length > 0) {
-      filtered = filtered.filter(boat => 
+      filtered = filtered.filter(boat =>
         boat.categories?.some(cat => selectedBoatTypes.includes(cat))
       );
     }
@@ -145,7 +145,7 @@ export default function BoatListingLayout() {
 
     // Activities filter (using categories as activities)
     if (selectedActivities.length > 0) {
-      filtered = filtered.filter(boat => 
+      filtered = filtered.filter(boat =>
         boat.categories?.some(cat => selectedActivities.includes(cat))
       );
     }
@@ -178,28 +178,104 @@ export default function BoatListingLayout() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+
   useEffect(() => {
     const fetchBoats = async () => {
       try {
         setLoading(true);
         let response;
-        
-        // جلب المراكب حسب الفلاتر
-        if (cityId && categoryId) {
-          response = await clientApi.getBoatsByCategoryAndCity(parseInt(categoryId), parseInt(cityId));
+
+        // Category ID to Names mapping (supporting multiple names per category)
+        const categoryIdToNames: Record<number, string[]> = {
+          1: ['Private', 'Motor Boat', 'Private Boats', 'Motor Boats', 'Cozy'], // Private/Motor boats
+          2: ['Sharing', 'Sharing Trips', 'Shared'],
+          3: ['Travel', 'Travel Boats', 'Travel Boat'],
+          4: ['Fishing', 'Fishing Boats', 'Fishing Boat'],
+          5: ['Water Activities', 'Water Activity', 'Water Sports', 'Kayak'],
+          6: ['Occasion', 'Occasions', 'Event', 'Events']
+        };
+
+        // Get the category names from ID if provided
+        const categoryNames = categoryId ? categoryIdToNames[parseInt(categoryId)] : null;
+
+        // Fetch boats - use specific endpoint if available for better performance
+        if (categoryId && cityId) {
+          response = await clientApi.getBoatsByCategoryAndCity(
+            parseInt(categoryId),
+            parseInt(cityId)
+          );
         } else if (categoryId) {
           response = await clientApi.getBoatsByCategory(parseInt(categoryId));
         } else {
-          // Get more boats if searching to have more results to filter
-          response = await clientApi.getBoats(1, searchQuery ? 100 : 20);
+          // Fetch more boats to have better search results
+          response = await clientApi.getBoats(1, 100);
         }
-        
+
         if (response.success && response.data) {
           let filteredBoats = response.data.boats || [];
-          
+
+          // Extract city names from trips array and add to boat object
+          filteredBoats = filteredBoats.map(boat => {
+            // Get unique city names from trips
+            const cityNames = boat.trips?.map((trip: { city_name?: string }) => trip.city_name).filter(Boolean) || [];
+            const uniqueCities = [...new Set(cityNames)];
+
+            return {
+              ...boat,
+              cities: uniqueCities.length > 0 ? uniqueCities : boat.cities || []
+            };
+          });
+
+          // Apply client-side filtering for better search experience
+          // Filter by category names if provided (and not already filtered by API)
+          if (categoryNames && categoryNames.length > 0 && !categoryId) {
+            filteredBoats = filteredBoats.filter(boat =>
+              boat.categories?.some(boatCat =>
+                categoryNames.some(catName =>
+                  boatCat.toLowerCase().includes(catName.toLowerCase()) ||
+                  catName.toLowerCase().includes(boatCat.toLowerCase())
+                )
+              )
+            );
+          }
+
+          // Filter by city if provided (apply even if API endpoint was used, for consistency)
+          if (cityId) {
+            filteredBoats = filteredBoats.filter(boat => {
+              // Check if boat has cities array with the city
+              const hasCityInArray = boat.cities?.some(city =>
+                city.toLowerCase().includes(cityId.toLowerCase()) ||
+                cityId.toLowerCase().includes(city.toLowerCase())
+              );
+
+              // Also check trips for city info
+              const hasCityInTrips = boat.trips?.some((trip: { city_name?: string }) =>
+                trip.city_name?.toLowerCase().includes(cityId.toLowerCase()) ||
+                cityId.toLowerCase().includes(trip.city_name?.toLowerCase() || '')
+              );
+
+              return hasCityInArray || hasCityInTrips;
+            });
+          }
+
+          // Filter by rental type if provided
+          if (rentalType) {
+            if (rentalType.toLowerCase() === 'hourly') {
+              // Show boats with hourly pricing
+              filteredBoats = filteredBoats.filter(boat =>
+                boat.price_per_hour && boat.price_per_hour > 0
+              );
+            } else if (rentalType.toLowerCase() === 'daily') {
+              // Show boats with daily pricing
+              filteredBoats = filteredBoats.filter(boat =>
+                boat.price_per_day && boat.price_per_day > 0
+              );
+            }
+          }
+
           // Store all boats for filtering
           setAllBoats(filteredBoats);
-          
+
           // Filter by search query if provided
           if (searchQuery) {
             const normalizedQuery = normalizeArabic(searchQuery);
@@ -207,25 +283,25 @@ export default function BoatListingLayout() {
               // Search in boat name (normalized)
               const normalizedName = normalizeArabic(boat.name);
               const nameMatch = normalizedName.includes(normalizedQuery);
-              
+
               // Search in categories (normalized with mapping)
               const categoryMatch = boat.categories?.some(cat => {
                 const normalizedCat = normalizeArabic(cat);
-                return normalizedCat.includes(normalizedQuery) || 
-                       matchesWithMapping(searchQuery, cat, categoryNameMapping);
+                return normalizedCat.includes(normalizedQuery) ||
+                  matchesWithMapping(searchQuery, cat, categoryNameMapping);
               });
-              
+
               // Search in cities (normalized with mapping)
               const cityMatch = boat.cities?.some(city => {
                 const normalizedCity = normalizeArabic(city);
-                return normalizedCity.includes(normalizedQuery) || 
-                       matchesWithMapping(searchQuery, city, cityNameMapping);
+                return normalizedCity.includes(normalizedQuery) ||
+                  matchesWithMapping(searchQuery, city, cityNameMapping);
               });
-              
+
               return nameMatch || categoryMatch || cityMatch;
             });
           }
-          
+
           setBoats(filteredBoats);
           setTotalBoats(filteredBoats.length);
         }
@@ -235,7 +311,7 @@ export default function BoatListingLayout() {
         setLoading(false);
       }
     };
-    
+
     fetchBoats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cityId, categoryId, rentalType, searchQuery]);
@@ -247,13 +323,13 @@ export default function BoatListingLayout() {
         <div className="flex gap-3 sm:gap-4 px-4 sm:px-8 lg:px-16 py-3 overflow-x-auto relative">
           {/* Price Filter */}
           <div className="relative filter-dropdown">
-            <FilterButton 
+            <FilterButton
               onClick={() => {
                 setPriceDropdownOpen(!priceDropdownOpen);
                 setBoatsDropdownOpen(false);
                 setCabinsDropdownOpen(false);
                 setActivitiesDropdownOpen(false);
-              }} 
+              }}
               label={`Price${priceRange[0] > 0 || priceRange[1] < 2500 ? `: ${priceRange[0]}-${priceRange[1]}` : ''}`}
             />
             {priceDropdownOpen && (
@@ -290,13 +366,13 @@ export default function BoatListingLayout() {
 
           {/* Boats Filter */}
           <div className="relative filter-dropdown">
-            <FilterButton 
+            <FilterButton
               onClick={() => {
                 setBoatsDropdownOpen(!boatsDropdownOpen);
                 setPriceDropdownOpen(false);
                 setCabinsDropdownOpen(false);
                 setActivitiesDropdownOpen(false);
-              }} 
+              }}
               label={`Boats${selectedBoatTypes.length > 0 ? ` (${selectedBoatTypes.length})` : ''}`}
             />
             {boatsDropdownOpen && (
@@ -326,13 +402,13 @@ export default function BoatListingLayout() {
 
           {/* Cabins Filter */}
           <div className="relative filter-dropdown">
-            <FilterButton 
+            <FilterButton
               onClick={() => {
                 setCabinsDropdownOpen(!cabinsDropdownOpen);
                 setPriceDropdownOpen(false);
                 setBoatsDropdownOpen(false);
                 setActivitiesDropdownOpen(false);
-              }} 
+              }}
               label={`Cabins${selectedCabins.length > 0 ? ` (${selectedCabins.length})` : ''}`}
             />
             {cabinsDropdownOpen && (
@@ -362,13 +438,13 @@ export default function BoatListingLayout() {
 
           {/* Activities Filter */}
           <div className="relative filter-dropdown">
-            <FilterButton 
+            <FilterButton
               onClick={() => {
                 setActivitiesDropdownOpen(!activitiesDropdownOpen);
                 setPriceDropdownOpen(false);
                 setBoatsDropdownOpen(false);
                 setCabinsDropdownOpen(false);
-              }} 
+              }}
               label={`Activities${selectedActivities.length > 0 ? ` (${selectedActivities.length})` : ''}`}
             />
             {activitiesDropdownOpen && (
@@ -442,19 +518,19 @@ export default function BoatListingLayout() {
             </div>
           ) : (
             boats.map((boat) => (
-            <BoatCard
-              key={boat.id}
-              boatId={boat.id}
-              imageUrl={boat.images?.[0] || "/images/Rectangle 3463853.png"}
-              name={boat.name}
-              price={`${boat.price_per_hour}`}
+              <BoatCard
+                key={boat.id}
+                boatId={boat.id}
+                imageUrl={boat.images?.[0] || "/images/Rectangle 3463853.png"}
+                name={boat.name}
+                price={`${boat.price_per_hour}`}
                 location={boat.cities?.[0] || "Aswan - Egypt"}
-              guests={boat.max_seats}
-              rooms={boat.max_seats_stay}
+                guests={boat.max_seats}
+                rooms={boat.max_seats_stay}
                 status="Available"
                 rating={5}
                 reviewsCount={boat.total_reviews || 0}
-            />
+              />
             ))
           )}
         </div>
