@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 const WhyChoosingUs = () => {
+  const router = useRouter();
   const [activeColumn, setActiveColumn] = useState(0);
 
   const columns = [
@@ -40,7 +42,10 @@ const WhyChoosingUs = () => {
           <p className="text-white text-xl sm:text-2xl lg:text-[30px] font-poppins font-normal mb-6 sm:mb-8 capitalize">
             We Do Our Best For Your Convenience
           </p>
-          <button className="bg-[#CEAF6E] text-[#093B77] px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm sm:text-base font-normal font-poppins capitalize hover:bg-[#B8941F] transition-colors w-full max-w-xs sm:w-auto pt-4 mt-4">
+          <button 
+            onClick={() => router.push('/boat-listing')}
+            className="bg-[#CEAF6E] text-[#093B77] px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm sm:text-base font-normal font-poppins capitalize hover:bg-[#B8941F] transition-colors w-full max-w-xs sm:w-auto pt-4 mt-4"
+          >
             Book With Us
           </button>
         </div>

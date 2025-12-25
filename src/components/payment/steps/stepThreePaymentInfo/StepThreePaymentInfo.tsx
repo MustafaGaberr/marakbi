@@ -40,17 +40,48 @@ export default function StepThreePaymentInfo() {
     setProcessing(true);
 
     try {
+      // حساب start_date و end_date بشكل صحيح
+      let startDate: string;
+      let endDate: string;
+
+      if (bookingData.start_date && bookingData.end_date) {
+        // استخدام التواريخ المحفوظة في bookingData
+        startDate = new Date(bookingData.start_date as string).toISOString();
+        
+        // إذا كان hourly، نحسب end_date بناءً على عدد الساعات
+        if (bookingData.rental_type === 'hourly' && bookingData.hours) {
+          const start = new Date(bookingData.start_date as string);
+          const hours = bookingData.hours as number;
+          endDate = new Date(start.getTime() + hours * 60 * 60 * 1000).toISOString();
+        } else {
+          // للـ daily، نستخدم end_date المحفوظ
+          endDate = new Date(bookingData.end_date as string).toISOString();
+        }
+      } else {
+        // Fallback: استخدام التاريخ الحالي (يجب ألا يحدث هذا)
+        startDate = new Date().toISOString();
+        if (bookingData.rental_type === 'hourly' && bookingData.hours) {
+          const hours = bookingData.hours as number;
+          endDate = new Date(Date.now() + hours * 60 * 60 * 1000).toISOString();
+        } else {
+          endDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+        }
+      }
+
       // إنشاء Order
+      // نرسل total_price كحقل إضافي لضمان أن الـ API يستخدم السعر الصحيح
       const orderData = {
-        boat_id: bookingData.boat_id,
-        start_date: new Date().toISOString(), // TODO: استخدام التاريخ المحدد من المستخدم
-        end_date: new Date(Date.now() + 3600000).toISOString(), // TODO: حساب نهاية الحجز
-        rental_type: bookingData.rental_type,
-        guest_count: bookingData.guest_count,
+        boat_id: bookingData.boat_id as number,
+        start_date: startDate,
+        end_date: endDate,
+        rental_type: bookingData.rental_type as 'daily' | 'hourly',
+        guest_count: bookingData.guest_count as number,
         payment_method: paymentMethod,
         platform: 'web' as const, // Platform identifier for web application
-        voyage_type: 'Private' as const // TODO: يمكن جعلها ديناميكية
-      };
+        voyage_type: 'Private' as const, // TODO: يمكن جعلها ديناميكية
+        // إرسال total_price لضمان أن بوابة الدفع تستخدم السعر الصحيح
+        total_price: (bookingData.total_price as number) || (bookingData.base_price as number)
+      } as Parameters<typeof customerApi.createOrder>[0] & { total_price: number };
 
       const response = await customerApi.createOrder(orderData);
 
