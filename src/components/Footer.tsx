@@ -3,19 +3,35 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Logo from './Logo';
+import { useRouter, usePathname } from 'next/navigation';
 
 const Footer = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Handle navigation with reset
+  const handleServiceClick = (categoryId: number | null) => {
+    // Always reset and navigate to boat-listing with only the category_id (if provided)
+    if (categoryId) {
+      router.push(`/boat-listing?category_id=${categoryId}`);
+    } else {
+      router.push('/boat-listing');
+    }
+  };
+
   // Service to Category ID mapping
-  const serviceToCategoryMap: Record<string, number> = {
-    "Boat Rentals": 1, // Private Boats / Motor Boats → category_id=1
-    "Water Sports": 5, // Water Activities → category_id=5
-    "Family activities": 5, // Water Activities → category_id=5
-    "Corporate Events": 6, // Occasion → category_id=6
-    "Fishing Trips": 4, // Fishing Boats → category_id=4
-    "Occassions": 6, // Occasion → category_id=6
-    "Occasions": 6, // Occasion → category_id=6
-    "Travel Boat": 3, // Travel Boats → category_id=3
-    "Dahabya": 1, // Felucca/Dahabya → category_id=1 (Private Boats)
+  // Based on API: 1=Motor Boat, 2=Felucca, 3=Fishing, 4=Occasion, 37=Sharing, 38=Water Activities, 39=Travel
+  // null = no filter (all boats), undefined = disabled
+  const serviceCategoryMap: Record<string, number | null | undefined> = {
+    "Boat Rentals": null, // All boats (no category filter)
+    "Water Sports": 38, // Water Activities → category_id=38
+    "Family activities": null, // All boats (Fishing + Water Activities - handled by showing all)
+    "Corporate Events": undefined, // Disabled
+    "Fishing Trips": 3, // Fishing → category_id=3
+    "Occassions": 4, // Occasion → category_id=4
+    "Occasions": 4, // Occasion → category_id=4
+    "Travel Boat": 39, // Travel → category_id=39
+    "Dahabya": undefined, // Disabled
   };
   return (
     <footer className="text-white bg-gradient-to-t from-[#083872] via-[#0A4489] to-[#106BD8]">
@@ -44,68 +60,100 @@ const Footer = () => {
             <h4 className="text-lg md:text-xl text-amber-300 font-semibold mb-4 md:mb-6 font-poppins">Marakbi Services</h4>
             <ul className="space-y-2 md:space-y-3 text-sm md:text-base list-disc list-inside">
               <li>
-                <Link
-                  href={`/boat-listing?category_id=${serviceToCategoryMap["Boat Rentals"] || 1}`}
-                  className=" hover:text-orange-300 transition-colors font-poppins"
-                >
-                  Boat Rentals
-                </Link>
+                {serviceCategoryMap["Boat Rentals"] !== undefined ? (
+                  <button
+                    onClick={() => handleServiceClick(serviceCategoryMap["Boat Rentals"] || null)}
+                    className=" hover:text-orange-300 transition-colors font-poppins text-left"
+                  >
+                    Boat Rentals
+                  </button>
+                ) : (
+                  <span className="text-gray-400 cursor-not-allowed font-poppins">Boat Rentals</span>
+                )}
               </li>
               <li>
-                <Link
-                  href={`/boat-listing?category_id=${serviceToCategoryMap["Water Sports"] || 5}`}
-                  className=" hover:text-orange-300 transition-colors font-poppins"
-                >
-                  Water Sports
-                </Link>
+                {serviceCategoryMap["Water Sports"] !== undefined ? (
+                  <button
+                    onClick={() => handleServiceClick(serviceCategoryMap["Water Sports"] || null)}
+                    className=" hover:text-orange-300 transition-colors font-poppins text-left"
+                  >
+                    Water Sports
+                  </button>
+                ) : (
+                  <span className="text-gray-400 cursor-not-allowed font-poppins">Water Sports</span>
+                )}
               </li>
               <li>
-                <Link
-                  href={`/boat-listing?category_id=${serviceToCategoryMap["Family activities"] || 5}`}
-                  className=" hover:text-orange-300 transition-colors font-poppins"
-                >
-                  Family activities
-                </Link>
+                {serviceCategoryMap["Family activities"] !== undefined ? (
+                  <button
+                    onClick={() => handleServiceClick(serviceCategoryMap["Family activities"] || null)}
+                    className=" hover:text-orange-300 transition-colors font-poppins text-left"
+                  >
+                    Family activities
+                  </button>
+                ) : (
+                  <span className="text-gray-400 cursor-not-allowed font-poppins">Family activities</span>
+                )}
               </li>
               <li>
-                <Link
-                  href={`/boat-listing?category_id=${serviceToCategoryMap["Corporate Events"] || 6}`}
-                  className=" hover:text-orange-300 transition-colors font-poppins"
-                >
-                  Corporate Events
-                </Link>
+                {serviceCategoryMap["Corporate Events"] !== undefined ? (
+                  <button
+                    onClick={() => handleServiceClick(serviceCategoryMap["Corporate Events"] || null)}
+                    className=" hover:text-orange-300 transition-colors font-poppins text-left"
+                  >
+                    Corporate Events
+                  </button>
+                ) : (
+                  <span className="text-gray-400 cursor-not-allowed font-poppins">Corporate Events</span>
+                )}
               </li>
               <li>
-                <Link
-                  href={`/boat-listing?category_id=${serviceToCategoryMap["Fishing Trips"] || 4}`}
-                  className=" hover:text-orange-300 transition-colors font-poppins"
-                >
-                  Fishing Trips
-                </Link>
+                {serviceCategoryMap["Fishing Trips"] !== undefined ? (
+                  <button
+                    onClick={() => handleServiceClick(serviceCategoryMap["Fishing Trips"] || null)}
+                    className=" hover:text-orange-300 transition-colors font-poppins text-left"
+                  >
+                    Fishing Trips
+                  </button>
+                ) : (
+                  <span className="text-gray-400 cursor-not-allowed font-poppins">Fishing Trips</span>
+                )}
               </li>
               <li>
-                <Link
-                  href={`/boat-listing?category_id=${serviceToCategoryMap["Occassions"] || 6}`}
-                  className=" hover:text-orange-300 transition-colors font-poppins"
-                >
-                  Occassions
-                </Link>
+                {serviceCategoryMap["Occassions"] !== undefined ? (
+                  <button
+                    onClick={() => handleServiceClick(serviceCategoryMap["Occassions"] || null)}
+                    className=" hover:text-orange-300 transition-colors font-poppins text-left"
+                  >
+                    Occassions
+                  </button>
+                ) : (
+                  <span className="text-gray-400 cursor-not-allowed font-poppins">Occassions</span>
+                )}
               </li>
               <li>
-                <Link
-                  href={`/boat-listing?category_id=${serviceToCategoryMap["Travel Boat"] || 2}`}
-                  className=" hover:text-orange-300 transition-colors font-poppins"
-                >
-                  Travel Boat
-                </Link>
+                {serviceCategoryMap["Travel Boat"] !== undefined ? (
+                  <button
+                    onClick={() => handleServiceClick(serviceCategoryMap["Travel Boat"] || null)}
+                    className=" hover:text-orange-300 transition-colors font-poppins text-left"
+                  >
+                    Travel Boat
+                  </button>
+                ) : (
+                  <span className="text-gray-400 cursor-not-allowed font-poppins">Travel Boat</span>
+                )}
               </li>
               <li>
-                <Link
-                  href={`/boat-listing?category_id=${serviceToCategoryMap["Dahabya"] || 1}`}
-                  className=" hover:text-orange-300 transition-colors font-poppins"
-                >
-                  Dahabya
-                </Link>
+                {serviceCategoryMap["Dahabya"] !== undefined ? (
+                  <button
+                    onClick={() => handleServiceClick(serviceCategoryMap["Dahabya"] || null)}
+                    className=" hover:text-orange-300 transition-colors font-poppins text-left"
+                  >
+                    Dahabya
+                  </button>
+                ) : (
+                  <span className="text-gray-400 cursor-not-allowed font-poppins">Dahabya</span>
+                )}
               </li>
             </ul>
           </div>

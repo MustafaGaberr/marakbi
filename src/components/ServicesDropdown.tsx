@@ -35,13 +35,14 @@ const ServicesDropdown = ({ variant = 'transparent' }: ServicesDropdownProps) =>
   const hoverTimeoutRef = useRef<number | null>(null);
 
   // Mapping service IDs to category IDs
+  // Based on API: 1=Motor Boat, 2=Felucca, 3=Fishing, 4=Occasion, 37=Sharing, 38=Water Activities, 39=Travel
   const serviceToCategoryMap: Record<number, number> = {
     1: 1, // Private Boats / Motor Boats → category_id=1
-    2: 2, // Sharing Trips → category_id=2
-    3: 3, // Travel Boats → category_id=3
-    4: 4, // Fishing Boats → category_id=4
-    5: 5, // Water Activities (Kayak) → category_id=5
-    6: 6, // Occasion → category_id=6
+    2: 37, // Sharing Trips → category_id=37
+    3: 39, // Travel Boats → category_id=39
+    4: 3, // Fishing Boats → category_id=3
+    5: 38, // Water Activities (Kayak) → category_id=38
+    6: 4, // Occasion → category_id=4
   };
 
   const services: Service[] = [

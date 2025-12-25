@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Boat } from "@/lib/api";
+import { Boat, City } from "@/lib/api";
 
 interface FiltersPanelProps {
   isOpen: boolean;
@@ -15,6 +15,11 @@ interface FiltersPanelProps {
   setSelectedCabins: (cabins: string[] | ((prev: string[]) => string[])) => void;
   selectedActivities: string[];
   setSelectedActivities: (activities: string[] | ((prev: string[]) => string[])) => void;
+  selectedRentalTypes: string[];
+  setSelectedRentalTypes: (types: string[] | ((prev: string[]) => string[])) => void;
+  selectedCities: number[];
+  setSelectedCities: (cities: number[] | ((prev: number[]) => number[])) => void;
+  cities: City[];
   boats: Boat[];
 }
 
@@ -29,41 +34,57 @@ export default function FiltersPanel({
   setSelectedCabins,
   selectedActivities,
   setSelectedActivities,
+  selectedRentalTypes,
+  setSelectedRentalTypes,
+  selectedCities,
+  setSelectedCities,
+  cities,
   boats
 }: FiltersPanelProps) {
 
-  // Get unique boat types from actual boats data
+  // Boat categories: Motor Boat, Felucca, Occasion, Sharing (exclude Travel, Fishing, and Water Activities)
+  // Activity categories: Water Activities, Fishing
+  const boatCategories = ['Motor Boat', 'Felucca', 'Occasion', 'Sharing'];
+  const activityCategories = ['Water Activities', 'Fishing'];
+
+  // Get boat types - always show all categories (not conditional)
   const getBoatTypes = () => {
-    const typeCounts = new Map<string, number>();
-    boats.forEach(boat => {
-      boat.categories?.forEach(cat => {
-        typeCounts.set(cat, (typeCounts.get(cat) || 0) + 1);
-      });
-    });
-    return Array.from(typeCounts.entries()).map(([name, count]) => ({ name, count }));
+    // Always return all boat categories, regardless of whether they exist in current boats
+    return boatCategories.map(name => ({
+      name,
+      count: boats.filter(boat => boat.categories?.includes(name)).length
+    })).sort((a, b) => a.name.localeCompare(b.name));
   };
 
   const boatTypes = getBoatTypes();
 
-  // Get cabin counts from actual boats data
+  // Get cabin counts - always show all cabin ranges (not conditional)
   const getCabins = () => {
-    const cabinCounts = new Map<string, number>();
-    boats.forEach(boat => {
-      const cabins = boat.max_seats_stay || 0;
-      let cabinRange = '';
-      if (cabins <= 2) cabinRange = '1-2 Cabins';
-      else if (cabins <= 4) cabinRange = '3-4 Cabins';
-      else if (cabins <= 6) cabinRange = '5-6 Cabins';
-      else cabinRange = '7+ Cabins';
-      cabinCounts.set(cabinRange, (cabinCounts.get(cabinRange) || 0) + 1);
+    const cabinRanges = ['1-2 Cabins', '3-4 Cabins', '5-6 Cabins', '7+ Cabins'];
+    return cabinRanges.map(range => {
+      let count = 0;
+      boats.forEach(boat => {
+        const cabins = boat.max_seats_stay || 0;
+        if (range === '1-2 Cabins' && cabins <= 2) count++;
+        else if (range === '3-4 Cabins' && cabins >= 3 && cabins <= 4) count++;
+        else if (range === '5-6 Cabins' && cabins >= 5 && cabins <= 6) count++;
+        else if (range === '7+ Cabins' && cabins >= 7) count++;
+      });
+      return { name: range, count };
     });
-    return Array.from(cabinCounts.entries()).map(([name, count]) => ({ name, count }));
   };
 
   const cabins = getCabins();
 
-  // Use boat types as activities (categories)
-  const activities = boatTypes;
+  // Get activities - always show all activity categories (not conditional)
+  const getActivities = () => {
+    return activityCategories.map(name => ({
+      name,
+      count: boats.filter(boat => boat.categories?.includes(name)).length
+    })).sort((a, b) => a.name.localeCompare(b.name));
+  };
+
+  const activities = getActivities();
 
   const toggleBoatType = (name: string) => {
     setSelectedBoatTypes((prev) =>
@@ -83,11 +104,25 @@ export default function FiltersPanel({
     );
   };
 
+  const toggleRentalType = (name: string) => {
+    setSelectedRentalTypes((prev) =>
+      prev.includes(name) ? prev.filter((t) => t !== name) : [...prev, name]
+    );
+  };
+
+  const toggleCity = (cityId: number) => {
+    setSelectedCities((prev) =>
+      prev.includes(cityId) ? prev.filter((id) => id !== cityId) : [...prev, cityId]
+    );
+  };
+
   const handleClearAll = () => {
     setPriceRange([0, 2500]);
     setSelectedBoatTypes([]);
     setSelectedCabins([]);
     setSelectedActivities([]);
+    setSelectedRentalTypes([]);
+    setSelectedCities([]);
   };
 
   const handleApplyFilters = () => {
@@ -370,6 +405,155 @@ export default function FiltersPanel({
                   </span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Rental Type */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+                    stroke="#030213"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <label className="text-sm font-poppins font-medium text-neutral-950">
+                Rental Type
+              </label>
+            </div>
+
+            <div className="space-y-2">
+              {['Hourly', 'Daily'].map((type) => (
+                <div
+                  key={type}
+                  className="flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => toggleRentalType(type.toLowerCase())}
+                      className={`w-4 h-4 rounded border ${
+                        selectedRentalTypes.includes(type.toLowerCase())
+                          ? "bg-[#093b77] border-[#093b77]"
+                          : "bg-[#f3f3f5] border-[rgba(0,0,0,0.1)]"
+                      } flex items-center justify-center`}
+                    >
+                      {selectedRentalTypes.includes(type.toLowerCase()) && (
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M20 6L9 17l-5-5"
+                            stroke="white"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
+                    </button>
+                    <span className="text-sm font-poppins font-medium text-neutral-950">
+                      {type}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Cities */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
+                    stroke="#030213"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
+                    stroke="#030213"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <label className="text-sm font-poppins font-medium text-neutral-950">
+                Cities
+              </label>
+            </div>
+
+            <div className="space-y-2">
+              {cities.map((city) => {
+                const cityBoatCount = boats.filter(boat =>
+                  boat.trips?.some((trip: { city_id?: number }) => trip.city_id === city.id)
+                ).length;
+                return (
+                  <div
+                    key={city.id}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => toggleCity(city.id)}
+                        className={`w-4 h-4 rounded border ${
+                          selectedCities.includes(city.id)
+                            ? "bg-[#093b77] border-[#093b77]"
+                            : "bg-[#f3f3f5] border-[rgba(0,0,0,0.1)]"
+                        } flex items-center justify-center`}
+                      >
+                        {selectedCities.includes(city.id) && (
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M20 6L9 17l-5-5"
+                              stroke="white"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                      </button>
+                      <span className="text-sm font-poppins font-medium text-neutral-950">
+                        {city.name}
+                      </span>
+                    </div>
+                    <span className="text-xs font-poppins font-normal text-[#717182]">
+                      ({cityBoatCount})
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
