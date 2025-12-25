@@ -1,8 +1,22 @@
 "use client";
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 const OurServices = () => {
+  const router = useRouter();
+
+  // Service to Category ID mapping
+  // Based on API: 1=Motor Boat, 2=Felucca, 3=Fishing, 4=Occasion, 37=Sharing, 38=Water Activities, 39=Travel
+  const serviceCategoryMap: Record<string, number> = {
+    "Private Boat": 1, // Motor Boat → category_id=1
+    "Sharing Boat": 37, // Sharing → category_id=37
+    "Travel Boat": 39, // Travel → category_id=39
+    "Fishing Boat": 3, // Fishing → category_id=3
+    "Occasion": 4, // Occasion → category_id=4
+    "Water Sports": 38, // Water Activities → category_id=38
+  };
+
   const services = [
     {
       id: 1,
@@ -41,6 +55,16 @@ const OurServices = () => {
       icon: "/icons/Wakeboarding.svg"
     }
   ];
+
+  const handleExploreNow = (serviceTitle: string) => {
+    const categoryId = serviceCategoryMap[serviceTitle];
+    if (categoryId) {
+      router.push(`/boat-listing?category_id=${categoryId}`);
+    } else {
+      // Fallback to boat-listing without filter if category not found
+      router.push('/boat-listing');
+    }
+  };
 
   return (
     <section className="py-8 sm:py-20 bg-white">
@@ -98,7 +122,10 @@ const OurServices = () => {
               </p>
 
               {/* Button */}
-              <button className="bg-[#093B77] text-white px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg text-sm sm:text-base font-normal hover:bg-[#0A3D7A] transition-colors duration-300 w-full sm:w-auto">
+              <button 
+                onClick={() => handleExploreNow(service.title)}
+                className="bg-[#093B77] text-white px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg text-sm sm:text-base font-normal hover:bg-[#0A3D7A] transition-colors duration-300 w-full sm:w-auto"
+              >
                 Explore Now
               </button>
             </div>
