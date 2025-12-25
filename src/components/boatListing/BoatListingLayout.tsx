@@ -179,84 +179,111 @@ export default function BoatListingLayout() {
   }, []);
 
 
+
   useEffect(() => {
     const fetchBoats = async () => {
       try {
         setLoading(true);
         let response;
 
-        // Category ID to Names mapping (supporting multiple names per category)
-        const categoryIdToNames: Record<number, string[]> = {
-          1: ['Private', 'Motor Boat', 'Private Boats', 'Motor Boats', 'Cozy'], // Private/Motor boats
-          2: ['Sharing', 'Sharing Trips', 'Shared'],
-          3: ['Travel', 'Travel Boats', 'Travel Boat'],
-          4: ['Fishing', 'Fishing Boats', 'Fishing Boat'],
-          5: ['Water Activities', 'Water Activity', 'Water Sports', 'Kayak'],
-          6: ['Occasion', 'Occasions', 'Event', 'Events']
-        };
-
-        // Get the category names from ID if provided
-        const categoryNames = categoryId ? categoryIdToNames[parseInt(categoryId)] : null;
-
         // Fetch boats - use specific endpoint if available for better performance
+        // According to API documentation:
+        // - /client/boats/category/{categoryId}/city/{cityId} - filter by both category and city
+        // - /client/boats/category/{categoryId} - filter by category only
+        // - When only cityId is provided, fetch all categories for that city, then get boats for each category
         if (categoryId && cityId) {
-          response = await clientApi.getBoatsByCategoryAndCity(
-            parseInt(categoryId),
-            parseInt(cityId)
-          );
+          // Both category and city provided - use API endpoint
+          const categoryIdNum = parseInt(categoryId);
+          const cityIdNum = parseInt(cityId);
+          if (!isNaN(categoryIdNum) && !isNaN(cityIdNum)) {
+            response = await clientApi.getBoatsByCategoryAndCity(categoryIdNum, cityIdNum);
+          } else {
+            // Invalid IDs, fallback to all boats
+            response = await clientApi.getBoats(1, 100);
+          }
         } else if (categoryId) {
-          response = await clientApi.getBoatsByCategory(parseInt(categoryId));
+          // Only category provided - use API endpoint
+          const categoryIdNum = parseInt(categoryId);
+          if (!isNaN(categoryIdNum)) {
+            response = await clientApi.getBoatsByCategory(categoryIdNum);
+          } else {
+            // Invalid ID, fallback to all boats
+            response = await clientApi.getBoats(1, 100);
+          }
+        } else if (cityId) {
+          // Only city provided - fetch all categories for that city, then get boats for each
+          const cityIdNum = parseInt(cityId);
+          if (!isNaN(cityIdNum)) {
+            // Get all categories for this city
+            const categoriesResponse = await clientApi.getCategoriesByCity(cityIdNum);
+            if (categoriesResponse.success && categoriesResponse.data) {
+              const data = categoriesResponse.data;
+              // API might return an array directly or wrapped in an object (e.g. { categories: [...] })
+              const categories = Array.isArray(data)
+                ? data
+                : Array.isArray((data as { categories?: unknown[] }).categories)
+                  ? (data as { categories: { id: number; name: string; description?: string }[] }).categories
+                  : [];
+              
+              // Fetch boats for each category and combine results
+              const allBoatsPromises = categories.map((cat: { id: number }) => 
+                clientApi.getBoatsByCategoryAndCity(cat.id, cityIdNum)
+              );
+              
+              const allResponses = await Promise.all(allBoatsPromises);
+              
+              // Combine all boats and remove duplicates
+              const boatsMap = new Map<number, Boat>();
+              allResponses.forEach(res => {
+                if (res.success && res.data && res.data.boats) {
+                  res.data.boats.forEach((boat: Boat) => {
+                    boatsMap.set(boat.id, boat);
+                  });
+                }
+              });
+              
+              // Create combined response
+              const combinedBoats = Array.from(boatsMap.values());
+              response = {
+                success: true,
+                data: {
+                  boats: combinedBoats,
+                  page: 1,
+                  pages: 1,
+                  per_page: combinedBoats.length,
+                  total: combinedBoats.length
+                }
+              };
+            } else {
+              // If categories fetch fails, fallback to all boats
+              response = await clientApi.getBoats(1, 100);
+            }
+          } else {
+            // Invalid city ID, fallback to all boats
+            response = await clientApi.getBoats(1, 100);
+          }
         } else {
-          // Fetch more boats to have better search results
+          // No category or city - fetch all boats
           response = await clientApi.getBoats(1, 100);
         }
 
         if (response.success && response.data) {
           let filteredBoats = response.data.boats || [];
 
-          // Extract city names from trips array and add to boat object
+          // Extract city names from trips array and add to boat object (for display purposes)
           filteredBoats = filteredBoats.map(boat => {
             // Get unique city names from trips
-            const cityNames = boat.trips?.map((trip: { city_name?: string }) => trip.city_name).filter(Boolean) || [];
+            const cityNames = boat.trips?.map((trip: { city_name?: string }) => trip.city_name).filter((name): name is string => Boolean(name)) || [];
             const uniqueCities = [...new Set(cityNames)];
 
             return {
               ...boat,
-              cities: uniqueCities.length > 0 ? uniqueCities : boat.cities || []
+              cities: uniqueCities.length > 0 ? uniqueCities : (boat.cities || [])
             };
           });
 
-          // Apply client-side filtering for better search experience
-          // Filter by category names if provided (and not already filtered by API)
-          if (categoryNames && categoryNames.length > 0 && !categoryId) {
-            filteredBoats = filteredBoats.filter(boat =>
-              boat.categories?.some(boatCat =>
-                categoryNames.some(catName =>
-                  boatCat.toLowerCase().includes(catName.toLowerCase()) ||
-                  catName.toLowerCase().includes(boatCat.toLowerCase())
-                )
-              )
-            );
-          }
-
-          // Filter by city if provided (apply even if API endpoint was used, for consistency)
-          if (cityId) {
-            filteredBoats = filteredBoats.filter(boat => {
-              // Check if boat has cities array with the city
-              const hasCityInArray = boat.cities?.some(city =>
-                city.toLowerCase().includes(cityId.toLowerCase()) ||
-                cityId.toLowerCase().includes(city.toLowerCase())
-              );
-
-              // Also check trips for city info
-              const hasCityInTrips = boat.trips?.some((trip: { city_name?: string }) =>
-                trip.city_name?.toLowerCase().includes(cityId.toLowerCase()) ||
-                cityId.toLowerCase().includes(trip.city_name?.toLowerCase() || '')
-              );
-
-              return hasCityInArray || hasCityInTrips;
-            });
-          }
+          // Note: City filtering is already handled by API when cityId is provided
+          // No need for additional client-side filtering in that case
 
           // Filter by rental type if provided
           if (rentalType) {
