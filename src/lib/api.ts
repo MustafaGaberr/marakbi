@@ -275,6 +275,42 @@ export interface Order {
   profile?: Record<string, unknown>;
 }
 
+// Admin Types
+export interface AddBoatData {
+  name: string;
+  price_per_hour: number;
+  price_per_day?: number;
+  max_seats?: number;
+  max_seats_stay?: number;
+  description: string;
+  categories: number[]; // Array of category IDs
+  cities: number[]; // Array of city IDs
+  boat_images?: File[]; // Array of image files
+}
+
+export interface EditBoatData {
+  name?: string;
+  price_per_hour?: number;
+  price_per_day?: number;
+  max_seats?: number;
+  max_seats_stay?: number;
+  description?: string;
+  categories?: number[]; // Array of category IDs
+  cities?: number[]; // Array of city IDs
+  trips?: number[]; // Array of trip IDs (optional)
+  boat_images?: File[]; // Array of new image files (optional)
+}
+
+export interface AddBoatResponse {
+  message: string;
+  boat: Boat;
+}
+
+export interface EditBoatResponse {
+  message: string;
+  boat: Boat;
+}
+
 export interface OrderData {
   boat_id: number;
   start_date: string;
@@ -684,6 +720,183 @@ export const voyagesApi = {
       method: 'POST',
       body: JSON.stringify(joinData)
     });
+  }
+};
+
+// ===== ADMIN API (Protected Admin Endpoints) =====
+export const adminApi = {
+  /**
+   * Add a new boat for a specific user
+   * @param userId - The user ID who owns the boat
+   * @param boatData - Boat details and images
+   * @returns Promise with the created boat data
+   */
+  addBoat: async (userId: number, boatData: AddBoatData): Promise<ApiResponse<AddBoatResponse>> => {
+    const formData = new FormData();
+    
+    // Add text fields
+    formData.append('name', boatData.name);
+    formData.append('price_per_hour', boatData.price_per_hour.toString());
+    
+    if (boatData.price_per_day) {
+      formData.append('price_per_day', boatData.price_per_day.toString());
+    }
+    
+    if (boatData.max_seats) {
+      formData.append('max_seats', boatData.max_seats.toString());
+    }
+    
+    if (boatData.max_seats_stay) {
+      formData.append('max_seats_stay', boatData.max_seats_stay.toString());
+    }
+    
+    formData.append('description', boatData.description);
+    
+    // Add categories (multiple values)
+    boatData.categories.forEach(categoryId => {
+      formData.append('categories', categoryId.toString());
+    });
+    
+    // Add cities (multiple values)
+    boatData.cities.forEach(cityId => {
+      formData.append('cities', cityId.toString());
+    });
+    
+    // Add images
+    if (boatData.boat_images && boatData.boat_images.length > 0) {
+      boatData.boat_images.forEach(image => {
+        formData.append('boat_images', image);
+      });
+    }
+    
+    const url = `${BASE_URL}/admin/users/${userId}/boats/add`;
+    const token = storage.getToken();
+    
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.message || data.error || 'Failed to add boat'
+        };
+      }
+      
+      return {
+        success: true,
+        data: data
+      };
+    } catch (error) {
+      console.error('Error adding boat:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'An unexpected error occurred.'
+      };
+    }
+  },
+
+  /**
+   * Edit an existing boat
+   * @param boatId - The boat ID to edit
+   * @param boatData - Updated boat details (all fields optional)
+   * @returns Promise with the updated boat data
+   */
+  editBoat: async (boatId: number, boatData: EditBoatData): Promise<ApiResponse<EditBoatResponse>> => {
+    const formData = new FormData();
+    
+    // Add text fields (only if provided)
+    if (boatData.name) {
+      formData.append('name', boatData.name);
+    }
+    
+    if (boatData.price_per_hour) {
+      formData.append('price_per_hour', boatData.price_per_hour.toString());
+    }
+    
+    if (boatData.price_per_day) {
+      formData.append('price_per_day', boatData.price_per_day.toString());
+    }
+    
+    if (boatData.max_seats) {
+      formData.append('max_seats', boatData.max_seats.toString());
+    }
+    
+    if (boatData.max_seats_stay) {
+      formData.append('max_seats_stay', boatData.max_seats_stay.toString());
+    }
+    
+    if (boatData.description) {
+      formData.append('description', boatData.description);
+    }
+    
+    // Add categories (multiple values)
+    if (boatData.categories && boatData.categories.length > 0) {
+      boatData.categories.forEach(categoryId => {
+        formData.append('categories', categoryId.toString());
+      });
+    }
+    
+    // Add cities (multiple values)
+    if (boatData.cities && boatData.cities.length > 0) {
+      boatData.cities.forEach(cityId => {
+        formData.append('cities', cityId.toString());
+      });
+    }
+    
+    // Add trips (optional, multiple values)
+    if (boatData.trips && boatData.trips.length > 0) {
+      boatData.trips.forEach(tripId => {
+        formData.append('trips', tripId.toString());
+      });
+    }
+    
+    // Add new images (optional)
+    if (boatData.boat_images && boatData.boat_images.length > 0) {
+      boatData.boat_images.forEach(image => {
+        formData.append('boat_images', image);
+      });
+    }
+    
+    const url = `${BASE_URL}/admin/boats/${boatId}/edit`;
+    const token = storage.getToken();
+    
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.message || data.error || 'Failed to edit boat'
+        };
+      }
+      
+      return {
+        success: true,
+        data: data
+      };
+    } catch (error) {
+      console.error('Error editing boat:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'An unexpected error occurred.'
+      };
+    }
   }
 };
 
