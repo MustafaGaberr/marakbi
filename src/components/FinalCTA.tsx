@@ -32,8 +32,7 @@ const FinalCTA = () => {
 
   {/* Blur Layer on Top */}
   <div className="absolute top-0 left-0 w-full h-16 bg-white blur-[31.90px]" />
-
-        {/* Overlay for better text readability */}
+  
         {/* <div className="absolute inset-0 bg-black/20"></div> */}
 
         {/* Content Container */}
