@@ -121,30 +121,30 @@ export default function StepThreePaymentInfo() {
       {/* Booking Summary */}
       <div className="bg-gray-50 p-4 rounded-lg mb-6">
         <h3 className="font-semibold mb-2">Booking Summary</h3>
-        <p className="text-sm text-gray-600">Boat: {bookingData.boat_name}</p>
-        <p className="text-sm text-gray-600">Guests: {bookingData.guest_count}</p>
+        <p className="text-sm text-gray-600">Boat: {String(bookingData.boat_name || '')}</p>
+        <p className="text-sm text-gray-600">Guests: {String(bookingData.guest_count || 0)}</p>
         <p className="text-sm text-gray-600">
           Rental Type: {bookingData.rental_type === 'hourly' ? 'Per Hour' : 'Per Day'}
         </p>
-        {bookingData.hours && (
+        {!!bookingData.hours && (
           <p className="text-sm text-gray-600">
-            Duration: {bookingData.hours} hour{bookingData.hours > 1 ? 's' : ''}
+            Duration: {String(bookingData.hours)} hour{Number(bookingData.hours) > 1 ? 's' : ''}
           </p>
         )}
-        {bookingData.days && (
+        {!!bookingData.days && (
           <p className="text-sm text-gray-600">
-            Duration: {bookingData.days} day{bookingData.days > 1 ? 's' : ''}
+            Duration: {String(bookingData.days)} day{Number(bookingData.days) > 1 ? 's' : ''}
           </p>
         )}
 
         <div className="mt-3 pt-3 border-t border-gray-300 space-y-1">
-          {bookingData.base_price && (
+          {typeof bookingData.base_price === 'number' && (
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Base Price:</span>
               <span className="font-medium">{bookingData.base_price.toFixed(0)} EGP</span>
             </div>
           )}
-          {bookingData.service_fee && (
+          {typeof bookingData.service_fee === 'number' && (
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Service Fee:</span>
               <span className="font-medium">{bookingData.service_fee.toFixed(0)} EGP</span>
@@ -153,7 +153,7 @@ export default function StepThreePaymentInfo() {
           <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-300">
             <span>Total:</span>
             <span className="text-sky-900">
-              {bookingData.total_price?.toFixed(0) || bookingData.base_price?.toFixed(0)} EGP
+              {typeof bookingData.total_price === 'number' ? bookingData.total_price.toFixed(0) : (typeof bookingData.base_price === 'number' ? bookingData.base_price.toFixed(0) : '0')} EGP
             </span>
           </div>
         </div>

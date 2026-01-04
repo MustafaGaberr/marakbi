@@ -25,7 +25,7 @@ export default function StepTwoPersonalInfo() {
           setAddress(response.data.address || "");
           setHasProfile(true);
         }
-      } catch (err) {
+      } catch {
         console.log("No profile found, creating new one");
       } finally {
         setLoading(false);
@@ -56,7 +56,7 @@ export default function StepTwoPersonalInfo() {
       } else {
         setError(response.error || "Failed to save profile");
       }
-    } catch (err) {
+    } catch {
       setError("An error occurred while saving profile");
     } finally {
       setSaving(false);

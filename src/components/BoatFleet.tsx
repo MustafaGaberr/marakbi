@@ -3,11 +3,11 @@
 import BoatCard from './BoatCard';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { clientApi, Boat } from '@/lib/api';
+import { clientApi, Boat, HomeData } from '@/lib/api';
 import Image from 'next/image';
 
 interface BoatFleetProps {
-  homeData?: any;
+  homeData?: HomeData;
 }
 
 const BoatFleet = ({ homeData }: BoatFleetProps) => {

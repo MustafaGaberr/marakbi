@@ -1,7 +1,7 @@
 "use client";
 import { IconType } from "react-icons";
 import { FieldError, UseFormRegisterReturn } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface AdminTextAreaProps {
   id: string;

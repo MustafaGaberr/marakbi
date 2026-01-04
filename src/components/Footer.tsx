@@ -3,11 +3,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Logo from './Logo';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const Footer = () => {
   const router = useRouter();
-  const pathname = usePathname();
 
   // Handle navigation with reset
   const handleServiceClick = (categoryId: number | null) => {

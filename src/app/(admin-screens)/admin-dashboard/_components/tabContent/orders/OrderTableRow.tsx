@@ -27,7 +27,6 @@ export default function OrderTableRow({
   orderDate,
   customerName,
   customerEmail,
-  boatImageUrl,
   boatName,
   boatType,
   rentalPeriod,

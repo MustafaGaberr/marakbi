@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense } from "react";
 // import type { Metadata } from "next";
 import Logo from "@/components/Logo";
 
@@ -9,7 +10,7 @@ import Logo from "@/components/Logo";
 //   description: "Your payment was completed successfully.",
 // };
 
-export default function PaymentSuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -101,4 +102,14 @@ export default function PaymentSuccessPage() {
   );
 }
 
-
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-[#0C4A8C] via-[#0C4A8C]/90 to-[#021526] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+      </div>
+    }>
+      <SuccessContent />
+    </Suspense>
+  );
+}

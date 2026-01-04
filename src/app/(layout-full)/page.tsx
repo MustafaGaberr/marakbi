@@ -10,10 +10,10 @@ import Stats from "@/components/Stats";
 import Activities from "@/components/Activities";
 import Destinations from "@/components/Destinations";
 import FinalCTA from "@/components/FinalCTA";
-import { clientApi } from "@/lib/api";
+import { clientApi, HomeData } from "@/lib/api";
 
 export default function HomePage() {
-  const [homeData, setHomeData] = useState<unknown>(null);
+  const [homeData, setHomeData] = useState<HomeData | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

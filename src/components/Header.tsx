@@ -151,7 +151,7 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
                   }
                 });
               }
-            } catch (error) {
+            } catch {
               // Continue if one city fails
             }
           }

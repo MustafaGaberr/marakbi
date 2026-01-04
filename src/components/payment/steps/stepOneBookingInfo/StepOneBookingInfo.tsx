@@ -47,29 +47,29 @@ export default function StepOneBookingInfo() {
         {/* Booking Details */}
         <div className="bg-gray-50 p-6 rounded-lg mb-6">
           <div className="flex gap-4">
-            {bookingData.boat_image && (
+            {typeof bookingData.boat_image === 'string' && bookingData.boat_image && (
               <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                 <Image
                   src={bookingData.boat_image}
-                  alt={bookingData.boat_name}
+                  alt={String(bookingData.boat_name || 'Boat')}
                   fill
                   className="object-cover"
                 />
               </div>
             )}
             <div className="flex-1">
-              <h3 className="text-xl font-semibold mb-2">{bookingData.boat_name}</h3>
+              <h3 className="text-xl font-semibold mb-2">{String(bookingData.boat_name || '')}</h3>
               <div className="space-y-1 text-gray-600">
                 <p>Rental Type: {bookingData.rental_type === 'hourly' ? 'Per Hour' : 'Per Day'}</p>
-                {bookingData.hours && (
-                  <p>Duration: {bookingData.hours} hour{bookingData.hours > 1 ? 's' : ''}</p>
+                {!!bookingData.hours && (
+                  <p>Duration: {String(bookingData.hours)} hour{Number(bookingData.hours) > 1 ? 's' : ''}</p>
                 )}
-                {bookingData.days && (
-                  <p>Duration: {bookingData.days} day{bookingData.days > 1 ? 's' : ''}</p>
+                {!!bookingData.days && (
+                  <p>Duration: {String(bookingData.days)} day{Number(bookingData.days) > 1 ? 's' : ''}</p>
                 )}
-                <p>Guests: {bookingData.guest_count} / {bookingData.max_seats}</p>
+                <p>Guests: {String(bookingData.guest_count)} / {String(bookingData.max_seats)}</p>
                 <p className="text-sm">
-                  {new Date(bookingData.start_date).toLocaleDateString('en-US', {
+                  {new Date(String(bookingData.start_date)).toLocaleDateString('en-US', {
                     weekday: 'short',
                     year: 'numeric',
                     month: 'short',
@@ -85,13 +85,13 @@ export default function StepOneBookingInfo() {
         <div className="bg-white p-6 rounded-lg border border-gray-200">
           <h3 className="font-semibold mb-4">Price Breakdown</h3>
           <div className="space-y-2">
-            {bookingData.base_price && (
+            {typeof bookingData.base_price === 'number' && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Base Price</span>
                 <span className="font-semibold">{bookingData.base_price.toFixed(0)} EGP</span>
               </div>
             )}
-            {bookingData.service_fee && (
+            {typeof bookingData.service_fee === 'number' && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Service Fee (10%)</span>
                 <span className="font-semibold">{bookingData.service_fee.toFixed(0)} EGP</span>
@@ -101,7 +101,7 @@ export default function StepOneBookingInfo() {
               <div className="flex justify-between text-lg">
                 <span className="font-bold">Total</span>
                 <span className="font-bold text-sky-900">
-                  {bookingData.total_price?.toFixed(0) || bookingData.base_price?.toFixed(0)} EGP
+                  {typeof bookingData.total_price === 'number' ? bookingData.total_price.toFixed(0) : (typeof bookingData.base_price === 'number' ? bookingData.base_price.toFixed(0) : '0')} EGP
                 </span>
               </div>
             </div>

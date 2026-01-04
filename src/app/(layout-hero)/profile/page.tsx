@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { storage } from "@/lib/api";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import Image from "next/image";
 
 export default function ProfilePage() {

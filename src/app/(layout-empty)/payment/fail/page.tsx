@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense } from "react";
 // import type { Metadata } from "next";
 import Logo from "@/components/Logo";
 
@@ -9,7 +10,7 @@ import Logo from "@/components/Logo";
 //   description: "Your payment could not be completed.",
 // };
 
-export default function PaymentFailPage() {
+function FailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -100,4 +101,14 @@ export default function PaymentFailPage() {
   );
 }
 
-
+export default function PaymentFailPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-[#7F1D1D] via-[#450A0A] to-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+      </div>
+    }>
+      <FailContent />
+    </Suspense>
+  );
+}

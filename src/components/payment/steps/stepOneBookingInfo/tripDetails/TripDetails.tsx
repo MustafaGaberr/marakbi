@@ -46,9 +46,11 @@ export default function TripDetails() {
   // Calculate duration text
   const getDurationText = () => {
     if (bookingData.rental_type === 'hourly' && bookingData.hours) {
-      return `${bookingData.hours} hour${bookingData.hours > 1 ? 's' : ''}`;
+      const hours = Number(bookingData.hours);
+      return `${hours} hour${hours > 1 ? 's' : ''}`;
     } else if (bookingData.days) {
-      return `${bookingData.days} day${bookingData.days > 1 ? 's' : ''}`;
+      const days = Number(bookingData.days);
+      return `${days} day${days > 1 ? 's' : ''}`;
     }
     return 'Duration not specified';
   };
@@ -59,8 +61,8 @@ export default function TripDetails() {
       <TripDetailsCell>
         <div className="relative h-[160px] sm:h-[200px] md:h-[240px] overflow-hidden rounded-md">
           <Image
-            alt={bookingData.boat_name}
-            src={bookingData.boat_image || "/paymentBg.jpg"}
+            alt={String(bookingData.boat_name || 'Boat')}
+            src={typeof bookingData.boat_image === 'string' ? bookingData.boat_image : "/paymentBg.jpg"}
             fill
             className="object-cover"
             priority
@@ -68,7 +70,7 @@ export default function TripDetails() {
         </div>
 
         <p className="text-[22px] sm:text-[26px] md:text-[28px] mt-3 mb-2 font-semibold leading-tight">
-          {bookingData.boat_name}
+          {String(bookingData.boat_name || '')}
         </p>
 
         <div className="flex flex-wrap text-[#CEAF6E] items-center gap-2">
@@ -90,11 +92,11 @@ export default function TripDetails() {
         <div className="flex flex-col gap-3 sm:gap-4">
           <TripDetailsCellItem
             Icon={FaRegClock}
-            description={`${formatDate(bookingData.start_date)} - ${getDurationText()}`}
+            description={`${formatDate(String(bookingData.start_date))} - ${getDurationText()}`}
           />
           <TripDetailsCellItem
             Icon={MdOutlineGroups2}
-            description={`${bookingData.guest_count} Guest${bookingData.guest_count > 1 ? 's' : ''}`}
+            description={`${String(bookingData.guest_count)} Guest${Number(bookingData.guest_count) > 1 ? 's' : ''}`}
           />
         </div>
       </TripDetailsCell>
@@ -114,10 +116,10 @@ export default function TripDetails() {
           <p className="text-base sm:text-lg font-semibold">Total</p>
           <div className="text-right sm:text-left">
             <p className="text-lg sm:text-xl mb-0.5 font-semibold">
-              {bookingData.total_price?.toFixed(0) || bookingData.base_price?.toFixed(0)} EGP
+              {typeof bookingData.total_price === 'number' ? bookingData.total_price.toFixed(0) : (typeof bookingData.base_price === 'number' ? bookingData.base_price.toFixed(0) : '0')} EGP
             </p>
             <p className="text-[#A0A0A0] text-xs sm:text-sm font-normal">
-              {bookingData.service_fee && `Including service fee: ${bookingData.service_fee.toFixed(0)} EGP`}
+              {typeof bookingData.service_fee === 'number' && `Including service fee: ${bookingData.service_fee.toFixed(0)} EGP`}
             </p>
           </div>
         </div>
