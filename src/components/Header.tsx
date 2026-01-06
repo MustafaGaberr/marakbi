@@ -26,11 +26,11 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [boats, setBoats] = useState<Boat[]>([]);
 
-  type Suggestion = { 
-    label: string; 
-    href: string; 
+  type Suggestion = {
+    label: string;
+    href: string;
     type: 'category' | 'city' | 'boat' | 'service';
-    keywords?: string[] 
+    keywords?: string[]
   };
 
   // Mapping for common Arabic city names to English (for search)
@@ -74,10 +74,10 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
   const matchesWithMapping = (query: string, source: string, mapping: Record<string, string[]>): boolean => {
     const normalizedQuery = normalizeArabic(query);
     const normalizedSource = normalizeArabic(source);
-    
+
     // Direct match
     if (normalizedSource.includes(normalizedQuery)) return true;
-    
+
     // Check Arabic query against English source using mapping
     for (const [arabicName, englishNames] of Object.entries(mapping)) {
       if (normalizeArabic(arabicName).includes(normalizedQuery)) {
@@ -87,7 +87,7 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
         }
       }
     }
-    
+
     // Check English query against Arabic source using mapping
     for (const [arabicName, englishNames] of Object.entries(mapping)) {
       if (englishNames.some(en => normalizedQuery.includes(en.toLowerCase()))) {
@@ -97,7 +97,7 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
         }
       }
     }
-    
+
     return false;
   };
 
@@ -105,17 +105,17 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
     const q = normalizeArabic(query);
     if (!q) return false;
     const normalizedSource = normalizeArabic(source);
-    
+
     // Direct match
     if (normalizedSource.includes(q)) return true;
-    
+
     // Use mapping for cities and categories
     if (type === 'city') {
       return matchesWithMapping(query, source, cityNameMapping);
     } else if (type === 'category') {
       return matchesWithMapping(query, source, categoryNameMapping);
     }
-    
+
     // For boats, check both direct match and word-by-word
     return normalizedSource.split(/\s+/).some((tok) => tok.startsWith(q) || tok.includes(q));
   };
@@ -194,7 +194,7 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
     const handleStorageChange = () => {
       checkAuth();
     };
-    
+
     if (typeof window !== 'undefined') {
       window.addEventListener('storage', handleStorageChange);
     }
@@ -303,22 +303,22 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    
+
     try {
       // Clear token and user data
       storage.clearAll();
-      
+
       // Clear cookies
       document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       document.cookie = 'refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-      
+
       // Clear remember me data
       localStorage.removeItem('rememberMe');
       localStorage.removeItem('savedUsername');
       localStorage.removeItem('savedPassword');
-      
+
       setUser(null);
-      
+
       // Refresh the page to update all components
       window.location.href = '/';
     } catch (error) {
@@ -376,7 +376,7 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
           </div>
         </div>
       </div>
-      
+
       {/* Main Navigation Bar */}
       <nav className={`absolute top-0 sm:top-14 left-0 right-0 z-50 ${variant === 'solid' ? 'bg-white shadow-sm' : 'bg-[#093B77] sm:bg-transparent'}`}>
         <div className="px-4 sm:px-8 md:px-16 py-4 flex justify-between items-center">
@@ -389,7 +389,7 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
               <Logo width={64} height={80} variant={logoVariant} />
             </Link>
           </div>
-          
+
           {/* Middle: Navigation Links - Desktop */}
           <div className="hidden md:flex gap-8">
             <Link href="/" className={`${textColor} text-base font-normal font-poppins ${hoverColor} transition-colors`}>Home</Link>
@@ -436,9 +436,8 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
                 }}
                 onBlur={() => setTimeout(() => setIsSearchOpen(false), 120)}
                 placeholder="Search..."
-                className={`absolute left-full ml-2 h-9 rounded-full bg-white text-gray-900 placeholder-gray-400 shadow border border-gray-200 px-4 transition-all duration-300 ease-out ${
-                  isSearchOpen ? 'w-64 opacity-100' : 'w-0 opacity-0'
-                }`}
+                className={`absolute left-full ml-2 h-9 rounded-full bg-white text-gray-900 placeholder-gray-400 shadow border border-gray-200 px-4 transition-all duration-300 ease-out ${isSearchOpen ? 'w-64 opacity-100' : 'w-0 opacity-0'
+                  }`}
               />
               {/* Suggestions Dropdown */}
               {isSearchOpen && searchQuery.trim() && (
@@ -458,12 +457,11 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
                         }}
                       >
                         <div className="flex items-center gap-2">
-                          <span className={`text-xs px-2 py-0.5 rounded ${
-                            s.type === 'category' ? 'bg-blue-100 text-blue-700' :
-                            s.type === 'city' ? 'bg-green-100 text-green-700' :
-                            s.type === 'boat' ? 'bg-purple-100 text-purple-700' :
-                            'bg-gray-100 text-gray-700'
-                          }`}>
+                          <span className={`text-xs px-2 py-0.5 rounded ${s.type === 'category' ? 'bg-blue-100 text-blue-700' :
+                              s.type === 'city' ? 'bg-green-100 text-green-700' :
+                                s.type === 'boat' ? 'bg-purple-100 text-purple-700' :
+                                  'bg-gray-100 text-gray-700'
+                            }`}>
                             {s.type === 'category' ? 'Category' : s.type === 'city' ? 'City' : 'Boat'}
                           </span>
                           <span>{s.label}</span>
@@ -479,7 +477,7 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
               )}
             </div>
           </div>
-          
+
           {/* Right: Auth Links or Profile */}
           <div className="flex items-center gap-6">
             {user ? (
@@ -487,19 +485,18 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
                 <Link href="/profile" className={`${textColor} text-base font-normal font-poppins ${hoverColor} transition-colors`}>
                   My Profile
                 </Link>
-                {currentPage !== 'dashboard' && (
+                {/* {currentPage !== 'dashboard' && (
                   <Link href="/dashboard" className={`${textColor} text-base font-normal font-poppins ${hoverColor} transition-colors`}>
                     Dashboard
                   </Link>
-                )}
+                )} */}
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}
-                  className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                    isLoggingOut 
-                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                  className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${isLoggingOut
+                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
                       : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md'
-                  }`}
+                    }`}
                 >
                   {isLoggingOut && (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -517,7 +514,7 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
                 </Link>
               </div>
             )}
-            
+
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -533,7 +530,7 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
             </button>
           </div>
         </div>
-        
+
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="fixed inset-x-0 top-16 bottom-0 z-[60] md:hidden bg-white/95 backdrop-blur-sm border-t border-gray-200 animate-fade-in">
@@ -551,26 +548,25 @@ const Header = ({ variant = 'transparent', currentPage }: HeaderProps) => {
                 <Link href="/services/occasions" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 rounded-lg text-gray-700 text-sm font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">OCCASIONS</Link>
               </div>
               <Link href="/contact" onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg text-gray-800 text-base font-medium font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">Contact</Link>
-              
+
               {/* Mobile Auth Links */}
               {user ? (
                 <div className="pt-4 border-t border-gray-200 space-y-3">
                   <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg text-gray-800 text-base font-medium font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">
                     My Profile
                   </Link>
-                  {currentPage !== 'dashboard' && (
+                  {/* {currentPage !== 'dashboard' && (
                     <Link href="/dashboard" onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 rounded-lg text-gray-800 text-base font-medium font-poppins hover:bg-blue-50 hover:text-blue-600 transition-colors">
                       Dashboard
                     </Link>
-                  )}
+                  )} */}
                   <button
                     onClick={handleLogout}
                     disabled={isLoggingOut}
-                    className={`w-full px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
-                      isLoggingOut 
-                        ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                    className={`w-full px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${isLoggingOut
+                        ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
                         : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md'
-                    }`}
+                      }`}
                   >
                     {isLoggingOut && (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

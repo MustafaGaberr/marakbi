@@ -119,9 +119,8 @@ export default function OurTeamPage() {
                   <button
                     key={index}
                     onClick={() => setCurrentSlide(index)}
-                    className={`flex-1 h-0.5 mx-1 transition-colors duration-300 ${
-                      index === currentSlide ? "bg-amber-400" : "bg-white/60"
-                    }`}
+                    className={`flex-1 h-0.5 mx-1 transition-colors duration-300 ${index === currentSlide ? "bg-amber-400" : "bg-white/60"
+                      }`}
                   />
                 ))}
               </div>
@@ -391,12 +390,12 @@ export default function OurTeamPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Ahmed Bastawi */}
             <div className="h-[450px] rounded-xl shadow-lg overflow-hidden border border-gray-200">
-              <div className="relative bg-[#EFEFEF] h-80">
+              <div className="relative bg-[#EFEFEF] h-80 overflow-hidden">
                 <Image
                   src="/images/founder 2.png"
                   alt="Ahmed Bastawi"
                   fill
-                  className="object-cover transform translate-x-30 translate-y-0"
+                  className="object-contain"
                 />
                 <div className="absolute top-4 right-4"></div>
               </div>
@@ -426,23 +425,14 @@ export default function OurTeamPage() {
             </div>
 
             {/* Nesma Ghazaly */}
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-              <div className="relative">
-                <div className="w-full h-80 bg-gray-200 flex items-center justify-center">
-                  <svg
-                    className="w-16 h-16 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                </div>
+            <div className="h-[450px] rounded-xl shadow-lg overflow-hidden border border-gray-200">
+              <div className="relative bg-[#EFEFEF] h-80 overflow-hidden">
+                <Image
+                  src="/images/founder-nesma.png"
+                  alt="Nesma Ghazaly"
+                  fill
+                  className="object-contain scale-110"
+                />
                 <div className="absolute top-4 right-4"></div>
               </div>
               <div className="p-6 flex items-center justify-between">
