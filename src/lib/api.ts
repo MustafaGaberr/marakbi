@@ -9,7 +9,7 @@
 // Falls back to the production Heroku URL when the env var is unset.
 // (NEXT_PUBLIC_API_URL is inlined client-side by Next.js, so this works
 // in both server and browser contexts.)
-const DEFAULT_API_URL = 'https://marakbi-e0870d98592a.herokuapp.com';
+const DEFAULT_API_URL = 'https://api.daffa.pro';
 // const DEFAULT_API_URL = 'http://127.0.0.1:8787';
 
 export const BASE_URL =
@@ -716,12 +716,69 @@ async function apiRequest<T>(
           (window.location.pathname === '/login' ||
             window.location.pathname === '/signup' ||
             endpoint.includes('/auth/login') ||
-            endpoint.includes('/auth/register'));
+            endpoint.includes('/auth/register') ||
+            endpoint.includes('/auth/refresh'));
 
         if (!isAuthPage) {
+          const refreshToken = storage.getRefreshToken();
+          if (refreshToken) {
+            try {
+              // Try to refresh token
+              const refreshResponse = await fetch(`${BASE_URL}/auth/refresh`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${refreshToken}`
+                }
+              });
+              if (refreshResponse.ok) {
+                const refreshData = await refreshResponse.json();
+                if (refreshData && refreshData.access_token) {
+                  // Save new access token
+                  storage.setToken(refreshData.access_token);
+                  // Update cookie
+                  const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
+                  document.cookie = `access_token=${refreshData.access_token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax${isSecure ? '; Secure' : ''}`;
+                  
+                  // Retry the original request
+                  const retryHeaders = {
+                    ...headers,
+                    'Authorization': `Bearer ${refreshData.access_token}`
+                  };
+                  const retryResponse = await fetch(url, {
+                    ...options,
+                    headers: retryHeaders
+                  });
+                  
+                  const retryContentType = retryResponse.headers.get('content-type');
+                  if (retryContentType && retryContentType.includes('application/json')) {
+                    const retryData = await retryResponse.json();
+                    if (retryResponse.ok) {
+                      return { success: true, data: retryData };
+                    } else {
+                      return {
+                        success: false,
+                        error: retryData?.message || retryData?.error || 'Retry request failed'
+                      };
+                    }
+                  } else {
+                    return {
+                      success: false,
+                      error: retryResponse.status >= 500 ? 'Server error. Please try again later.' : 'Retry request returned non-JSON'
+                    };
+                  }
+                }
+              }
+            } catch (refreshErr) {
+              console.error('Error refreshing token:', refreshErr);
+            }
+          }
+
+          // If refresh failed or no refresh token, clear session and redirect to login
           storage.clearAll();
           if (typeof window !== 'undefined') {
-            window.location.href = '/login';
+            const currentPath = window.location.pathname + window.location.search;
+            window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
           }
         }
 

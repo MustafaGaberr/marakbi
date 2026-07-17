@@ -24,9 +24,7 @@ export default function LoginPage() {
       const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
       if (savedRememberMe) {
         const savedUsername = localStorage.getItem('savedUsername') || '';
-        const savedPassword = localStorage.getItem('savedPassword') || '';
         setUsername(savedUsername);
-        setPassword(savedPassword);
         setRememberMe(true);
       }
     }
@@ -81,22 +79,27 @@ export default function LoginPage() {
         if (rememberMe) {
           localStorage.setItem('rememberMe', 'true');
           localStorage.setItem('savedUsername', username);
-          localStorage.setItem('savedPassword', password);
         } else {
           localStorage.removeItem('rememberMe');
           localStorage.removeItem('savedUsername');
-          localStorage.removeItem('savedPassword');
         }
+        localStorage.removeItem('savedPassword'); // Ensure any legacy saved password is deleted
 
         // Also set cookie for middleware
-        document.cookie = `access_token=${response.data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+        const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
+        document.cookie = `access_token=${response.data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax${isSecure ? '; Secure' : ''}`;
+
+        // Validate relative redirect URL
+        const isValidRelativeRedirect = (path: string) => {
+          return path.startsWith('/') && !path.startsWith('//') && !path.startsWith('\\');
+        };
 
         // Priority: explicit ?redirect= query param > stored intended_url > home
-        if (redirectTo) {
+        if (redirectTo && isValidRelativeRedirect(redirectTo)) {
           router.push(redirectTo);
         } else {
           const intendedUrl = localStorage.getItem('intended_url');
-          if (intendedUrl) {
+          if (intendedUrl && isValidRelativeRedirect(intendedUrl)) {
             localStorage.removeItem('intended_url');
             router.push(intendedUrl);
           } else {

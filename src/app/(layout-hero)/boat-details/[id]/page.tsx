@@ -1373,12 +1373,23 @@ export default function BoatDetailsPage() {
                   src={(() => {
                     const url = normalizedMedia[currentImageIndex].url;
                     let videoId = "";
+                    try {
+                      const parsed = new URL(url);
+                      if (parsed.protocol === 'https:' && 
+                          (parsed.hostname === 'youtube.com' || parsed.hostname === 'www.youtube.com' || parsed.hostname === 'youtube-nocookie.com')) {
+                        if (parsed.pathname.startsWith('/embed/')) {
+                          return url;
+                        }
+                      }
+                    } catch (e) {
+                      // Fallback
+                    }
                     if (url.includes("youtu.be/")) {
                       videoId = url.split("youtu.be/")[1].split("?")[0];
                     } else if (url.includes("youtube.com/watch")) {
-                      videoId = new URL(url).searchParams.get("v") || "";
-                    } else if (url.includes("youtube.com/embed/")) {
-                      return url;
+                      try {
+                        videoId = new URL(url).searchParams.get("v") || "";
+                      } catch (e) {}
                     }
                     return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
                   })()}

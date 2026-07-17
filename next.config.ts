@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "daffa-e0870d98592a.herokuapp.com",
+        hostname: "api.daffa.pro",
         pathname: "/**",
       },
       {
@@ -43,6 +43,35 @@ const nextConfig: NextConfig = {
   eslint: {
     // Ignore ESLint errors/warnings during builds to bypass legacy issues in the codebase
     ignoreDuringBuilds: true,
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://img.youtube.com https://i.ytimg.com; media-src 'self' https://res.cloudinary.com; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://api.daffa.pro https://yasershaban.pythonanywhere.com http://127.0.0.1:5000 http://127.0.0.1:8787;",
+          },
+        ],
+      },
+    ];
   },
 };
 

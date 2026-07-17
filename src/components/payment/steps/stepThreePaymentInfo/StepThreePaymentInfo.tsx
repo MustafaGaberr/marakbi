@@ -109,8 +109,31 @@ export default function StepThreePaymentInfo() {
         const paymentUrl = responseData.payment_data?.payment_url || responseData.payment?.payment_url;
 
         if (paymentMethod === 'card' && paymentUrl) {
-          window.location.href = paymentUrl;
-        } else {          clearBookingData();
+          try {
+            const parsedPaymentUrl = new URL(paymentUrl);
+            const allowedHosts = [
+              'fawaterk.com', 'www.fawaterk.com',
+              'staging.fawaterk.com',
+              'faturat.com', 'www.faturat.com',
+              'fawaterak.com', 'www.fawaterak.com'
+            ];
+            
+            const isAllowedHost = allowedHosts.some(host => 
+              parsedPaymentUrl.hostname === host || parsedPaymentUrl.hostname.endsWith('.' + host)
+            );
+            
+            if (isAllowedHost) {
+              window.location.href = paymentUrl;
+            } else {
+              console.error('Blocked redirection to untrusted payment host:', parsedPaymentUrl.hostname);
+              setError('Security Error: Redirection to untrusted payment host was blocked. Please contact support.');
+            }
+          } catch (e) {
+            console.error('Invalid payment URL format:', paymentUrl);
+            setError('Error: Invalid payment redirect URL format.');
+          }
+        } else {
+          clearBookingData();
           toast.success('Booking created successfully! Payment will be collected in cash.');
           router.push('/my-bookings');
         }
