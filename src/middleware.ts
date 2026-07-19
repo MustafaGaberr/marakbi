@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // JWT token decode helper — returns payload if valid, null otherwise
-function decodeToken(token: string): { exp?: number; role?: string; username?: string } | null {
+function decodeToken(token: string, ignoreExpiration = false): { exp?: number; role?: string; username?: string } | null {
   if (!token) return null;
 
   try {
@@ -12,7 +12,7 @@ function decodeToken(token: string): { exp?: number; role?: string; username?: s
     const payload = JSON.parse(atob(parts[1]));
     const currentTime = Math.floor(Date.now() / 1000);
 
-    if (payload.exp && payload.exp < currentTime) {
+    if (!ignoreExpiration && payload.exp && payload.exp < currentTime) {
       return null;
     }
 
@@ -25,10 +25,6 @@ function decodeToken(token: string): { exp?: number; role?: string; username?: s
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
-  // Get token from cookies
-  const token = request.cookies.get('access_token')?.value;
-  const payload = token ? decodeToken(token) : null;
 
   // Protected pages that require authentication
   const protectedPages = [
@@ -46,6 +42,12 @@ export function middleware(request: NextRequest) {
   // Check if current page is protected
   const isProtectedPage = protectedPages.some(page => pathname.startsWith(page));
   const isAdminPage = adminPages.some(page => pathname.startsWith(page));
+
+  // Get token from cookies
+  const token = request.cookies.get('access_token')?.value;
+  // For protected pages, we ignore expiration to let the client-side API requests refresh the token.
+  // For other pages (like login/signup), we check expiration strictly to avoid redirecting users with expired tokens away from login.
+  const payload = token ? decodeToken(token, isProtectedPage) : null;
 
   // If trying to access a protected page without valid token, redirect to login
   if (isProtectedPage) {

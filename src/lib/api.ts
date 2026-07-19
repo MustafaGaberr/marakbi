@@ -10,7 +10,7 @@
 // (NEXT_PUBLIC_API_URL is inlined client-side by Next.js, so this works
 // in both server and browser contexts.)
 const DEFAULT_API_URL = 'https://api.daffa.pro';
-// const DEFAULT_API_URL = 'http://127.0.0.1:8787';
+// const DEFAULT_API_URL = 'http://127.0.0.1:5000';
 
 export const BASE_URL =
   (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) ||
@@ -739,7 +739,7 @@ async function apiRequest<T>(
                   // Update cookie
                   const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
                   document.cookie = `access_token=${refreshData.access_token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax${isSecure ? '; Secure' : ''}`;
-                  
+
                   // Retry the original request
                   const retryHeaders = {
                     ...headers,
@@ -749,7 +749,7 @@ async function apiRequest<T>(
                     ...options,
                     headers: retryHeaders
                   });
-                  
+
                   const retryContentType = retryResponse.headers.get('content-type');
                   if (retryContentType && retryContentType.includes('application/json')) {
                     const retryData = await retryResponse.json();

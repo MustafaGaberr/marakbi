@@ -67,7 +67,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://img.youtube.com https://i.ytimg.com; media-src 'self' https://res.cloudinary.com; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://api.daffa.pro https://yasershaban.pythonanywhere.com http://127.0.0.1:5000 http://127.0.0.1:8787;",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://staging.fawaterk.com https://app.fawaterk.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://img.youtube.com https://i.ytimg.com; media-src 'self' https://res.cloudinary.com; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://staging.fawaterk.com https://app.fawaterk.com; connect-src 'self' https://api.daffa.pro https://yasershaban.pythonanywhere.com https://api.cloudinary.com https://staging.fawaterk.com https://app.fawaterk.com http://127.0.0.1:5000 http://127.0.0.1:8787;",
           },
         ],
       },
