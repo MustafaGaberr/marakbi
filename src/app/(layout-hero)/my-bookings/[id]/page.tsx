@@ -469,7 +469,12 @@ export default function BookingDetailsPage() {
                                                     <div key={idx} className="flex justify-between items-start text-sm">
                                                         <div className="flex-1 min-w-0">
                                                             <span className="text-gray-600 font-medium">{svc.name}</span>
-                                                            {svc.price_mode !== 'per_trip' && svc.person_count && (
+                                                            {svc.price_mode === 'per_unit' && svc.unit_count && (
+                                                                <p className="text-[11px] text-gray-400 mt-0.5">
+                                                                    {formatCurrency(svc.price)} × {svc.unit_count} {svc.unit_count === 1 ? 'unit' : 'units'}
+                                                                </p>
+                                                            )}
+                                                            {svc.price_mode !== 'per_trip' && svc.price_mode !== 'per_unit' && svc.person_count && (
                                                                 <p className="text-[11px] text-gray-400 mt-0.5">
                                                                     {formatCurrency(svc.price)} × {svc.person_count} {svc.person_count === 1 ? 'person' : 'persons'}
                                                                     {svc.price_mode === 'per_person_per_time' && svc.price > 0 && svc.person_count > 0 &&

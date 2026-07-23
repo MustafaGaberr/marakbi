@@ -74,6 +74,18 @@ export default function BoatDetailsPage() {
     }
     return new Map();
   });
+  const [serviceUnitCounts, setServiceUnitCounts] = useState<Map<number, number>>(() => {
+    const stored = useBookingStore.getState().bookingData;
+    const currentBoatId = parseInt(params.id as string);
+    if (stored?.selected_services && stored.boat_id === currentBoatId) {
+      const map = new Map<number, number>();
+      (stored.selected_services as { service_id: number; unit_count?: number }[]).forEach(svc => {
+        if (svc.unit_count != null) map.set(svc.service_id, svc.unit_count);
+      });
+      return map;
+    }
+    return new Map();
+  });
 
   // Auto-advance trip image slider
   useEffect(() => {
@@ -726,7 +738,9 @@ export default function BoatDetailsPage() {
                         ? 'Per Person'
                         : svc.service?.price_mode === 'per_person_per_time'
                           ? 'Per Person/Time'
-                          : 'Per Trip';
+                          : svc.service?.price_mode === 'per_unit'
+                            ? 'Per Unit'
+                            : 'Per Trip';
                     const isSelected = selectedServiceIds.has(svc.service_id);
                     return (
                     <div
@@ -1289,6 +1303,8 @@ export default function BoatDetailsPage() {
               setSelectedServiceIds={setSelectedServiceIds}
               servicePersonCounts={servicePersonCounts}
               setServicePersonCounts={setServicePersonCounts}
+              serviceUnitCounts={serviceUnitCounts}
+              setServiceUnitCounts={setServiceUnitCounts}
               childrenAllowed={boat.children_allowed}
               childPrice={boat.child_price}
               minChildAge={boat.min_child_age}

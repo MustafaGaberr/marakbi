@@ -113,11 +113,16 @@ export default function StepOneBookingInfo() {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Add-on Services</span>
                   <span className="font-semibold">{typeof bookingData.services_total === 'number' ? bookingData.services_total.toFixed(0) : '0'} EGP</span>
-                </div>                {bookingData.selected_services.map((svc: { service_id: number; name: string; price: number; price_mode: string; calculated_price: number; person_count?: number }) => (
+                </div>                {bookingData.selected_services.map((svc: { service_id: number; name: string; price: number; price_mode: string; calculated_price: number; person_count?: number; unit_count?: number }) => (
                   <div key={svc.service_id} className="flex justify-between pl-4">
                     <span className="text-gray-400 text-sm">
                       {svc.name}
-                      {svc.price_mode !== 'per_trip' && svc.person_count && (
+                      {svc.price_mode === 'per_unit' && svc.unit_count && (
+                        <span className="text-gray-300 text-xs ml-1">
+                          ({svc.price} × {svc.unit_count} {svc.unit_count === 1 ? 'unit' : 'units'})
+                        </span>
+                      )}
+                      {svc.price_mode !== 'per_trip' && svc.price_mode !== 'per_unit' && svc.person_count && (
                         <span className="text-gray-300 text-xs ml-1">
                           ({svc.price} × {svc.person_count}{svc.price_mode === 'per_person_per_time' && svc.price > 0 && svc.person_count > 0 ? ` × ${Number((Math.round((svc.calculated_price / (svc.price * svc.person_count)) * 100) / 100).toFixed(1))}h` : ''})
                         </span>

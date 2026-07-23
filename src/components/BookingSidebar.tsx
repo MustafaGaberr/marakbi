@@ -37,6 +37,8 @@ interface BookingSidebarProps {
     setSelectedServiceIds: React.Dispatch<React.SetStateAction<Set<number>>>;
     servicePersonCounts: Map<number, number>;
     setServicePersonCounts: React.Dispatch<React.SetStateAction<Map<number, number>>>;
+    serviceUnitCounts: Map<number, number>;
+    setServiceUnitCounts: React.Dispatch<React.SetStateAction<Map<number, number>>>;
     // Children pricing props
     childrenAllowed?: boolean;
     childPrice?: number | null;
@@ -51,6 +53,7 @@ export interface SelectedServiceItem {
     price_mode: string;
     calculated_price: number;
     person_count?: number;
+    unit_count?: number;
 }
 
 export interface BookingData {
@@ -92,6 +95,8 @@ export default function BookingSidebar({
     setSelectedServiceIds,
     servicePersonCounts,
     setServicePersonCounts,
+    serviceUnitCounts,
+    setServiceUnitCounts,
     childrenAllowed = true,
     childPrice = null,
     minChildAge = 0,
@@ -530,6 +535,7 @@ export default function BookingSidebar({
 
             const perPersonAllRequired = svcAssign.per_person_all_required !== false;
             const isPerPerson = svcPriceMode === 'per_person' || svcPriceMode === 'per_person_per_time';
+            const isPerUnit = svcPriceMode === 'per_unit';
             const maxPeople = guestCount + (includeChildren ? childrenCount : 0);
             let svcPersonCount = (!perPersonAllRequired && isPerPerson)
                 ? (servicePersonCounts.get(svcAssign.service_id) ?? maxPeople)
@@ -537,6 +543,7 @@ export default function BookingSidebar({
             if (svcPersonCount > maxPeople) {
                 svcPersonCount = maxPeople;
             }
+            const svcUnitCount = isPerUnit ? (serviceUnitCounts.get(svcAssign.service_id) ?? 1) : undefined;
 
             if (svcPriceMode === 'per_trip') {
                 calculatedSvcPrice = svcPrice;
@@ -545,6 +552,8 @@ export default function BookingSidebar({
             } else if (svcPriceMode === 'per_person_per_time') {
                 const hrs = calculatedHours || (days * 8) || 1;
                 calculatedSvcPrice = svcPrice * svcPersonCount * hrs;
+            } else if (isPerUnit && svcUnitCount) {
+                calculatedSvcPrice = svcPrice * svcUnitCount;
             }
 
             servicesTotal += calculatedSvcPrice;
@@ -555,6 +564,7 @@ export default function BookingSidebar({
                 price_mode: svcPriceMode,
                 calculated_price: calculatedSvcPrice,
                 person_count: isPerPerson ? svcPersonCount : undefined,
+                unit_count: isPerUnit ? svcUnitCount : undefined,
             });
         });
 
@@ -1244,8 +1254,9 @@ export default function BookingSidebar({
                                     const svc = svcAssign.service;
                                     if (!svc) return null;
                                     const svcPrice = svcAssign.price ?? svc.default_price ?? 0;
-                                    const priceModeLabel = svc.price_mode === 'per_trip' ? '' : svc.price_mode === 'per_person' ? '/person' : '/person/hr';
+                                    const priceModeLabel = svc.price_mode === 'per_trip' ? '' : svc.price_mode === 'per_person' ? '/person' : svc.price_mode === 'per_unit' ? '/unit' : '/person/hr';
                                     const isPerPerson = svc.price_mode === 'per_person' || svc.price_mode === 'per_person_per_time';
+                                    const isPerUnit = svc.price_mode === 'per_unit';
                                     const perPersonAllRequired = svcAssign.per_person_all_required !== false;
                                     const showPersonPicker = isPerPerson && !perPersonAllRequired;
                                     const maxPeople = guestCount + (includeChildren ? childrenCount : 0);
@@ -1253,6 +1264,7 @@ export default function BookingSidebar({
                                     if (currentPersonCount > maxPeople) {
                                         currentPersonCount = maxPeople;
                                     }
+                                    const currentUnitCount = serviceUnitCounts.get(svcAssign.service_id) ?? 1;
 
                                     return (
                                         <div key={svcAssign.service_id} className="border border-[#0F3875] bg-blue-50/30 rounded-lg overflow-hidden">
@@ -1319,6 +1331,42 @@ export default function BookingSidebar({
                                                     </div>
                                                 </div>
                                             )}
+                                            {isPerUnit && (
+                                                <div className="flex items-center justify-between px-3 py-2 border-t border-[#0F3875]/30">
+                                                    <span className="text-zinc-600 text-xs font-poppins">Quantity</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setServiceUnitCounts(prev => {
+                                                                    const next = new Map(prev);
+                                                                    next.set(svcAssign.service_id, Math.max(1, currentUnitCount - 1));
+                                                                    return next;
+                                                                });
+                                                            }}
+                                                            disabled={currentUnitCount <= 1}
+                                                            className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center text-sm font-bold text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                        >
+                                                            −
+                                                        </button>
+                                                        <span className="text-stone-900 text-sm font-semibold font-poppins min-w-[20px] text-center">{currentUnitCount}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setServiceUnitCounts(prev => {
+                                                                    const next = new Map(prev);
+                                                                    next.set(svcAssign.service_id, Math.min(99, currentUnitCount + 1));
+                                                                    return next;
+                                                                });
+                                                            }}
+                                                            disabled={currentUnitCount >= 99}
+                                                            className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center text-sm font-bold text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                        >
+                                                            +
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     );
                                 })}
@@ -1363,7 +1411,10 @@ export default function BookingSidebar({
                             <div key={svc.service_id} className="flex justify-between items-center ml-2">
                                 <span className="text-zinc-400 text-xs font-normal font-poppins">
                                     {svc.name}
-                                    {svc.price_mode !== 'per_trip' && svc.person_count && (
+                                    {svc.price_mode === 'per_unit' && svc.unit_count && (
+                                        <span className="text-zinc-400"> — {Math.round(svc.price)} × {svc.unit_count} {svc.unit_count === 1 ? 'unit' : 'units'}</span>
+                                    )}
+                                    {svc.price_mode !== 'per_trip' && svc.price_mode !== 'per_unit' && svc.person_count && (
                                         <span className="text-zinc-400"> — {Math.round(svc.price)} × {svc.person_count} {svc.person_count === 1 ? 'person' : 'persons'}{hrsForLabel > 0 ? ` × ${hrsForLabel} hr${hrsForLabel !== 1 ? 's' : ''}` : ''}</span>
                                     )}
                                 </span>

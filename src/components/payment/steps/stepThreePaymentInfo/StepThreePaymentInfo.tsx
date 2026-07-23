@@ -66,6 +66,7 @@ export default function StepThreePaymentInfo() {
           payment_method: paymentMethod,
           platform: 'web',
           trip_id: bookingData.trip_id as number,
+          selected_services: bookingData.selected_services as TripBookingRequest['selected_services'],
           // Contact info
           booking_for: bookingData.booking_for as string,
           contact_first_name: bookingData.contact_first_name as string,
@@ -89,7 +90,7 @@ export default function StepThreePaymentInfo() {
           trip_id: bookingData.trip_id as number | undefined,
           total_price: (bookingData.total_price as number) || (bookingData.base_price as number),
           // Selected services
-          selected_services: bookingData.selected_services as { service_id: number; name: string; price: number; price_mode: string; calculated_price: number; person_count?: number }[] | undefined,
+          selected_services: bookingData.selected_services as { service_id: number; name: string; price: number; price_mode: string; calculated_price: number; person_count?: number; unit_count?: number }[] | undefined,
           // Contact info
           booking_for: bookingData.booking_for as string,
           contact_first_name: bookingData.contact_first_name as string,
@@ -213,11 +214,16 @@ export default function StepThreePaymentInfo() {
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Add-on Services:</span>
                 <span className="font-medium">{typeof bookingData.services_total === 'number' ? (bookingData.services_total as number).toFixed(0) : '0'} EGP</span>
-              </div>              {(bookingData.selected_services as { service_id: number; name: string; price: number; price_mode: string; calculated_price: number; person_count?: number }[]).map((svc) => (
+              </div>              {(bookingData.selected_services as { service_id: number; name: string; price: number; price_mode: string; calculated_price: number; person_count?: number; unit_count?: number }[]).map((svc) => (
                 <div key={svc.service_id} className="flex justify-between text-xs pl-3">
                   <span className="text-gray-400">
                     {svc.name}
-                    {svc.price_mode !== 'per_trip' && svc.person_count && (
+                    {svc.price_mode === 'per_unit' && svc.unit_count && (
+                      <span className="text-gray-300 ml-1">
+                        ({svc.price} × {svc.unit_count} {svc.unit_count === 1 ? 'unit' : 'units'})
+                      </span>
+                    )}
+                    {svc.price_mode !== 'per_trip' && svc.price_mode !== 'per_unit' && svc.person_count && (
                       <span className="text-gray-300 ml-1">
                         ({svc.price} × {svc.person_count}{svc.price_mode === 'per_person_per_time' && svc.price > 0 && svc.person_count > 0 ? ` × ${Number((Math.round((svc.calculated_price / (svc.price * svc.person_count)) * 100) / 100).toFixed(1))}h` : ''})
                       </span>

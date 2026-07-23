@@ -90,7 +90,7 @@ export default function AdminBoatListingLayout() {
     name: string;
     description: string;
     price: number | null;
-    price_mode: 'per_trip' | 'per_person' | 'per_person_per_time';
+    price_mode: 'per_trip' | 'per_person' | 'per_person_per_time' | 'per_unit';
     icon: File | null;
   }>({ name: '', description: '', price: null, price_mode: 'per_trip', icon: null });
   const resetNewServiceData = () => {
@@ -102,7 +102,7 @@ export default function AdminBoatListingLayout() {
   const [editServiceData, setEditServiceData] = useState<{
     name: string;
     description: string;
-    price_mode: 'per_trip' | 'per_person' | 'per_person_per_time';
+    price_mode: 'per_trip' | 'per_person' | 'per_person_per_time' | 'per_unit';
     icon: File | null;
   }>({ name: '', description: '', price_mode: 'per_trip', icon: null });
   const [savingService, setSavingService] = useState(false);
@@ -1979,12 +1979,13 @@ export default function AdminBoatListingLayout() {
                           <label className="block text-xs font-semibold text-gray-600 mb-1">Pricing Model *</label>
                           <select
                             value={newServiceData.price_mode}
-                            onChange={(e) => setNewServiceData(prev => ({ ...prev, price_mode: e.target.value as 'per_trip' | 'per_person' | 'per_person_per_time' }))}
+                            onChange={(e) => setNewServiceData(prev => ({ ...prev, price_mode: e.target.value as 'per_trip' | 'per_person' | 'per_person_per_time' | 'per_unit' }))}
                             className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
                           >
                             <option value="per_trip">Per Trip (flat fee)</option>
                             <option value="per_person">Per Person</option>
                             <option value="per_person_per_time">Per Person / Hour</option>
+                            <option value="per_unit">Per Unit</option>
                           </select>
                         </div>
                         <div>
@@ -2070,12 +2071,13 @@ export default function AdminBoatListingLayout() {
                                     <label className="block text-xs font-semibold text-gray-600 mb-1">Pricing Model *</label>
                                     <select
                                       value={editServiceData.price_mode}
-                                      onChange={(e) => setEditServiceData(prev => ({ ...prev, price_mode: e.target.value as 'per_trip' | 'per_person' | 'per_person_per_time' }))}
+                                      onChange={(e) => setEditServiceData(prev => ({ ...prev, price_mode: e.target.value as 'per_trip' | 'per_person' | 'per_person_per_time' | 'per_unit' }))}
                                       className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
                                     >
                                       <option value="per_trip">Per Trip (flat fee)</option>
                                       <option value="per_person">Per Person</option>
                                       <option value="per_person_per_time">Per Person / Hour</option>
+                                      <option value="per_unit">Per Unit</option>
                                     </select>
                                   </div>
                                   <div className="md:col-span-2">

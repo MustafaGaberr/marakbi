@@ -438,9 +438,14 @@ export default function OrderDetailsModal({
                                                 <div className="flex-1 min-w-0">
                                                     <span className="font-medium text-gray-700">{svc.name}</span>
                                                     <span className="text-[10px] text-gray-400 ml-1.5">
-                                                        ({svc.price_mode === 'per_trip' ? 'flat' : svc.price_mode === 'per_person' ? '/person' : '/person/hr'})
+                                                        ({svc.price_mode === 'per_trip' ? 'flat' : svc.price_mode === 'per_person' ? '/person' : svc.price_mode === 'per_unit' ? '/unit' : '/person/hr'})
                                                     </span>
-                                                    {svc.price_mode !== 'per_trip' && svc.person_count && (
+                                                    {svc.price_mode === 'per_unit' && svc.unit_count && (
+                                                        <p className="text-[11px] text-gray-400 mt-0.5">
+                                                            {formatCurrency(svc.price)} × {svc.unit_count} {svc.unit_count === 1 ? 'unit' : 'units'}
+                                                        </p>
+                                                    )}
+                                                    {svc.price_mode !== 'per_trip' && svc.price_mode !== 'per_unit' && svc.person_count && (
                                                         <p className="text-[11px] text-gray-400 mt-0.5">
                                                             {formatCurrency(svc.price)} × {svc.person_count} {svc.person_count === 1 ? 'person' : 'persons'}
                                                             {svc.price_mode === 'per_person_per_time' && svc.price > 0 && svc.person_count > 0 &&

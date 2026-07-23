@@ -63,7 +63,7 @@ export interface BoatServiceDef {
   name: string;
   description: string | null;
   default_price: number | null;
-  price_mode: 'per_trip' | 'per_person' | 'per_person_per_time';
+  price_mode: 'per_trip' | 'per_person' | 'per_person_per_time' | 'per_unit';
   icon_url: string | null;
   created_at: string;
 }
@@ -314,6 +314,15 @@ export interface TripBookingRequest {
   payment_method: 'card' | 'cash';
   platform: 'web' | 'mobile';
   trip_id: number;
+  selected_services?: Array<{
+    service_id: number;
+    name: string;
+    price: number;
+    price_mode: string;
+    calculated_price: number;
+    person_count?: number;
+    unit_count?: number;
+  }>;
   // Contact info
   booking_for?: string;
   contact_first_name?: string;
@@ -519,6 +528,7 @@ export interface Order {
     price_mode: string;
     calculated_price: number;
     person_count?: number | null;
+    unit_count?: number | null;
   }>;
   services_total?: number;
   // Children
@@ -546,7 +556,7 @@ export interface OrderData {
   payment_method: 'card' | 'cash';
   platform: 'web' | 'mobile';
   voyage_type: 'Private' | 'Sharing' | 'Travel' | 'Stay' | 'Fishing' | 'Occasion' | 'Water_activities';
-  selected_services?: { service_id: number; name: string; price: number; price_mode: string; calculated_price: number; person_count?: number }[];
+  selected_services?: { service_id: number; name: string; price: number; price_mode: string; calculated_price: number; person_count?: number; unit_count?: number }[];
 }
 
 export interface CreateOrderResponse {
@@ -1229,6 +1239,7 @@ export interface AdminOrder {
     price_mode: string;
     calculated_price: number;
     person_count?: number | null;
+    unit_count?: number | null;
   }>;
   services_total?: number;
   // Children

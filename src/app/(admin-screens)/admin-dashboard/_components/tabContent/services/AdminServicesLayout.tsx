@@ -10,6 +10,7 @@ const PRICE_MODES = [
   { value: "per_trip", label: "Per Trip" },
   { value: "per_person", label: "Per Person" },
   { value: "per_person_per_time", label: "Per Person / Hour (or Day)" },
+  { value: "per_unit", label: "Per Unit" },
 ];
 
 interface ServiceFormData {
