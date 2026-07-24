@@ -2,11 +2,11 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Logo from './Logo';
 import ServicesDropdown from './ServicesDropdown';
-import { storage, isAuthenticated, clientApi, City, Boat } from '@/lib/api';
+import { storage, isAuthenticated, clientApi, City, Boat, BASE_URL } from '@/lib/api';
 
 interface HeaderProps {
   variant?: 'transparent' | 'solid';
@@ -25,6 +25,7 @@ const Header = ({ variant = 'transparent' }: HeaderProps) => {
   const [cities, setCities] = useState<City[]>([]);
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [boats, setBoats] = useState<Boat[]>([]);
+  const isRefreshingRef = useRef(false);
 
   type Suggestion = {
     label: string;
@@ -165,32 +166,84 @@ const Header = ({ variant = 'transparent' }: HeaderProps) => {
     loadSearchData();
   }, []);
 
-  // Check authentication status
-  useEffect(() => {
-    const checkAuth = () => {
-      if (isAuthenticated()) {
-        const userData = storage.getUser();
-        if (userData) {
-          setUser({
-            fullName: userData.username,
-            email: userData.email || '',
-            role: userData.role || 'user'
-          });
-        }
-      } else {
-        setUser(null);
-        // Clear storage if token is invalid
-        storage.clearAll();
+  // Shared auth-check: proactively refreshes the access token when it
+  // expires so the user stays logged in without waiting for a 401.
+  const checkAuth = useCallback(async () => {
+    if (isAuthenticated()) {
+      const userData = storage.getUser();
+      if (userData) {
+        setUser({
+          fullName: userData.username,
+          email: userData.email || '',
+          role: userData.role || 'user'
+        });
       }
-    };
+      return;
+    }
 
-    // Check immediately
+    // Access token is invalid / missing.
+    // Clear the stale cookie immediately so the Next.js middleware
+    // stops redirecting /login → / (it checks the cookie, not localStorage).
+    if (typeof window !== 'undefined') {
+      document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
+    }
+    setUser(null);
+
+    const refreshToken = storage.getRefreshToken();
+    if (!refreshToken) {
+      storage.clearAll();
+      return;
+    }
+
+    // Prevent concurrent refresh attempts from interval / storage events
+    if (isRefreshingRef.current) return;
+    isRefreshingRef.current = true;
+
+    try {
+      const response = await fetch(`${BASE_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${refreshToken}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data?.access_token) {
+          // Persist the fresh access token
+          storage.setToken(data.access_token);
+          const isSecure =
+            typeof window !== 'undefined' && window.location.protocol === 'https:';
+          document.cookie = `access_token=${data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax${isSecure ? '; Secure' : ''}`;
+
+          const userData = storage.getUser();
+          if (userData) {
+            setUser({
+              fullName: userData.username,
+              email: userData.email || '',
+              role: userData.role || 'user'
+            });
+          }
+          return;
+        }
+      }
+
+      // Refresh failed — session is truly over
+      storage.clearAll();
+    } catch {
+      storage.clearAll();
+    } finally {
+      isRefreshingRef.current = false;
+    }
+  }, []);
+
+  // Run auth check on mount, every 30 s, and on cross-tab storage changes
+  useEffect(() => {
     checkAuth();
 
-    // Check periodically (every 30 seconds)
     const interval = setInterval(checkAuth, 30000);
 
-    // Check on storage change (when token is cleared)
     const handleStorageChange = () => {
       checkAuth();
     };
@@ -205,28 +258,12 @@ const Header = ({ variant = 'transparent' }: HeaderProps) => {
         window.removeEventListener('storage', handleStorageChange);
       }
     };
-  }, []);
+  }, [checkAuth]);
 
-  // Also check when pathname changes
+  // Re-check when the user navigates to a different page
   useEffect(() => {
-    const checkAuth = () => {
-      if (isAuthenticated()) {
-        const userData = storage.getUser();
-        if (userData) {
-          setUser({
-            fullName: userData.username,
-            email: userData.email || '',
-            role: userData.role || 'user'
-          });
-        }
-      } else {
-        setUser(null);
-        storage.clearAll();
-      }
-    };
-
     checkAuth();
-  }, [pathname]);
+  }, [pathname, checkAuth]);
 
   // Generate dynamic search suggestions
   const getSearchSuggestions = (): Suggestion[] => {
