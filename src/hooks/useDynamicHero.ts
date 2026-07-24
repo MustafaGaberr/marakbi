@@ -35,6 +35,13 @@ export default function useDynamicHero() {
       background: "/mainBg.jpg",
     },
     {
+      route: "/delete-account",
+      title: "Delete\nPage",
+      description:
+        "Account Deletion\nYou can permanently delete your account and associated data directly from the app.",
+      background: "/mainBg.jpg",
+    },
+    {
       route: "/contact",
       title: "Get in\nTouch",
       description:

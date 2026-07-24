@@ -1057,6 +1057,12 @@ export const customerApi = {
     });
   },
 
+  deleteProfile: async (): Promise<ApiResponse<{ message: string }>> => {
+    return apiRequest<{ message: string }>('/customer/profile', {
+      method: 'DELETE'
+    });
+  },
+
   getOrders: async (page = 1, perPage = 10, status: 'ongoing' | 'past' = 'ongoing'): Promise<ApiResponse<{ orders: Order[]; page: number; pages: number; per_page: number; total: number }>> => {
     return apiRequest<{ orders: Order[]; page: number; pages: number; per_page: number; total: number }>(`/customer/orders?page=${page}&per_page=${perPage}&status=${status}`);
   },

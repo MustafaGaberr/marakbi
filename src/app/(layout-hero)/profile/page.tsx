@@ -291,8 +291,8 @@ export default function ProfilePage() {
                 </p>
               </div>
 
-              {/* Edit Profile Button */}
-              <div className="flex justify-center mb-8">
+              {/* Edit Profile and Delete Account Buttons */}
+              <div className="flex justify-center mb-8 flex-col gap-4">
                 <button
                   onClick={() => setIsEditing(!isEditing)}
                   className="flex items-center justify-center gap-3 px-6 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 font-poppins hover:bg-gray-50 transition-colors"
@@ -305,6 +305,13 @@ export default function ProfilePage() {
                     height={20}
                     className="w-5 h-5"
                   />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push("/delete-account")}
+                  className="w-full rounded-full bg-red-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-red-700"
+                >
+                  Delete Account
                 </button>
               </div>
 
