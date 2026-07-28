@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { customerApi, Order } from "@/lib/api";
+import { customerApi, Order, isPaymentLinkUsable } from "@/lib/api";
 import { normalizeImageUrl } from "@/lib/imageUtils";
 import {
     FiClock,
@@ -21,6 +21,7 @@ import {
     FiMessageSquare,
     FiPackage
 } from "react-icons/fi";
+import PaymentCheckoutModal from "@/components/payment/PaymentCheckoutModal";
 
 export default function BookingDetailsPage() {
     const params = useParams();
@@ -30,6 +31,7 @@ export default function BookingDetailsPage() {
     const [error, setError] = useState("");
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [currentBoatImageIndex, setCurrentBoatImageIndex] = useState(0); // For Boat Slider
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
 
     // Auto-advance Trip slider
     useEffect(() => {
@@ -203,13 +205,19 @@ export default function BookingDetailsPage() {
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <span className={`px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide border ${getStatusColor(order.status)}`}>
-                            {order.status}
-                        </span>
-                        {order.payment_status === 'paid' && (
+                        {order.payment_status === 'paid' ? (
                             <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold bg-gray-100 text-gray-700 border border-gray-200">
                                 <FiCheckCircle className="text-green-500" /> Paid
                             </span>
+                        ) : (
+                            isPaymentLinkUsable(order) && (
+                                <button
+                                    onClick={() => setShowPaymentModal(true)}
+                                    className="flex items-center gap-2 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-sm font-bold shadow-sm transition-colors cursor-pointer"
+                                >
+                                    <FiCreditCard size={16} /> Pay Now
+                                </button>
+                            )
                         )}
                     </div>
                 </div>
@@ -563,10 +571,20 @@ export default function BookingDetailsPage() {
                                 {(order.payment_method || '').toLowerCase() === 'cash' ? (
                                     null
                                 ) : (
-                                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase ${order.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                                        }`}>
-                                        {order.payment_status || 'Pending'}
-                                    </span>
+                                    <div className="flex items-center justify-between gap-2 mt-2">
+                                        <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase ${order.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                            }`}>
+                                            {order.payment_status || 'Pending'}
+                                        </span>
+                                        {isPaymentLinkUsable(order) && (
+                                            <button
+                                                onClick={() => setShowPaymentModal(true)}
+                                                className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                                            >
+                                                <FiCreditCard size={12} /> Pay Now
+                                            </button>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -700,6 +718,14 @@ export default function BookingDetailsPage() {
 
                 </div>
             </div>
+
+            {showPaymentModal && order.fawaterak_payment_url && (
+                <PaymentCheckoutModal
+                    paymentUrl={order.fawaterak_payment_url}
+                    expiresAt={order.payment_expires_at}
+                    onClose={() => setShowPaymentModal(false)}
+                />
+            )}
         </div >
     );
 }

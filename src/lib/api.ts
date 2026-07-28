@@ -469,6 +469,8 @@ export interface Order {
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   payment_status?: 'unpaid' | 'paid' | 'pending' | 'failed' | 'expired';
   payment_method?: 'card' | 'cash';
+  fawaterak_payment_url?: string;
+  payment_expires_at?: string;
   trip_id: number | null;
   voyage_id: number | null;
   created_at: string;
@@ -534,6 +536,23 @@ export interface Order {
   // Children
   children_count?: number;
   child_price_snapshot?: number | null;
+}
+
+export function isPaymentLinkUsable(order?: Order | null): boolean {
+  if (!order || !order.fawaterak_payment_url) return false;
+  if (order.payment_status === 'paid' || order.payment_status === 'expired' || order.payment_status === 'failed') return false;
+  if (order.status === 'cancelled' || order.status === 'completed') return false;
+
+  if (order.payment_expires_at) {
+    const expireTime = new Date(
+      order.payment_expires_at.endsWith('Z') ? order.payment_expires_at : order.payment_expires_at + 'Z'
+    ).getTime();
+    if (expireTime <= Date.now()) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 

@@ -39,8 +39,12 @@ export function middleware(request: NextRequest) {
   // Pages that require admin role
   const adminPages = ['/admin-dashboard', '/list-your-boat'];
 
-  // Check if current page is protected
-  const isProtectedPage = protectedPages.some(page => pathname.startsWith(page));
+  // Pages that should be accessible without auth when loaded via payment gateway redirect
+  const iframeAllowedPages = ['/payment/success', '/payment/fail'];
+  const isIframeAllowed = iframeAllowedPages.some(page => pathname.startsWith(page));
+
+  // Check if current page is protected (excluding payment result pages)
+  const isProtectedPage = !isIframeAllowed && protectedPages.some(page => pathname.startsWith(page));
   const isAdminPage = adminPages.some(page => pathname.startsWith(page));
 
   // Get token from cookies
