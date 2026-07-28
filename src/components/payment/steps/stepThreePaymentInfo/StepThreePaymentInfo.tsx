@@ -7,6 +7,7 @@ import useFormStep from "@/hooks/useFormStep";
 import useBookingStore from "@/hooks/useBookingStore";
 import toast from "react-hot-toast";
 import { IoArrowBack } from "react-icons/io5";
+import PaymentCheckoutModal from "@/components/payment/PaymentCheckoutModal";
 
 export default function StepThreePaymentInfo() {
   const router = useRouter();
@@ -14,7 +15,10 @@ export default function StepThreePaymentInfo() {
   const bookingData = useBookingStore((s) => s.bookingData);
   const clearBookingData = useBookingStore((s) => s.clearBookingData);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash'>('card');
-  const [processing, setProcessing] = useState(false);  const [error, setError] = useState("");
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState("");
+  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
+  const [expiresAtStr, setExpiresAtStr] = useState<string | null>(null);
 
   const handleConfirmPayment = async () => {
     if (!bookingData) return;
@@ -102,11 +106,12 @@ export default function StepThreePaymentInfo() {
       }
 
       if (response.success && response.data) {
-        // ... rest of success logic
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const responseData = response.data as any;
-        // Check for payment_url in both possible locations (payment_data for regular orders, payment for trips)
-        const paymentUrl = responseData.payment_data?.payment_url || responseData.payment?.payment_url;
+        const paymentData = responseData.payment_data || responseData.payment;
+        const paymentUrl = paymentData?.payment_url;
+        const expiresAtStr = paymentData?.expires_at;
+        const expMinutes = paymentData?.exp_minutes || 15;
 
         if (paymentMethod === 'card' && paymentUrl) {
           try {
@@ -123,7 +128,8 @@ export default function StepThreePaymentInfo() {
             );
             
             if (isAllowedHost) {
-              window.location.href = paymentUrl;
+              setExpiresAtStr(expiresAtStr || null);
+              setCheckoutUrl(paymentUrl);
             } else {
               console.error('Blocked redirection to untrusted payment host:', parsedPaymentUrl.hostname);
               setError('Security Error: Redirection to untrusted payment host was blocked. Please contact support.');
@@ -156,7 +162,20 @@ export default function StepThreePaymentInfo() {
     );
   }
 
-  return (    <div className="max-w-2xl mx-auto p-6">
+  // --- Full Screen Checkout View ---
+  if (checkoutUrl) {
+    return (
+      <PaymentCheckoutModal
+        paymentUrl={checkoutUrl}
+        expiresAt={expiresAtStr}
+        onClose={() => setCheckoutUrl(null)}
+      />
+    );
+  }
+
+  // --- Payment Method Selection View ---
+  return (
+    <div className="max-w-2xl mx-auto p-6">
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => setStep(2)}
@@ -213,7 +232,8 @@ export default function StepThreePaymentInfo() {
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Add-on Services:</span>
                 <span className="font-medium">{typeof bookingData.services_total === 'number' ? (bookingData.services_total as number).toFixed(0) : '0'} EGP</span>
-              </div>              {(bookingData.selected_services as { service_id: number; name: string; price: number; price_mode: string; calculated_price: number; person_count?: number }[]).map((svc) => (
+              </div>
+              {(bookingData.selected_services as { service_id: number; name: string; price: number; price_mode: string; calculated_price: number; person_count?: number }[]).map((svc) => (
                 <div key={svc.service_id} className="flex justify-between text-xs pl-3">
                   <span className="text-gray-400">
                     {svc.name}
@@ -284,7 +304,8 @@ export default function StepThreePaymentInfo() {
         <div className="mb-4 bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg">
           {error}
         </div>
-      )}      <div>
+      )}
+      <div>
         <button
           onClick={handleConfirmPayment}
           disabled={processing}
@@ -296,3 +317,4 @@ export default function StepThreePaymentInfo() {
     </div>
   );
 }
+

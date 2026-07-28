@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.className}`} suppressHydrationWarning>
-        <Toaster position="top-center" />
+        <Toaster position="top-center" containerStyle={{ zIndex: 999999 }} />
         {children}
       </body>
     </html>

@@ -344,7 +344,11 @@ export default function BookingSidebar({
                 const [slotStartH, slotStartM] = slot.start.split(":").map(Number);
                 const [slotEndH, slotEndM] = slot.end.split(":").map(Number);
                 const slotStartTotalMinutes = slotStartH * 60 + slotStartM;
-                const slotEndTotalMinutes = slotEndH * 60 + slotEndM;
+                let slotEndTotalMinutes = slotEndH * 60 + slotEndM;
+
+                if ((slot.end === "24:00" || (slotEndH === 0 && slotEndM === 0)) && slotStartTotalMinutes > 0) {
+                    slotEndTotalMinutes = 24 * 60; // 1440 minutes (24:00)
+                }
 
                 if (isEndTime) {
                     if (startTime) {

@@ -3,15 +3,17 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { customerApi, Order } from "@/lib/api";
+import { customerApi, Order, isPaymentLinkUsable } from "@/lib/api";
 import { normalizeImageUrl } from "@/lib/imageUtils";
-import { FiClock, FiCalendar, FiMapPin, FiAnchor, FiChevronLeft, FiChevronRight, FiPackage } from "react-icons/fi";
+import { FiClock, FiCalendar, FiMapPin, FiAnchor, FiChevronLeft, FiChevronRight, FiPackage, FiCreditCard } from "react-icons/fi";
+import PaymentCheckoutModal from "@/components/payment/PaymentCheckoutModal";
 
 interface BookingCardProps {
   order: Order;
+  onPayNow?: (order: Order) => void;
 }
 
-function BookingCard({ order }: BookingCardProps) {
+function BookingCard({ order, onPayNow }: BookingCardProps) {
   const router = useRouter();
 
   // Safety check - return null if boat is not available
@@ -136,10 +138,18 @@ function BookingCard({ order }: BookingCardProps) {
           <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
             Order #{order.id}
           </span>
-          <div className="flex items-center gap-3">
-            {order.boat?.location_url && (
-              /* Location link removed as per request */
-              null
+          <div className="flex items-center gap-2">
+            {isPaymentLinkUsable(order) && onPayNow && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPayNow(order);
+                }}
+                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
+              >
+                <FiCreditCard size={14} />
+                <span>Pay Now</span>
+              </button>
             )}
             <span className="text-sm font-medium text-[#106BD8] group-hover:translate-x-1 transition-transform flex items-center gap-1">
               View Details <FiChevronRight />
@@ -159,6 +169,7 @@ export default function MyBookingsPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [activePaymentOrder, setActivePaymentOrder] = useState<Order | null>(null);
 
   // Sync state with URL params if needed in future
 
@@ -234,7 +245,7 @@ export default function MyBookingsPage() {
             {orders.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                 {orders.map((order) => (
-                  <BookingCard key={order.id} order={order} />
+                  <BookingCard key={order.id} order={order} onPayNow={(ord) => setActivePaymentOrder(ord)} />
                 ))}
               </div>
             ) : (
@@ -280,6 +291,15 @@ export default function MyBookingsPage() {
               </div>
             )}
           </>
+        )}
+
+        {/* Payment Checkout Modal for Card Payments */}
+        {activePaymentOrder && activePaymentOrder.fawaterak_payment_url && (
+          <PaymentCheckoutModal
+            paymentUrl={activePaymentOrder.fawaterak_payment_url}
+            expiresAt={activePaymentOrder.payment_expires_at}
+            onClose={() => setActivePaymentOrder(null)}
+          />
         )}
       </div>
     </div>
